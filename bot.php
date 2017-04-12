@@ -10,7 +10,7 @@ if ($_REQUEST['hub_verify_token'] === $hubVerifyToken) {
 // handle bot's anwser
 $input = json_decode(file_get_contents('php://input'), true);
 $senderId = $input['entry'][0]['messaging'][0]['sender']['id'];
-$messageText = isset($input['entry'][0]['messaging'][0]['message']['text']) ? $input['entry'][0]['messaging'][0]['message']['text']: '';
+$messageText = $input['entry'][0]['messaging'][0]['message']['text'];
 $postback = isset($input['entry'][0]['messaging'][0]['postback']['payload']) ? $input['entry'][0]['messaging'][0]['postback']['payload']: '';
 $response = null;
 //set Message
