@@ -11,7 +11,7 @@ if ($_REQUEST['hub_verify_token'] === $hubVerifyToken) {
 $input = json_decode(file_get_contents('php://input'), true);
 $senderId = $input['entry'][0]['messaging'][0]['sender']['id'];
 $messageText = $input['entry'][0]['messaging'][0]['message']['text'];
-$postback = isset($input['entry'][0]['messaging'][0]['postback']['payload']) ? $input['entry'][0]['messaging'][0]['postback']['payload']: '';
+//$postback = isset($input['entry'][0]['messaging'][0]['postback']['payload']) ? $input['entry'][0]['messaging'][0]['postback']['payload']: '';
 $response = null;
 //set Message
 if($messageText == "hi") {
@@ -41,9 +41,7 @@ if($messageText == "hi") {
         ]
       ]
     ]];
-} else if($postback != ''){
-	$answer = $postback;
-}
+} 
 //send message to facebook bot
 $response = [
     'recipient' => [ 'id' => $senderId ],
