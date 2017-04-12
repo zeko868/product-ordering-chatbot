@@ -33,7 +33,7 @@ if($messageText == "hi") {
               [
                 "type"=>"postback",
                 "title"=>"Start Chatting",
-                "payload"=>"vrijednost x"
+                "payload"=>"DEVELOPER_DEFINED_PAYLOAD_FOR_LATEST_POSTS"
               ]              
             ]
           ]
