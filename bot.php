@@ -21,22 +21,17 @@ if($messageText == "hi"){
           [
             "title"=>"Dobro došli u aplikaciju za rezervaciju konzultacija",
             "subtitle"=>"Odaberite profesora kod kojeg želite rezervirati konzultacije:",
-            "buttons"=>
+            "buttons"=>[
+              [
+                "type"=>"web_url",
+                "url"=>"https://petersfancybrownhats.com",
+                "title"=>"View Website"
+              ],
               [
                 "type"=>"postback",
-                "title"=>"Profesor 1",
+                "title"=>"Start Chatting",
                 "payload"=>"DEVELOPER_DEFINED_PAYLOAD"
-              ],
-				[
-                "type"=>"postback",
-                "title"=>"Profesor 2",
-                "payload"=>"DEVELOPER_DEFINED_PAYLOAD"
-              ],
-			  [
-                "type"=>"postback",
-                "title"=>"Profesor 3",
-                "payload"=>"DEVELOPER_DEFINED_PAYLOAD"
-              ]
+              ]              
             ]
           ]
         ]
