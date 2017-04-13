@@ -24,18 +24,18 @@ if($messageText == "hi"){
             "buttons"=>[
               [
                 "type"=>"web_url",
-                "url"=>"",
-                "title"=>""
+                "url"=>"https://petersfancybrownhats.com",
+                "title"=>"View Website"
               ],
               [
                 "type"=>"postback",
                 "title"=>"Start Chatting",
-                "payload"=>"DEVELOPER_DEFINED_PAYLOAD"
+                "payload"=>"1"
               ],
 				[
                 "type"=>"postback",
                 "title"=>"Start Chatting 2",
-                "payload"=>"DEVELOPER_DEFINED_PAYLOAD2"
+                "payload"=>"2"
               ]
             ]
           ]
