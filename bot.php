@@ -27,7 +27,7 @@ if (!empty($input['entry'][0]['messaging'])) {
 
 
 if($command == "konzultacije"){
-     $x = "$answer = ['attachment'=>[
+     $answer = ['attachment'=>[
       'type'=>'template',
       'payload'=>[
         'template_type'=>'button',
@@ -50,10 +50,10 @@ if($command == "konzultacije"){
           ]
         ]
       ]
-      ]];";
+      ]];
      $response = [
     'recipient' => [ 'id' => $senderId ],
-    'message' => $x
+    'message' => $answer 
 ];
 
 }else if($command == "1"){
