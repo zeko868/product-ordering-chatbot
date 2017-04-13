@@ -9,11 +9,12 @@ if ($_REQUEST['hub_verify_token'] === $hubVerifyToken) {
 }
 // handle bot's anwser
 $input = json_decode(file_get_contents('php://input'), true);
+$command = "";
 if (!empty($data['entry'][0]['messaging'])) { 
 
         foreach ($data['entry'][0]['messaging'] as $message) { 
 
-        $command = "";
+        
 
         // When bot receive message from user
         if (!empty($message['message'])) {
@@ -27,7 +28,7 @@ if (!empty($data['entry'][0]['messaging'])) {
 }
 $senderId = $input['entry'][0]['messaging'][0]['sender']['id'];
 $response = null;
-if($messageText == "hi"){
+if($command == "hi"){
      $answer = ["attachment"=>[
       "type"=>"template",
       "payload"=>[
