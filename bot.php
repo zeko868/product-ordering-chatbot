@@ -31,7 +31,12 @@ if($messageText == "hi"){
                 "type"=>"postback",
                 "title"=>"Start Chatting",
                 "payload"=>"DEVELOPER_DEFINED_PAYLOAD"
-              ]              
+              ],
+				[
+                "type"=>"postback",
+                "title"=>"Start Chatting 2",
+                "payload"=>"DEVELOPER_DEFINED_PAYLOAD2"
+              ]
             ]
           ]
         ]
