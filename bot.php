@@ -36,11 +36,6 @@ if($command == "hi"){
         "text"=>"What do you want to do next?",
         "buttons"=>[
           [
-            "type"=>"web_url",
-            "url"=>"https://petersapparel.parseapp.com",
-            "title"=>"Show Website"
-          ],
-          [
             "type"=>"postback",
             "title"=>"Start Chatting",
             "payload"=>"USER_DEFINED_PAYLOAD"
@@ -53,12 +48,6 @@ if($command == "hi"){
     'message' => $answer 
 ];
 
-}else if($command == "1"){
-	$answer = "a";
- $response = [
-'recipient' => [ 'id' => $senderId ],
-'message' => [ 'text' => $answer ]
-];
 }
 $ch = curl_init('https://graph.facebook.com/v2.6/me/messages?access_token='.$accessToken);
 curl_setopt($ch, CURLOPT_POST, 1);
