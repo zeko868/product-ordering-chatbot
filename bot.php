@@ -47,7 +47,7 @@ if($messageText == "hi"){
     'recipient' => [ 'id' => $senderId ],
     'message' => $answer 
 ];
-}else{
+}else if(isset($input['entry'][0]['messaging'][0]['postback']['payload'])){
 	$answer = "Pogreska kod inicijalizacije";
      $response = [
     'recipient' => [ 'id' => $senderId ],
