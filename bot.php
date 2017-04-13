@@ -57,19 +57,98 @@ if($command == "konzultacije"){
 ];
 
 }else if($command == "1"){
-	$answer = "Odabran je profesor broj ".$command;
+	$answer = ['attachment'=>[
+      'type'=>'template',
+      'payload'=>[
+        'template_type'=>'button',
+        'text'=>'Termini konzultacija kod profesora 1: ',
+        'buttons'=>[
+          [
+            'type'=>'postback',
+            'title'=>'Termin 1',
+            'payload'=>'Termin 1 profesor 1'
+          ],
+		  [
+            'type'=>'postback',
+            'title'=>'Termin 2',
+            'payload'=>'Termin 2 profesor 1'
+          ]
+        ]
+      ]
+      ]];
      $response = [
     'recipient' => [ 'id' => $senderId ],
-    'message' => [ 'text' => $answer ]
+    'message' => $answer 
 ];
 }else if($command == "2"){
-	$answer = "Odabran je profesor broj ".$command;
+	$answer = ['attachment'=>[
+      'type'=>'template',
+      'payload'=>[
+        'template_type'=>'button',
+        'text'=>'Termini konzultacija kod profesora 1: ',
+        'buttons'=>[
+          [
+            'type'=>'postback',
+            'title'=>'Termin 1',
+            'payload'=>'Termin 1 profesor 2'
+          ]
+        ]
+      ]
+      ]];
+     $response = [
+    'recipient' => [ 'id' => $senderId ],
+    'message' => $answer 
+];
+}else if($command == "3"){
+	$answer = ['attachment'=>[
+      'type'=>'template',
+      'payload'=>[
+        'template_type'=>'button',
+        'text'=>'Termini konzultacija kod profesora 1: ',
+        'buttons'=>[
+          [
+            'type'=>'postback',
+            'title'=>'Termin 1',
+            'payload'=>'Termin 1 profesor 3'
+          ],
+		  [
+            'type'=>'postback',
+            'title'=>'Termin 2',
+            'payload'=>'Termin 2 profesor 3'
+          ]
+        ]
+      ]
+      ]];
+     $response = [
+    'recipient' => [ 'id' => $senderId ],
+    'message' => $answer 
+];
+}else if($command == "Termin 1 profesor 1"){
+	$answer = "Odabran je termin 1 kod profesora 1, kada profesor odgovori na zahtjev javit ćemo Vam profesorov odgovor.";
      $response = [
     'recipient' => [ 'id' => $senderId ],
     'message' => [ 'text' => $answer ]
 ];
-}else if($command == "3"){
-	$answer = "Odabran je profesor broj ".$command;
+}else if($command == "Termin 2 profesor 1"){
+	$answer = "Odabran je termin 2 kod profesora 1, kada profesor odgovori na zahtjev javit ćemo Vam profesorov odgovor.";
+     $response = [
+    'recipient' => [ 'id' => $senderId ],
+    'message' => [ 'text' => $answer ]
+];
+}else if($command == "Termin 1 profesor 2"){
+	$answer = "Odabran je termin 1 kod profesora 2, kada profesor odgovori na zahtjev javit ćemo Vam profesorov odgovor.";
+     $response = [
+    'recipient' => [ 'id' => $senderId ],
+    'message' => [ 'text' => $answer ]
+];
+}else if($command == "Termin 1 profesor 3"){
+	$answer = "Odabran je termin 1 kod profesora 3, kada profesor odgovori na zahtjev javit ćemo Vam profesorov odgovor.";
+     $response = [
+    'recipient' => [ 'id' => $senderId ],
+    'message' => [ 'text' => $answer ]
+];
+}else if($command == "Termin 2 profesor 3"){
+	$answer = "Odabran je termin 1 kod profesora 1, kada profesor odgovori na zahtjev javit ćemo Vam profesorov odgovor.";
      $response = [
     'recipient' => [ 'id' => $senderId ],
     'message' => [ 'text' => $answer ]
