@@ -14,27 +14,27 @@ $messageText = isset($input['entry'][0]['messaging'][0]['message']['text']) ? $i
 $postback = isset($input['entry'][0]['messaging'][0]['postback']['payload']) ? $input['entry'][0]['messaging'][0]['postback']['payload']: '' ;
 $response = null;
 if($messageText == "hi"){
-     $answer = {
-    "attachment":{
+     $answer = [
+    "attachment":[
       "type":"template",
-      "payload":{
+      "payload":[
         "template_type":"button",
         "text":"What do you want to do next?",
         "buttons":[
-          {
+          [
             "type":"web_url",
             "url":"https://petersapparel.parseapp.com",
             "title":"Show Website"
-          },
-          {
+          ],
+          [
             "type":"postback",
             "title":"Start Chatting",
             "payload":"USER_DEFINED_PAYLOAD"
-          }
+          ]
         ]
-      }
-    }
-  };
+      ]
+    ]
+  ];
      $response = [
     'recipient' => [ 'id' => $senderId ],
     'message' => $answer 
