@@ -69,14 +69,14 @@ if($command == "hi"){
     'recipient' => [ 'id' => $senderId ],
     'message' => $answer 
 ];
-
-}
 curl_setopt($ch, CURLOPT_POST, 1);
 curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($response));
 curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
 if(!empty($input)){
 $result = curl_exec($ch);
 }
+}
+
 curl_close($ch);
 
 
