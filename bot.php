@@ -54,14 +54,6 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
 if(!empty($input)){
 $result = curl_exec($ch);
 }
-curl_setopt($ch, CURLOPT_POST, 1);
-curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($response));
-curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-if(!empty($input)){
-$result = curl_exec($ch);
-}
-curl_close($ch);
-}
 $answer = "druga poruka";
      $response = [
     'recipient' => [ 'id' => $senderId ],
@@ -73,4 +65,7 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
 if(!empty($input)){
 $result = curl_exec($ch);
 }
+curl_close($ch);
+}
+
 
