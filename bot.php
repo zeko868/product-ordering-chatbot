@@ -48,10 +48,11 @@ if($messageText == "hi"){
     'message' => $answer 
 ];
 }else{
-	$answer = "Pogreška kod inicijalizacije";
-	$response = [
+	$answer = ["Pogreska kod inicijalizacije"];
+     $response = [
     'recipient' => [ 'id' => $senderId ],
-    'message' => $answer
+    'message' => $answer 
+];
 }
 
 $ch = curl_init('https://graph.facebook.com/v2.6/me/messages?access_token='.$accessToken);
