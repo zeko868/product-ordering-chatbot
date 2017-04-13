@@ -10,9 +10,9 @@ if ($_REQUEST['hub_verify_token'] === $hubVerifyToken) {
 // handle bot's anwser
 $input = json_decode(file_get_contents('php://input'), true);
 $command = "";
-if (!empty($data['entry'][0]['messaging'])) { 
+if (!empty($input['entry'][0]['messaging'])) { 
 
-        foreach ($data['entry'][0]['messaging'] as $message) { 
+        foreach ($input['entry'][0]['messaging'] as $message) { 
 
         
 
