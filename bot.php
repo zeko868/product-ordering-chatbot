@@ -20,21 +20,18 @@ if($messageText == "hi"){
         "elements"=>[
           [
             "title"=>"Dobro došli u aplikaciju za rezervaciju konzultacija",
-            "subtitle"=>"Odaberite profesora kod kojeg želite rezervirati konzultacije",
-            "buttons"=>
+            "item_url"=>"https://www.cloudways.com/blog/migrate-symfony-from-cpanel-to-cloud-hosting/",
+            "image_url"=>"https://www.cloudways.com/blog/wp-content/uploads/Migrating-Your-Symfony-Website-To-Cloudways-Banner.jpg",
+            "subtitle"=>"Odaberite profesora kod kojeg želite rezervirati konzultacije:",
+            "buttons"=>[
+              [
+                "type"=>"web_url",
+                "url"=>"https://petersfancybrownhats.com",
+                "title"=>"View Website"
+              ],
               [
                 "type"=>"postback",
-                "title"=>"Profesor 1",
-                "payload"=>"DEVELOPER_DEFINED_PAYLOAD"
-              ],
-				[
-                "type"=>"postback",
-                "title"=>"Profesor 2",
-                "payload"=>"DEVELOPER_DEFINED_PAYLOAD"
-              ],
-				[
-                "type"=>"postback",
-                "title"=>"Profesor 3",
+                "title"=>"Start Chatting",
                 "payload"=>"DEVELOPER_DEFINED_PAYLOAD"
               ]              
             ]
