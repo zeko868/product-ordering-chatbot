@@ -33,11 +33,21 @@ if($command == "hi"){
       "type"=>"template",
       "payload"=>[
         "template_type"=>"button",
-        "text"=>"What do you want to do next?",
+        "text"=>"Kod kojeg profesora želite rezervirati konzultacije?",
         "buttons"=>[
           [
             "type"=>"postback",
-            "title"=>"Start Chatting",
+            "title"=>"Profesor 1",
+            "payload"=>"USER_DEFINED_PAYLOAD"
+          ],
+		  [
+            "type"=>"postback",
+            "title"=>"Profesor 2",
+            "payload"=>"USER_DEFINED_PAYLOAD"
+          ],
+		  [
+            "type"=>"postback",
+            "title"=>"Profesor 3",
             "payload"=>"USER_DEFINED_PAYLOAD"
           ]
         ]
