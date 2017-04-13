@@ -69,7 +69,9 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
 if(!empty($input)){
 $result = curl_exec($ch);
 }
-$answer = "Postback";
+
+}
+$answer = $command . "a";
  $response = [
 'recipient' => [ 'id' => $senderId ],
 'message' => [ 'text' => $answer ]
@@ -81,8 +83,6 @@ if(!empty($input)){
 $result = curl_exec($ch);
 }
 curl_close($ch);
-}
-
 
 
 
