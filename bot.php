@@ -48,10 +48,10 @@ if($messageText == "hi"){
     'message' => $answer 
 ];
 }else{
-	$answer = ["Pogreska kod inicijalizacije"];
+	$answer = "Pogreska kod inicijalizacije";
      $response = [
     'recipient' => [ 'id' => $senderId ],
-    'message' => $answer 
+    'message' => [ 'text' => $answer ]
 ];
 }
 
