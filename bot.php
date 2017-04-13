@@ -9,9 +9,23 @@ if ($_REQUEST['hub_verify_token'] === $hubVerifyToken) {
 }
 // handle bot's anwser
 $input = json_decode(file_get_contents('php://input'), true);
+if (!empty($data['entry'][0]['messaging'])) { 
+
+        foreach ($data['entry'][0]['messaging'] as $message) { 
+
+        $command = "";
+
+        // When bot receive message from user
+        if (!empty($message['message'])) {
+             $command = $message['message']['text'];           
+        }
+         // When bot receive button click from user
+         else if (!empty($message['postback'])) {
+             $command = $message['postback']['payload'];
+        }
+    }
+}
 $senderId = $input['entry'][0]['messaging'][0]['sender']['id'];
-$messageText = isset($input['entry'][0]['messaging'][0]['message']['text']) ? $input['entry'][0]['messaging'][0]['message']['text']: '' ;
-$postback = isset($input['entry'][0]['messaging'][0]['postback'][0]['payload']) ? $input['entry'][0]['messaging'][0]['postback'][0]['payload']: '' ;
 $response = null;
 if($messageText == "hi"){
      $answer = ["attachment"=>[
@@ -46,12 +60,6 @@ if($messageText == "hi"){
      $response = [
     'recipient' => [ 'id' => $senderId ],
     'message' => $answer 
-];
-}else if(isset($input['entry'][0]['messaging'][0]['postback'][0]['payload'])){
-	$answer = "Pogreska kod inicijalizacije";
-     $response = [
-    'recipient' => [ 'id' => $senderId ],
-    'message' => [ 'text' => $postback ]
 ];
 }
 
