@@ -24,8 +24,8 @@ if($messageText == "hi"){
             "buttons"=>[
               [
                 "type"=>"web_url",
-                "url"=>"https://petersfancybrownhats.com",
-                "title"=>"View Website"
+                "url"=>"",
+                "title"=>""
               ],
               [
                 "type"=>"postback",
