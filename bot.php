@@ -45,7 +45,7 @@ if($command == "hi"){
               ],
               [
                 "type"=>"postback",
-                "title"=>"Start Chatting",
+                "title"=>"hi",
                 "payload"=>"1"
               ],
 				[
