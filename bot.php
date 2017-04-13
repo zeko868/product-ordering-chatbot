@@ -62,6 +62,12 @@ if($command == "hi"){
     'recipient' => [ 'id' => $senderId ],
     'message' => $answer 
 ];
+}else{
+	$answer = "Postback";
+     $response = [
+    'recipient' => [ 'id' => $senderId ],
+    'message' => [ 'text' => $answer ]
+];
 }
 
 $ch = curl_init('https://graph.facebook.com/v2.6/me/messages?access_token='.$accessToken);
