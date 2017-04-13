@@ -47,6 +47,8 @@ if($messageText == "hi"){
     'recipient' => [ 'id' => $senderId ],
     'message' => $answer 
 ];
+}else{
+	$answer = "Pogreška kod inicijalizacije";
 }
 
 $ch = curl_init('https://graph.facebook.com/v2.6/me/messages?access_token='.$accessToken);
