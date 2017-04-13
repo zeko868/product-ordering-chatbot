@@ -63,7 +63,7 @@ if($command == "hi"){
     'message' => $answer 
 ];
 
-}else if($command == "Start Chatting"){
+}else if($command == "1"){
 	$answer = "a";
  $response = [
 'recipient' => [ 'id' => $senderId ],
