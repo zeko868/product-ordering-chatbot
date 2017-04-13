@@ -9,6 +9,7 @@ if ($_REQUEST['hub_verify_token'] === $hubVerifyToken) {
 }
 // handle bot's anwser
 $input = json_decode(file_get_contents("php://input"), true, 512, JSON_BIGINT_AS_STRING);
+$senderId = $input['entry'][0]['messaging'][0]['sender']['id'];
 $response = null;
 $ch = curl_init('https://graph.facebook.com/v2.6/me/messages?access_token='.$accessToken);
 $answer = "BOK";
@@ -39,7 +40,7 @@ if (!empty($input['entry'][0]['messaging'])) {
         }
     }
 }
-$senderId = $input['entry'][0]['messaging'][0]['sender']['id'];
+
 
 if($command == "hi"){
      $answer = ["attachment"=>[
