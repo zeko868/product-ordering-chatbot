@@ -51,7 +51,7 @@ if($messageText == "hi"){
 	$answer = "Pogreska kod inicijalizacije";
      $response = [
     'recipient' => [ 'id' => $senderId ],
-    'message' => [ 'text' => $answer ]
+    'message' => [ 'text' => $postback ]
 ];
 }
 
