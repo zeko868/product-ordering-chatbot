@@ -28,6 +28,18 @@ if (!empty($input['entry'][0]['messaging'])) {
 }
 $senderId = $input['entry'][0]['messaging'][0]['sender']['id'];
 $response = null;
+$ch = curl_init('https://graph.facebook.com/v2.6/me/messages?access_token='.$accessToken);
+$answer = "BOK";
+     $response = [
+    'recipient' => [ 'id' => $senderId ],
+    'message' => [ 'text' => $answer ]
+];
+curl_setopt($ch, CURLOPT_POST, 1);
+curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($response));
+curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+if(!empty($input)){
+$result = curl_exec($ch);
+}
 if($command == "hi"){
      $answer = ["attachment"=>[
       "type"=>"template",
@@ -59,7 +71,6 @@ if($command == "hi"){
 ];
 
 }
-$ch = curl_init('https://graph.facebook.com/v2.6/me/messages?access_token='.$accessToken);
 curl_setopt($ch, CURLOPT_POST, 1);
 curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($response));
 curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
