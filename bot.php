@@ -46,8 +46,7 @@ if($messageText == "hi"){
      $response = [
     'recipient' => [ 'id' => $senderId ],
     'message' => $answer 
-];}
-
+];
 $ch = curl_init('https://graph.facebook.com/v2.6/me/messages?access_token='.$accessToken);
 curl_setopt($ch, CURLOPT_POST, 1);
 curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($response));
@@ -56,3 +55,5 @@ if(!empty($input)){
 $result = curl_exec($ch);
 }
 curl_close($ch);
+}
+
