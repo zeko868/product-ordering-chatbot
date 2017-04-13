@@ -50,7 +50,7 @@ if($command == "hi"){
               ],
 				[
                 "type"=>"postback",
-                "title"=>"Start Chatting 2",
+                "title"=>"hi 2",
                 "payload"=>"2"
               ]
             ]
