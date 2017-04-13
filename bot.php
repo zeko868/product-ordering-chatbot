@@ -11,7 +11,7 @@ if ($_REQUEST['hub_verify_token'] === $hubVerifyToken) {
 $input = json_decode(file_get_contents('php://input'), true);
 $senderId = $input['entry'][0]['messaging'][0]['sender']['id'];
 $messageText = isset($input['entry'][0]['messaging'][0]['message']['text']) ? $input['entry'][0]['messaging'][0]['message']['text']: '' ;
-$postback = isset($input['entry'][0]['messaging'][0]['postback']['payload']) ? $input['entry'][0]['messaging'][0]['postback']['payload']: '' ;
+$postback = isset($input['entry'][0]['messaging'][0]['postback'][0]['payload']) ? $input['entry'][0]['messaging'][0]['postback'][0]['payload']: '' ;
 $response = null;
 if($messageText == "hi"){
      $answer = ["attachment"=>[
@@ -47,7 +47,7 @@ if($messageText == "hi"){
     'recipient' => [ 'id' => $senderId ],
     'message' => $answer 
 ];
-}else if(isset($input['entry'][0]['messaging'][0]['postback']['payload'])){
+}else if(isset($input['entry'][0]['messaging'][0]['postback'][0]['payload'])){
 	$answer = "Pogreska kod inicijalizacije";
      $response = [
     'recipient' => [ 'id' => $senderId ],
