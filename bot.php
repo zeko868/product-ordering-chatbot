@@ -14,35 +14,27 @@ $messageText = isset($input['entry'][0]['messaging'][0]['message']['text']) ? $i
 $postback = isset($input['entry'][0]['messaging'][0]['postback']['payload']) ? $input['entry'][0]['messaging'][0]['postback']['payload']: '' ;
 $response = null;
 if($messageText == "hi"){
-     $answer = ["attachment"=>[
-      "type"=>"template",
-      "payload"=>[
-        "template_type"=>"generic",
-        "elements"=>[
-          [
-            "title"=>"Dobro došli u aplikaciju za rezervaciju konzultacija",
-            "subtitle"=>"Odaberite profesora kod kojeg želite rezervirati konzultacije:",
-            "buttons"=>[
-              [
-                "type"=>"web_url",
-                "url"=>"https://petersfancybrownhats.com",
-                "title"=>"View Website"
-              ],
-              [
-                "type"=>"postback",
-                "title"=>"Start Chatting",
-                "payload"=>"1"
-              ],
-				[
-                "type"=>"postback",
-                "title"=>"Start Chatting 2",
-                "payload"=>"2"
-              ]
-            ]
-          ]
+     $answer = {
+    "attachment":{
+      "type":"template",
+      "payload":{
+        "template_type":"button",
+        "text":"What do you want to do next?",
+        "buttons":[
+          {
+            "type":"web_url",
+            "url":"https://petersapparel.parseapp.com",
+            "title":"Show Website"
+          },
+          {
+            "type":"postback",
+            "title":"Start Chatting",
+            "payload":"USER_DEFINED_PAYLOAD"
+          }
         ]
-      ]
-    ]];
+      }
+    }
+  };
      $response = [
     'recipient' => [ 'id' => $senderId ],
     'message' => $answer 
