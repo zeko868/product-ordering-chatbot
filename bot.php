@@ -20,8 +20,6 @@ if($messageText == "hi"){
         "elements"=>[
           [
             "title"=>"Dobro došli u aplikaciju za rezervaciju konzultacija",
-            "item_url"=>"https://www.cloudways.com/blog/migrate-symfony-from-cpanel-to-cloud-hosting/",
-            "image_url"=>"https://www.cloudways.com/blog/wp-content/uploads/Migrating-Your-Symfony-Website-To-Cloudways-Banner.jpg",
             "subtitle"=>"Odaberite profesora kod kojeg želite rezervirati konzultacije:",
             "buttons"=>[
               [
