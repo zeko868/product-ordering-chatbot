@@ -50,7 +50,23 @@ $cp = explode(" ", $command);
 	$k = array();
 foreach($xml->employee as $item)
 {
-    $p = explode(" ", $prof);
+	if($cp[2] == "1" || $cp[2] == "2" || $cp[2] == "3" || $cp[2] == "4"){
+	$xml=simplexml_load_file('informacije.xml');
+	foreach($xml->employee as $item)
+{
+	if($item->firstname == $cp[0] && $item->lastname ==$cp[1]){
+		//substr($i->day, 0, 2).' '.$i->time_from.' - '.$i->time_to, 'payload' => $prof.' '.$broj++));
+		$answer = "Rezervirano: ". $cp[0] . ' '. $cp[1]. 'u terminu: ' . substr($item->consultation->term[intval($cp[2])]->day, 0, 2). ' ' 
+		. $item->consultation->term[intval($cp[2])]->time_from.' - '.$item->consultation->term[intval($cp[2])]->time_to.
+		'. Javiti ćemo Vam profesorov odgovor.';
+	}
+}
+     $response = [
+    'recipient' => [ 'id' => $senderId ],
+    'message' => [ 'text' => $answer ]
+];
+}else{
+	$p = explode(" ", $prof);
 	$button = array();
 	$broj = 1;
 	if($item->firstname == $p[0] && $item->lastname == $p[1]){
@@ -75,6 +91,8 @@ foreach($xml->employee as $item)
 		'message' => [ 'attachment' => $answer ]
 	];
 	}
+}
+    
 	}
 	
 
