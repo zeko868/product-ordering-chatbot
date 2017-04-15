@@ -17,5 +17,5 @@ $answer = [
 ];
  $x = json_encode($answer);
 echo $x;
-echo json_decode($x);
+print_r(json_decode($x));
 ?>
