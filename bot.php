@@ -54,7 +54,7 @@ foreach($xml->employee as $item)
     $p = explode(" ", $prof);
 	$button = array();
 	$broj = 1;
-	if($item->firstname == $p[0] && $item->lastname == $p[1]){
+	/*if($item->firstname == $p[0] && $item->lastname == $p[1]){
 		foreach($item->consultation->term as $i){
 			//$i->day.' '.$i->time_from.' '.$i->time_to
 			array_push($button, array('type'=>'postback', 'title'=>$i->day.' '.$i->time_from.' '.$i->time_to, 'payload' => $broj));
@@ -73,7 +73,7 @@ foreach($xml->employee as $item)
 		'recipient' => [ 'id' => $senderId ],
 		'message' => [ 'attachment' => $answer ]
 	];
-	}
+	}*/
 	}
 	
 }
