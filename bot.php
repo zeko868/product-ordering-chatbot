@@ -59,6 +59,20 @@ if($command == "konzultacije"){
 }else if(strlen($command) > 12){
 	$prof = substr($command, 13, strlen($command));	
 	$answer = "Odabran je profesor: ".$prof;
+	$xml = simplexml_load_string("informacije.xml");
+	$k = array();
+foreach($xml->response->employees->employee as $item)
+{
+    $p = explode(" ", $prof);
+	if(strtolower($item->firstname) == strtolower($p[0]) && strtolower($item->lastname) == strtolower($p[1])){
+		foreach($item->consultation->term as $i){
+			array_push($k, $i->day.$i->time_from.$i->time_to);
+		}
+	}
+	for($i=0;$i<sizeof($k);$i++){
+		$answer .= $k[$i];
+	}
+}
      $response = [
     'recipient' => [ 'id' => $senderId ],
     'message' => [ 'text' => $answer ]
