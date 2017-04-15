@@ -59,7 +59,8 @@ if($command == "konzultacije"){
 }else if(strlen($command) > 12){
 	$prof = substr($command, 13, strlen($command));	
 	$answer = "Odabran je profesor: ".$prof;
-	$xml=simplexml_load_file('informacije.xml')
+	$xml=simplexml_load_file('informacije.xml');
+	$xml=simplexml_load_file('informacije.xml');
 	$k = array();
 foreach($xml->employee as $item)
 {
