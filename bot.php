@@ -56,6 +56,13 @@ if($command == "konzultacije"){
     'message' => [ 'attachment' => $answer ]
 ];
 
+}else if(strlen($command) > strlen("konzultacije"){
+	$prof = substr($command, strlen("konzultacije")+1, strlen($command));	
+	$answer = "Odabran je profesor: ".$prof;
+     $response = [
+    'recipient' => [ 'id' => $senderId ],
+    'message' => [ 'text' => $answer ]
+];
 }else if($command == "1"){
 	$answer = ['attachment'=>[
       'type'=>'template',
