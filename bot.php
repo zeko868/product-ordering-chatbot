@@ -37,7 +37,9 @@ if($command == "konzultacije"){
             'type'=>'postback',
             'title'=>'Profesor 1',
             'payload'=>'1'
-          ],
+          ];
+		  
+     $answer .= 
 		  [
             'type'=>'postback',
             'title'=>'Profesor 2',
