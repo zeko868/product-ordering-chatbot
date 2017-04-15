@@ -27,7 +27,7 @@ if (!empty($input['entry'][0]['messaging'])) {
 
 
 if($command == "konzultacije"){
-     $answer = [
+     $answer = "[
       'type'=>'template',
       'payload'=>[
         'template_type'=>'button',
@@ -50,10 +50,12 @@ if($command == "konzultacije"){
           ]
         ]
       ]
-      ];
+      ]";
+	  $a = json_encode($answer);
+	  $an = str_replace($a,':','=>');
      $response = [
     'recipient' => [ 'id' => $senderId ],
-    'message' => [ 'attachment' => $answer ]
+    'message' => [ 'attachment' => $an ]
 ];
 
 }else if(strlen($command) > 12){
