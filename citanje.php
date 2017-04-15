@@ -2,11 +2,10 @@
 $xml = simplexml_load_string("informacije.xml");
 $dom = new DOMDocument();
 $dom->loadXML($xml);
-print_r($dom);
 
-foreach($dom->getElementsByTagName('employee') as $currency)
+foreach($dom->getElementsByTagName('response') as $currency)
 {
-    echo $currency->getAttribute('firstname'), "\n";
+    echo $currency->employees[0]->employee[0]->getAttribute('firstname'), "\n";
     echo "+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+\n";
 }
 
