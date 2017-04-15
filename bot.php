@@ -8,6 +8,7 @@ $input = json_decode(file_get_contents("php://input"), true, 512, JSON_BIGINT_AS
 $senderId = $input['entry'][0]['messaging'][0]['sender']['id'];
 $response = null;
 $command = "";
+
 if (!empty($input['entry'][0]['messaging'])) { 
 
         foreach ($input['entry'][0]['messaging'] as $message) { 
@@ -24,7 +25,7 @@ if (!empty($input['entry'][0]['messaging'])) {
         }
     }
 }
-
+$cp = explode(" ", $command);
 
 if($command == "konzultacije"){
 	$button = array();
@@ -43,7 +44,7 @@ for($i=1;$i<=3;$i++){
     'recipient' => [ 'id' => $senderId ],
     'message' => [ 'attachment' => $answer ]
 ];
-$cp = explode(" ", $command);
+
 }else if(strlen($command) > 12){
 	$prof = substr($command, 13, strlen($command));	
 	$xml=simplexml_load_file('informacije.xml');
