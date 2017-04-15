@@ -15,7 +15,7 @@ $answer = [
     'recipient' => [ 'id' => $senderId ],
     'message' => [ 'attachment' => $answer ]
 ];
- 
-echo json_encode($answer);
- 
+ $x = json_encode($answer);
+echo $x;
+echo json_decode($x);
 ?>
