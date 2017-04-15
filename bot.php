@@ -29,7 +29,7 @@ if (!empty($input['entry'][0]['messaging'])) {
 if($command == "konzultacije"){
 	$button = array();
 for($i=0;$i<3;$i++){
-	array_push($button, array('type'=>'postback', 'title'=>'Profesor $i', 'payload' => '$i'));
+	array_push($button, array('type'=>'postback', 'title'=>'Profesor ' . $i, 'payload' => $i));
 }
      $answer = [
       'type'=>'template',
