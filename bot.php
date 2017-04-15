@@ -45,8 +45,8 @@ for($i=1;$i<=3;$i++){
     'message' => [ 'attachment' => $answer ]
 ];
 
-}else if(strlen($command) > 12 && $cp[0] == "konzultacije"){
-	$prof = substr($command, 13, strlen($command));	
+}else if(strlen($command) > 12){
+	
 	$xml=simplexml_load_file('informacije.xml');
 	$k = array();
 foreach($xml->employee as $item)
@@ -58,6 +58,7 @@ foreach($xml->employee as $item)
     'message' => [ 'text' => $answer ]
 ];
 }else{
+	$prof = substr($command, 13, strlen($command));	
 	$p = explode(" ", $prof);
 	$button = array();
 	$broj = 1;
