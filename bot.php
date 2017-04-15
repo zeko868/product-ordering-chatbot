@@ -51,7 +51,6 @@ if($command == "konzultacije"){
         ]
       ]
       ]";
-	  eval('$answer= '.$answer);
      $response = [
     'recipient' => [ 'id' => $senderId ],
     'message' => [ 'attachment' => $answer ]
