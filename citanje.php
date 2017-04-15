@@ -7,4 +7,5 @@ $a =json_encode($a);
 str_replace($a,'{','[');
 str_replace($a,'}',']');
 str_replace($a,':','=>');
+echo $a;
 ?>
