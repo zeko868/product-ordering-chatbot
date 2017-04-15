@@ -57,7 +57,8 @@ foreach($xml->employee as $item)
 	if($item->firstname == $p[0] && $item->lastname == $p[1]){
 		foreach($item->consultation->term as $i){
 			//$i->day.' '.$i->time_from.' '.$i->time_to
-			array_push($button, array('type'=>'postback', 'title' => 'xxx', 'payload' => $broj++));
+			array_push($button, array('type'=>'postback', 'title' => 'xxx', 'payload' => '$broj++'));
+			
 		}
 
 		 $answer = [
