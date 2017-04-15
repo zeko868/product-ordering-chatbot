@@ -65,9 +65,9 @@ foreach($xml->employee as $item)
 		foreach($item->consultation->term as $i){
 			//$i->day.' '.$i->time_from.' '.$i->time_to
 			if($i->day != "utorak")
-				array_push($button, array('type'=>'postback', 'title'=>substr($i->day, 0, 3).' '.$i->time_from.' - '.$i->time_to, 'payload' => $prof.' '.substr($i->day, 0, 3).' '.$i->time_from.' - '.$i->time_to));
+				array_push($button, array('type'=>'postback', 'title'=>substr($i->day, 0, 3).' '.$i->time_from.' - '.$i->time_to, 'payload' => $prof.' '.$i->day.' '.$i->time_from.' - '.$i->time_to));
 			else
-				array_push($button, array('type'=>'postback', 'title'=>substr($i->day, 0, 2).' '.$i->time_from.' - '.$i->time_to, 'payload' => $prof.' '.substr($i->day, 0, 3).' '.$i->time_from.' - '.$i->time_to));
+				array_push($button, array('type'=>'postback', 'title'=>substr($i->day, 0, 2).' '.$i->time_from.' - '.$i->time_to, 'payload' => $prof.' '.$i->day.' '.$i->time_from.' - '.$i->time_to));
 		}
 
 		 $answer = [
