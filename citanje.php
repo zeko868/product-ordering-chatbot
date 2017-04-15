@@ -1,12 +1,12 @@
 <?php
-$a = array();
-$array = array('a'=>'1','b'=>'2');
-array_push($a,$array);
-array_push($a,array('a'=>'3','b'=>'4'));
-$a =json_encode($a);
-$a = str_replace(":","=>",$a);
-$a = str_replace("{","[",$a);
-$a = str_replace("}","]",$a);
-$a = str_replace("\"","'",$a);
-echo $a;
+$button = array();
+	for($i=0;$i<3;$i++){
+		array_push($button, array('type'=>'postback', 'title'=>'Profesor 1', 'payload' => '1'));
+	}
+	$button =json_encode($button);
+	$button = str_replbuttonce(":","=>",$button);
+	$button = str_replbuttonce("{","[",$button);
+	$button = str_replbuttonce("}","]",$button);
+	$button = str_replbuttonce("\"","'",$button);
+echo $button;
 ?>
