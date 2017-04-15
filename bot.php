@@ -77,10 +77,7 @@ foreach($xml->employee as $item)
 	}
 	
 }
-     $response = [
-    'recipient' => [ 'id' => $senderId ],
-    'message' => [ 'text' => $answer ]
-];
+     
 }else if($command == "1"){
 	$answer = ['attachment'=>[
       'type'=>'template',
