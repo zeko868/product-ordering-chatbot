@@ -8,5 +8,5 @@ $button = str_replace(":","=>",$button);
 $button = str_replace("{","[",$button);
 $button = str_replace("}","]",$button);
 $button = str_replace("\"","'",$button);
-echo $button;
+echo eval('return $'.$button.';');
 ?>
