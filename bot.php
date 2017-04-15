@@ -46,7 +46,6 @@ for($i=1;$i<=3;$i++){
 
 }else if(strlen($command) > 12){
 	$prof = substr($command, 13, strlen($command));	
-	$answer = "Odabran je profesor: ".$prof."\n";
 	$xml=simplexml_load_file('informacije.xml');
 	$k = array();
 foreach($xml->employee as $item)
@@ -54,7 +53,7 @@ foreach($xml->employee as $item)
     $p = explode(" ", $prof);
 	$button = array();
 	$broj = 1;
-	/*if($item->firstname == $p[0] && $item->lastname == $p[1]){
+	if($item->firstname == $p[0] && $item->lastname == $p[1]){
 		foreach($item->consultation->term as $i){
 			//$i->day.' '.$i->time_from.' '.$i->time_to
 			array_push($button, array('type'=>'postback', 'title'=>$i->day.' '.$i->time_from.' '.$i->time_to, 'payload' => $broj));
@@ -73,10 +72,10 @@ foreach($xml->employee as $item)
 		'recipient' => [ 'id' => $senderId ],
 		'message' => [ 'attachment' => $answer ]
 	];
-	}*/
+	}
 	}
 	
-}
+
      
 }else if($command == "1"){
 	$answer = ['attachment'=>[
