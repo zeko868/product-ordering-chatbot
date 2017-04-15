@@ -43,7 +43,7 @@ for($i=1;$i<=3;$i++){
     'recipient' => [ 'id' => $senderId ],
     'message' => [ 'attachment' => $answer ]
 ];
-
+$cp = explode(" ", $command);
 }else if(strlen($command) > 12){
 	$prof = substr($command, 13, strlen($command));	
 	$xml=simplexml_load_file('informacije.xml');
@@ -79,7 +79,8 @@ foreach($xml->employee as $item)
 	
 
      
-}else if($command == "1"){
+}
+else if($command == "1"){
 	$answer = ['attachment'=>[
       'type'=>'template',
       'payload'=>[
@@ -146,32 +147,17 @@ foreach($xml->employee as $item)
     'recipient' => [ 'id' => $senderId ],
     'message' => $answer 
 ];
-}else if($command == "Termin 1 profesor 1"){
-	$answer = "Odabran je termin 1 kod profesora 1, kada profesor odgovori na zahtjev javit ćemo Vam profesorov odgovor.";
-     $response = [
-    'recipient' => [ 'id' => $senderId ],
-    'message' => [ 'text' => $answer ]
-];
-}else if($command == "Termin 2 profesor 1"){
-	$answer = "Odabran je termin 2 kod profesora 1, kada profesor odgovori na zahtjev javit ćemo Vam profesorov odgovor.";
-     $response = [
-    'recipient' => [ 'id' => $senderId ],
-    'message' => [ 'text' => $answer ]
-];
-}else if($command == "Termin 1 profesor 2"){
-	$answer = "Odabran je termin 1 kod profesora 2, kada profesor odgovori na zahtjev javit ćemo Vam profesorov odgovor.";
-     $response = [
-    'recipient' => [ 'id' => $senderId ],
-    'message' => [ 'text' => $answer ]
-];
-}else if($command == "Termin 1 profesor 3"){
-	$answer = "Odabran je termin 1 kod profesora 3, kada profesor odgovori na zahtjev javit ćemo Vam profesorov odgovor.";
-     $response = [
-    'recipient' => [ 'id' => $senderId ],
-    'message' => [ 'text' => $answer ]
-];
-}else if($command == "Termin 2 profesor 3"){
-	$answer = "Odabran je termin 1 kod profesora 1, kada profesor odgovori na zahtjev javit ćemo Vam profesorov odgovor.";
+}else if($cp[2] == "1" || $cp[2] == "2" || $cp[2] == "3" || $cp[2] == "4"){
+	$xml=simplexml_load_file('informacije.xml');
+	foreach($xml->employee as $item)
+{
+	if($item->firstname == $cp[0] && $item->lastname ==$cp[1]){
+		//substr($i->day, 0, 2).' '.$i->time_from.' - '.$i->time_to, 'payload' => $prof.' '.$broj++));
+		$answer = "Rezervirano: ". $cp[0] . ' '. $cp[1]. 'u terminu: ' . substr($item->consultation->term[intval($cp[2])]->day, 0, 2). ' ' 
+		. $item->consultation->term[intval($cp[2])]->time_from.' - '.$item->consultation->term[intval($cp[2])]->time_to.
+		'. Javiti ćemo Vam profesorov odgovor.';
+	}
+}
      $response = [
     'recipient' => [ 'id' => $senderId ],
     'message' => [ 'text' => $answer ]
