@@ -62,7 +62,7 @@ foreach($xml->employee as $item)
 	$p = explode(" ", $prof);
 	$button = array();
 	$broj = 1;
-	if($item->firstname == $p[0] && $item->lastname == $p[1]){
+	if((strtolower($item->firstname) == strtolower($p[0]) && strtolower($item->lastname) == strtolower($p[1])) || (strtolower($item->firstname) == strtolower($p[1]) && strtolower($item->lastname) == strtolower($p[0]))){
 		foreach($item->consultation->term as $i){
 			//$i->day.' '.$i->time_from.' '.$i->time_to
 			if($i->day != "utorak")
