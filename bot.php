@@ -41,7 +41,7 @@ $button = str_replace("\"","'",$button);
       'payload'=>[
         'template_type'=>'button',
         'text'=>'Kod kojeg profesora želite rezervirati konzultacije?',
-        'buttons'=> echo $button;
+        'buttons'=> $button
       ]
       ];
      $response = [
