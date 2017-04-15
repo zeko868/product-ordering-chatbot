@@ -50,7 +50,7 @@ if($command == "konzultacije"){
           ]
         ]
       ]
-      ]];";
+      ]]";
      $response = [
     'recipient' => [ 'id' => $senderId ],
     'message' => $answer 
