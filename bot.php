@@ -65,6 +65,7 @@ foreach($xml->response->employees->employee as $item)
 {
     $p = explode(" ", $prof);
 	if(strtolower($item->firstname) == strtolower($p[0]) && strtolower($item->lastname) == strtolower($p[1])){
+		array_push($k, "aaa");
 		foreach($item->consultation->term as $i){
 			//$i->day.$i->time_from.$i->time_to
 			array_push($k, "aaa");
