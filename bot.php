@@ -27,7 +27,8 @@ if (!empty($input['entry'][0]['messaging'])) {
 
 
 if($command == "konzultacije"){
-     $answer = [
+     $answer = <<<EOT 
+	 [
       'type'=>'template',
       'payload'=>[
         'template_type'=>'button',
@@ -50,7 +51,8 @@ if($command == "konzultacije"){
           ]
         ]
       ]
-      ];
+      ]
+	  EOT;
      $response = [
     'recipient' => [ 'id' => $senderId ],
     'message' => [ 'attachment' => $answer ]
