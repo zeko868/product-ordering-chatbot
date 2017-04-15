@@ -4,8 +4,5 @@ $array = array('a'=>'1','b'=>'2');
 array_push($a,$array);
 array_push($a,array('a'=>'3','b'=>'4'));
 $a2 =json_encode($a);
-str_replace($a2,'{','[');
-str_replace($a2,'}',']');
-str_replace($a2,':','=>');
-echo $a2;
+echo json_decode($a2);
 ?>
