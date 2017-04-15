@@ -52,12 +52,25 @@ for($i=1;$i<=3;$i++){
 foreach($xml->employee as $item)
 {
     $p = explode(" ", $prof);
+	$button = array();
+	$broj = 1;
 	if($item->firstname == $p[0] && $item->lastname == $p[1]){
 		foreach($item->consultation->term as $i){
-			array_push($k, $i->day.$i->time_from.$i->time_to);
+			array_push($button, array('type'=>'postback', $i->day.' '.$i->time_from.' '.$i->time_to, 'payload' => $broj++));
 		}
-		for($i=0;$i<sizeof($k);$i++){
-		$answer .= $k[$i]."\n";
+
+		 $answer = [
+		  'type'=>'template',
+		  'payload'=>[
+			'template_type'=>'button',
+			'text'=>'Kod kojeg profesora želite rezervirati konzultacije?',
+			'buttons'=> $button
+		  ]
+		  ];
+		 $response = [
+		'recipient' => [ 'id' => $senderId ],
+		'message' => [ 'attachment' => $answer ]
+	];
 	}
 	}
 	
