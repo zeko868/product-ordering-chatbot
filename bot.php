@@ -51,17 +51,8 @@ for($i=1;$i<=3;$i++){
 	$k = array();
 foreach($xml->employee as $item)
 {
-	if($cp[2] == "1" || $cp[2] == "2" || $cp[2] == "3" || $cp[2] == "4"){
-	$xml=simplexml_load_file('informacije.xml');
-	foreach($xml->employee as $item)
-{
-	if($item->firstname == $cp[0] && $item->lastname ==$cp[1]){
-		//substr($i->day, 0, 2).' '.$i->time_from.' - '.$i->time_to, 'payload' => $prof.' '.$broj++));
-		$answer = "Rezervirano: ". $cp[0] . ' '. $cp[1]. 'u terminu: ' . substr($item->consultation->term[intval($cp[2])]->day, 0, 2). ' ' 
-		. $item->consultation->term[intval($cp[2])]->time_from.' - '.$item->consultation->term[intval($cp[2])]->time_to.
-		'. Javiti ćemo Vam profesorov odgovor.';
-	}
-}
+	if(sizeof($cp) > 3){
+		$answer = "Rezervirano: ". $command . '. Javiti ćemo Vam profesorov odgovor.';
      $response = [
     'recipient' => [ 'id' => $senderId ],
     'message' => [ 'text' => $answer ]
@@ -74,9 +65,9 @@ foreach($xml->employee as $item)
 		foreach($item->consultation->term as $i){
 			//$i->day.' '.$i->time_from.' '.$i->time_to
 			if($i->day != "utorak")
-				array_push($button, array('type'=>'postback', 'title'=>substr($i->day, 0, 3).' '.$i->time_from.' - '.$i->time_to, 'payload' => $prof.' '.$broj++));
+				array_push($button, array('type'=>'postback', 'title'=>substr($i->day, 0, 3).' '.$i->time_from.' - '.$i->time_to, 'payload' => $prof.' '.substr($i->day, 0, 3).' '.$i->time_from.' - '.$i->time_to));
 			else
-				array_push($button, array('type'=>'postback', 'title'=>substr($i->day, 0, 2).' '.$i->time_from.' - '.$i->time_to, 'payload' => $prof.' '.$broj++));
+				array_push($button, array('type'=>'postback', 'title'=>substr($i->day, 0, 2).' '.$i->time_from.' - '.$i->time_to, 'payload' => $prof.' '.substr($i->day, 0, 3).' '.$i->time_from.' - '.$i->time_to));
 		}
 
 		 $answer = [
