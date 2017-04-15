@@ -1,12 +1,21 @@
 <?php
-$button = array();
-for($i=0;$i<3;$i++){
-	array_push($button, array('type'=>'postback', 'title'=>'Profesor 1', 'payload' => '1'));
-}
-$button =json_encode($button);
-$button = str_replace(":","=>",$button);
-$button = str_replace("{","[",$button);
-$button = str_replace("}","]",$button);
-$button = str_replace("\"","'",$button);
-echo $button;
+$answer = [
+      'type'=>'template',
+      'payload'=>[
+        'template_type'=>'button',
+        'text'=>'Kod kojeg profesora želite rezervirati konzultacije?',
+        'buttons'=>[
+		['type'=>'postback','title'=>'Profesor 1','payload'=>'1'],
+		['type'=>'postback','title'=>'Profesor 1','payload'=>'1'],
+		['type'=>'postback','title'=>'Profesor 1','payload'=>'1']
+		]
+      ]
+      ];
+     $response = [
+    'recipient' => [ 'id' => $senderId ],
+    'message' => [ 'attachment' => $answer ]
+];
+ 
+echo json_encode($answer);
+ 
 ?>
