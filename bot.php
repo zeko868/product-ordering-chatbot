@@ -56,7 +56,7 @@ foreach($xml->employee as $item)
 	if($item->firstname == $p[0] && $item->lastname == $p[1]){
 		foreach($item->consultation->term as $i){
 			//$i->day.' '.$i->time_from.' '.$i->time_to
-			if($i->day != "ut")
+			if($i->day != "utorak")
 				array_push($button, array('type'=>'postback', 'title'=>substr($i->day, 0, 3).' '.$i->time_from.' - '.$i->time_to, 'payload' => $prof.' '.$broj++));
 			else
 				array_push($button, array('type'=>'postback', 'title'=>substr($i->day, 0, 2).' '.$i->time_from.' - '.$i->time_to, 'payload' => $prof.' '.$broj++));
