@@ -64,7 +64,7 @@ if($command == "konzultacije"){
 foreach($xml->response->employees->employee as $item)
 {
     $p = explode(" ", $prof);
-	if($item->firstname == $p[0] && $item->lastname == $p[1]){
+	if($item->firstname == $p[1] && $item->lastname == $p[2]){
 		$answer .= "aaa";
 		foreach($item->consultation->term as $i){
 			//$i->day.$i->time_from.$i->time_to
