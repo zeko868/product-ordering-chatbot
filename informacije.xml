@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<response>
-	<status>
-		<code>0</code>
-		<message>response ok</message>
-	</status>
+
 	<employees>
 											       																								                                                            	            		            	            	
             	            	            		            			            			            			            		            	            		    																										                                                            	            			            			            			            			            	            	            	
@@ -12780,4 +12776,3 @@
 			            <hasDescription>false</hasDescription>
 		</employee>
 	</employees>
-</response>
