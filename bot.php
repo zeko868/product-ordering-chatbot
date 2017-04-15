@@ -61,6 +61,7 @@ if($command == "konzultacije"){
 	$answer = "Odabran je profesor: ".$prof;
 	$xml = simplexml_load_string("informacije.xml");
 	$k = array();
+	$answer .= print_r($xml);
 foreach($xml->response->employees->employee as $item)
 {
     $p = explode(" ", $prof);
