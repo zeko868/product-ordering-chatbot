@@ -27,7 +27,7 @@ if (!empty($input['entry'][0]['messaging'])) {
 
 
 if($command == "konzultacije"){
-     $str = "[
+     $answer = [
       'type'=>'template',
       'payload'=>[
         'template_type'=>'button',
@@ -50,8 +50,7 @@ if($command == "konzultacije"){
           ]
         ]
       ]
-      ]";
-	  parse_str($str, $answer);
+      ];
      $response = [
     'recipient' => [ 'id' => $senderId ],
     'message' => [ 'attachment' => $answer ]
