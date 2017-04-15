@@ -60,12 +60,11 @@ if($command == "konzultacije"){
 	$prof = substr($command, 13, strlen($command));	
 	$answer = "Odabran je profesor: ".$prof;
 	$xml=simplexml_load_file('informacije.xml');
-	$xml=simplexml_load_file('informacije.xml');
 	$k = array();
 foreach($xml->employee as $item)
 {
     $p = explode(" ", $prof);
-	if($item->firstname == $p[1] && $item->lastname == $p[2]){
+	if($item->firstname == $p[0] && $item->lastname == $p[1]){
 		$answer .= "aaa";
 		foreach($item->consultation->term as $i){
 			//$i->day.$i->time_from.$i->time_to
