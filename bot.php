@@ -45,7 +45,7 @@ for($i=1;$i<=3;$i++){
     'message' => [ 'attachment' => $answer ]
 ];
 
-}else if(strlen($command) > 12){
+}else if(strlen($command) > 12 && $cp[0] == "konzultacije"){
 	$prof = substr($command, 13, strlen($command));	
 	$xml=simplexml_load_file('informacije.xml');
 	$k = array();
