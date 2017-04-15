@@ -65,9 +65,9 @@ foreach($xml->employee as $item)
 	if((strtolower($item->firstname) == strtolower($p[0]) && strtolower($item->lastname) == strtolower($p[1])) || (strtolower($item->firstname) == strtolower($p[1]) && strtolower($item->lastname) == strtolower($p[0]))){
 		foreach($item->consultation->term as $i){
 			//$i->day.' '.$i->time_from.' '.$i->time_to
-			if($i->day != "utorak" && $i->day != null)
+			if($i->day != "utorak")
 				array_push($button, array('type'=>'postback', 'title'=>substr($i->day, 0, 3).' '.$i->time_from.' - '.$i->time_to, 'payload' => $prof.' '.$i->day.' '.$i->time_from.' - '.$i->time_to));
-			else if($i->day != null)
+			else if()
 				array_push($button, array('type'=>'postback', 'title'=>substr($i->day, 0, 2).' '.$i->time_from.' - '.$i->time_to, 'payload' => $prof.' '.$i->day.' '.$i->time_from.' - '.$i->time_to));
 		}
 
