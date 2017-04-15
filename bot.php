@@ -57,7 +57,7 @@ foreach($xml->employee as $item)
     'recipient' => [ 'id' => $senderId ],
     'message' => [ 'text' => $answer ]
 ];
-}else{
+}else if($cp[0] == "konzultacije"){
 	$prof = substr($command, 13, strlen($command));	
 	$p = explode(" ", $prof);
 	$button = array();
