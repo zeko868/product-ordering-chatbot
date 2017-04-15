@@ -27,30 +27,30 @@ if (!empty($input['entry'][0]['messaging'])) {
 
 
 if($command == "konzultacije"){
-     $answer = "\[
-      'type'\=\>'template',
-      'payload'\=\>\[
-        'template_type'\=\>'button',
-        'text'\=\>'Kod kojeg profesora želite rezervirati konzultacije?',
-        'buttons'\=\>\[
-          \[
-            'type'\=\>'postback',
-            'title'\=\>'Profesor 1',
-            'payload'\=\>'1'
-          \],
-		  \[
-            'type'\=\>'postback',
-            'title'\=\>'Profesor 2',
-            'payload'\=\>'2'
-          \],
-		  \[
-            'type'\=\>'postback',
-            'title'\=\>'Profesor 3',
-            'payload'\=\>'3'
-          \]
-        \]
-      \]
-      \]";
+     $answer = [
+      'type'=>'template',
+      'payload'=>[
+        'template_type'=>'button',
+        'text'=>'Kod kojeg profesora želite rezervirati konzultacije?',
+        'buttons'=>[
+          [
+            'type'=>'postback',
+            'title'=>'Profesor 1',
+            'payload'=>'1'
+          ],
+		  [
+            'type'=>'postback',
+            'title'=>'Profesor 2',
+            'payload'=>'2'
+          ],
+		  [
+            'type'=>'postback',
+            'title'=>'Profesor 3',
+            'payload'=>'3'
+          ]
+        ]
+      ]
+      ];
      $response = [
     'recipient' => [ 'id' => $senderId ],
     'message' => [ 'attachment' => $answer ]
