@@ -78,7 +78,7 @@ if (stripos($command, 'konzultacije') === 0) {
 						'recipient' => [ 'id' => $senderId ],
 						'message' => [ 'attachment' => $answer ]
 					];
-					print_r($response);
+					//print_r($response);
 					$suggestions["$item->firstname $item->lastname"] = $response;
 				}
 			}
