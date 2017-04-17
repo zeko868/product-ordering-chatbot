@@ -190,7 +190,7 @@ if (stripos($command, 'konzultacije') === 0) {
 			foreach($xml->employee as $item) {
 				if ("$item->firstname $item->lastname" === $origProfName) {
 					foreach($item->consultation->term as $i){
-						$answer = "l: '"$item->firstname $item->lastname"', r: '$origProfName'";
+						$answer = "l: '$item->firstname $item->lastname', r: '$origProfName'";
 						$response = [
 							'recipient' => [ 'id' => $senderId ],
 							'message' => [ 'text' => $answer ]
