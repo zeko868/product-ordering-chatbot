@@ -131,12 +131,6 @@ if (stripos($command, 'konzultacije') === 0) {
 				if (preg_match(get_regex_fullname_with_deviation("$item->firstname $item->lastname"), $prof)===1) {
                                     
 					$button = array();
-						/*$answer = "$origProfName";
-						$response = [
-							'recipient' => [ 'id' => $senderId ],
-							'message' => [ 'text' => $answer ]
-						];
-						break;*/
 
 					foreach($item->consultation->term as $i){
 						//$i->day.' '.$i->time_from.' '.$i->time_to
@@ -145,13 +139,7 @@ if (stripos($command, 'konzultacije') === 0) {
 						else
 							array_push($button, array('type'=>'postback', 'title'=>substr($i->day, 0, 2).' '.$i->time_from.' - '.$i->time_to, 'payload' => "konzultacije $item->firstname $item->lastname $i->day $i->time_from - $i->time_to"));
 					}
-					$p = false;
-					foreach ($button as $b){
-						if($b['title']==='-')
-							$p = true;
-					}
-					if($p === true)
-						array_push($button, array('type'=>'postback', 'title'=>'-', 'payload' => "konzultacije $item->firstname $item->lastname -"));
+					array_push($button, array('type'=>'postback', 'title'=>'-', 'payload' => "konzultacije $item->firstname $item->lastname -"));
                                         
 					$answer = [
 						'type'=>'template',
