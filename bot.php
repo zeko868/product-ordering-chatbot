@@ -126,6 +126,9 @@ if (stripos($command, 'konzultacije') === 0) {
 	} else {
 		if ($term === null) {
 			$suggestions = array();
+                        print_r($prof);
+                        print_r(get_regex_fullname_with_deviation(localized_strtolower("Zlatko Stapić")));
+                        print_r(preg_match(get_regex_fullname_with_deviation(localized_strtolower("Zlatko Stapić")),$prof));
 			foreach($xml->employee as $item) {
 				if (preg_match(get_regex_fullname_with_deviation("$item->firstname $item->lastname"), $prof)===1) {
                                     
@@ -140,9 +143,9 @@ if (stripos($command, 'konzultacije') === 0) {
 					foreach($item->consultation->term as $i){
 						//$i->day.' '.$i->time_from.' '.$i->time_to
 						if($i->day != "utorak")
-							array_push($button, array('type'=>'postback', 'title'=>substr($i->day, 0, 3).' '.$i->time_from.' - '.$i->time_to, 'payload' => "konzultacije $origProfName $i->day $i->time_from - $i->time_to"));
+							array_push($button, array('type'=>'postback', 'title'=>substr($i->day, 0, 3).' '.$i->time_from.' - '.$i->time_to, 'payload' => "konzultacije $item->firstname $item->lastname $i->day $i->time_from - $i->time_to"));
 						else
-							array_push($button, array('type'=>'postback', 'title'=>substr($i->day, 0, 2).' '.$i->time_from.' - '.$i->time_to, 'payload' => "konzultacije $origProfName $i->day $i->time_from - $i->time_to"));
+							array_push($button, array('type'=>'postback', 'title'=>substr($i->day, 0, 2).' '.$i->time_from.' - '.$i->time_to, 'payload' => "konzultacije $item->firstname $item->lastname $i->day $i->time_from - $i->time_to"));
 					}
                                         $p = false;
                                         foreach ($button as $b){
@@ -150,7 +153,7 @@ if (stripos($command, 'konzultacije') === 0) {
                                                 $p = true;
                                         }
                                         if($p === true)
-                                            array_push($button, array('type'=>'postback', 'title'=>'-', 'payload' => "konzultacije $origProfName -"));
+                                            array_push($button, array('type'=>'postback', 'title'=>'-', 'payload' => "konzultacije $item->firstname $item->lastname -"));
 
                                         
 					$answer = [
@@ -169,7 +172,7 @@ if (stripos($command, 'konzultacije') === 0) {
 					$suggestions["$item->firstname $item->lastname"] = $response;
 				}
 			}
-                        
+                        print_r($suggestions);
 			switch (count($suggestions)) {
 				case 0:
 					$answer = 'Ne postoji nastavnik u bazi podataka s navedenim imenom';
