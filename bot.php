@@ -144,8 +144,15 @@ if (stripos($command, 'konzultacije') === 0) {
 						else
 							array_push($button, array('type'=>'postback', 'title'=>substr($i->day, 0, 2).' '.$i->time_from.' - '.$i->time_to, 'payload' => "konzultacije $origProfName $i->day $i->time_from - $i->time_to"));
 					}
-					array_push($button, array('type'=>'postback', 'title'=>'-', 'payload' => "konzultacije $origProfName -"));
+                                        $p = false;
+                                        foreach ($button as $b){
+                                            if($b['title']==='-')
+                                                $p = true;
+                                        }
+                                        if($p === true)
+                                            array_push($button, array('type'=>'postback', 'title'=>'-', 'payload' => "konzultacije $origProfName -"));
 
+                                        
 					$answer = [
 						'type'=>'template',
 						'payload'=>[
@@ -180,6 +187,7 @@ if (stripos($command, 'konzultacije') === 0) {
 					for($i=0;$i<=count($suggestions);$i++){
 						array_push($button, array('type'=>'postback', 'title'=>$suggestions[$i], 'payload' => "konzultacije $suggestions[$i]"));
 					}
+                                        
 					$answer = [
 						'type'=>'template',
 						'payload'=>[
@@ -195,17 +203,21 @@ if (stripos($command, 'konzultacije') === 0) {
 					break;
 			}
 		} else {
+                    
 			foreach($xml->employee as $item) {
-				if (localized_strtolower("$item->firstname $item->lastname") === localized_strtolower($origProfName)) {
-					foreach($item->consultation->term as $i){
-						$answer = "Rezervirano: $item->firstname $item->lastname $term. Javiti ćemo Vam profesorov odgovor.";
+				
+                            if (localized_strtolower("$item->firstname $item->lastname") === localized_strtolower($origProfName)) {
+					print_r($item->consultation);
+                                foreach($item->consultation->term as $i){
+						
+
+						if ($term === '-' || $term === "$i->day $i->time_from - $i->time_to") {
+                                                    $answer = "Rezervirano: $item->firstname $item->lastname $term. Javiti ćemo Vam profesorov odgovor.";
 						$response = [
 							'recipient' => [ 'id' => $senderId ],
 							'message' => [ 'text' => $answer ]
 						];
 						break;
-
-						if ($term === '-' || $term === "$i->day $i->time_from - $i->time_to") {
 							if (send_email_and_get_success_state($senderId, 'Neko ime i prezime', 'eadresa@korisnika', $item->contact->email, $term)) {
 								$answer = "Rezervirano: $origProfName $term. Javiti ćemo Vam profesorov odgovor.";
 							} else {
