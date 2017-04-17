@@ -126,9 +126,6 @@ if (stripos($command, 'konzultacije') === 0) {
 	} else {
 		if ($term === null) {
 			$suggestions = array();
-                        print_r($prof);
-                        print_r(get_regex_fullname_with_deviation(localized_strtolower("Zlatko Stapić")));
-                        print_r(preg_match(get_regex_fullname_with_deviation(localized_strtolower("Zlatko Stapić")),$prof));
 			foreach($xml->employee as $item) {
 				if (preg_match(get_regex_fullname_with_deviation("$item->firstname $item->lastname"), $prof)===1) {
                                     
