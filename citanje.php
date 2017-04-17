@@ -1,7 +1,6 @@
 <?php
 $command = $_GET['konzultacije'];
 $command = preg_replace('/\s{2,}/', ' ', trim($command));
-echo $command;
 if (stripos($command, 'konzultacije') === 0) {
 	$termArray = preg_grep($termRegex, $command);
 	if (empty($termArray)) {
@@ -79,7 +78,7 @@ if (stripos($command, 'konzultacije') === 0) {
 						'recipient' => [ 'id' => $senderId ],
 						'message' => [ 'attachment' => $answer ]
 					];
-
+					print_r($response);
 					$suggestions["$item->firstname $item->lastname"] = $response;
 				}
 			}
