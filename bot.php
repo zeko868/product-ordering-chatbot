@@ -127,6 +127,12 @@ if (stripos($command, 'konzultacije') === 0) {
 		if ($term === null) {
 			$suggestions = array();
 			foreach($xml->employee as $item) {
+				$answer = 'regex: "' . get_regex_fullname_with_deviation("$item->firstname $item->lastname") . '" prof: "' . $prof . '"';
+				$response = [
+					'recipient' => [ 'id' => $senderId ],
+					'message' => [ 'text' => $answer ]
+				];
+				break;
 				if (preg_match(get_regex_fullname_with_deviation("$item->firstname $item->lastname"), $prof)===1) {
 					$button = array();
 					foreach($item->consultation->term as $i){
