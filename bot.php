@@ -78,8 +78,8 @@ $substitutes = [
 	'š' => ['s'],
 	'ž' => ['z']
 ];
-$daysAbbreviations = ['po', 'ut', 'sr', 'če', 'pe', 'su', 'ne'];
-$termRegex = '/(' .implode('|', $daysAbbreviations) . ') \d{2} - \d{2}$/';
+$dayNames = ['ponedjeljak', 'utorak', 'srijeda', 'četvrtak', 'petak', 'subota', 'nedjelja'];
+$termRegex = '/-|(' .implode('|', $daysNames) . ') \d{2}:\d{2} - \d{2}:\d{2}$/';
 
 if (stripos($command, 'konzultacije') === 0) {
 	$termArray = preg_grep($termRegex, $command);
@@ -132,10 +132,11 @@ if (stripos($command, 'konzultacije') === 0) {
 					foreach($item->consultation->term as $i){
 						//$i->day.' '.$i->time_from.' '.$i->time_to
 						if($i->day != "utorak")
-							array_push($button, array('type'=>'postback', 'title'=>substr($i->day, 0, 3).' '.$i->time_from.' - '.$i->time_to, 'payload' => $prof.' '.$i->day.' '.$i->time_from.' - '.$i->time_to));
+							array_push($button, array('type'=>'postback', 'title'=>substr($i->day, 0, 3).' '.$i->time_from.' - '.$i->time_to, 'payload' => "konzultacije $prof $i->day $i->time_from - $i->time_to"));
 						else
-							array_push($button, array('type'=>'postback', 'title'=>substr($i->day, 0, 2).' '.$i->time_from.' - '.$i->time_to, 'payload' => $prof.' '.$i->day.' '.$i->time_from.' - '.$i->time_to));
+							array_push($button, array('type'=>'postback', 'title'=>substr($i->day, 0, 2).' '.$i->time_from.' - '.$i->time_to, 'payload' => "konzultacije $prof $i->day $i->time_from - $i->time_to"));
 					}
+					array_push($button, array('type'=>'postback', 'title'=>'-', 'payload' => "konzultacije $prof -"));
 
 					$answer = [
 						'type'=>'template',
@@ -174,7 +175,7 @@ if (stripos($command, 'konzultacije') === 0) {
 						'type'=>'template',
 						'payload'=>[
 							'template_type'=>'button',
-							'text'=>'Kod kojeg profesora želite rezervirati konzultacije?',
+							'text'=>'Neuspjeh kod prepoznavanja. Kod kojeg profesora želite rezervirati konzultacije?',
 							'buttons'=> $button
 						]
 					];
