@@ -12775,4 +12775,426 @@
 			<alias>irena.zunic</alias>
 			            <hasDescription>false</hasDescription>
 		</employee>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+											<employee>
+			<id>vstrahon</id>
+            			<relation>1</relation>
+			<types>
+							<type>1</type>
+						</types>
+			<firstname>Petar</firstname> 
+			<lastname>Šestak</lastname> 
+			<image>https://services.foi.hr/hr/web/uploads/images/avatar/vstrahon.jpg</image> 
+			<qr>https://services.foi.hr/hr/web/uploads/images/qr/vstrahon.png</qr> 
+			<sex>m</sex> 
+			<unique_scientist_number>95553</unique_scientist_number> 
+			<assistants_association>false</assistants_association>
+			<details>https://services.foi.hr/hr/web/employee/113/show</details>
+			<contact>
+				<email>petar.sestak3@foi.hr</email> 
+				<www>http://www.foi.hr/nastavnici/strahonja.vjeran/index.html</www> 
+				<tel1>+385 42 390820</tel1> 
+				<tel2>+385 99 3390820</tel2> 
+			</contact>
+			<title>
+				<title_id>2</title_id> 
+				<title_type>2</title_type> 
+				<title_name>Prof. dr. sc.</title_name> 
+				<title_name_eng>Full Prof. %name%, Ph.D.</title_name_eng> 
+			</title>
+			<departments>
+										<department>
+					<department_id>13</department_id> 
+					<department_name>Katedra za razvoj informacijskih sustava</department_name> 
+					<department_name_eng>Department of Information Systems Development</department_name_eng>
+					<role_id>1</role_id>
+					<role>Djelatnik</role>
+					<role_eng>Member of staff</role_eng>
+				</department>
+										</departments>
+			<working_place>
+				<working_place_id>2</working_place_id> 
+				<working_place_name>Redoviti prof. - Trajno zvanje</working_place_name>
+				<working_place_name_eng>Full Professor with Tenure</working_place_name_eng>
+				<election_date>21.10.2014.</election_date>
+			</working_place>
+			<position>
+				<position_id></position_id> 
+				<position_name></position_name>
+				<position_name_eng></position_name_eng>
+			</position>
+			<locations>
+							<location>
+					<building_id>1</building_id> 
+					<building>Fakultet organizacije i informatike, zgrada 1</building> 
+					<building_eng>Faculty Building 1</building_eng> 
+					<floor_id>2</floor_id> 
+					<floor_title>Južno krilo</floor_title> 
+					<floor_title_eng>South Wing</floor_title_eng> 
+					<floor_number>1</floor_number> 
+					<room_id>102</room_id>
+					<room_number>57</room_number>
+					<room>Kabinet</room>
+					<room_eng>Office</room_eng>
+					<room_type_id>3</room_type_id> 
+					<room_type>Kabinet/ured</room_type> 
+					<room_type_eng>Office</room_type_eng> 
+				</location>
+						</locations>
+						<consultation>
+																																																													<term>
+							<type>1</type> 
+							<day>utorak</day> 
+							<day_eng>Tuesday</day_eng> 
+							<time_from>09:00</time_from> 
+							<time_to>12:00</time_to>
+							<note></note>
+						</term>
+																																																																																								<term>
+							<type>1</type> 
+							<day>četvrtak</day> 
+							<day_eng>Thursday</day_eng> 
+							<time_from>09:00</time_from> 
+							<time_to>12:00</time_to>
+							<note></note>
+						</term>
+																																																													<term>
+							<type></type> 
+							<day></day> 
+							<day_eng></day_eng> 
+							<time_from></time_from> 
+							<time_to></time_to>
+							<note>izvanredni studenti prema dogovoru</note>
+						</term>
+																																	</consultation>
+			<alias>vjeran.strahonja</alias>
+			            <hasDescription>false</hasDescription>
+		</employee>
+											<employee>
+			<id>vstrahon</id>
+            			<relation>1</relation>
+			<types>
+							<type>1</type>
+						</types>
+			<firstname>Marin</firstname> 
+			<lastname>Mihajlović</lastname> 
+			<image>https://services.foi.hr/hr/web/uploads/images/avatar/vstrahon.jpg</image> 
+			<qr>https://services.foi.hr/hr/web/uploads/images/qr/vstrahon.png</qr> 
+			<sex>m</sex> 
+			<unique_scientist_number>95553</unique_scientist_number> 
+			<assistants_association>false</assistants_association>
+			<details>https://services.foi.hr/hr/web/employee/113/show</details>
+			<contact>
+				<email>marmihajlovi@foi.hr</email> 
+				<www>http://www.foi.hr/nastavnici/strahonja.vjeran/index.html</www> 
+				<tel1>+385 42 390820</tel1> 
+				<tel2>+385 99 3390820</tel2> 
+			</contact>
+			<title>
+				<title_id>2</title_id> 
+				<title_type>2</title_type> 
+				<title_name>Prof. dr. sc.</title_name> 
+				<title_name_eng>Full Prof. %name%, Ph.D.</title_name_eng> 
+			</title>
+			<departments>
+										<department>
+					<department_id>13</department_id> 
+					<department_name>Katedra za razvoj informacijskih sustava</department_name> 
+					<department_name_eng>Department of Information Systems Development</department_name_eng>
+					<role_id>1</role_id>
+					<role>Djelatnik</role>
+					<role_eng>Member of staff</role_eng>
+				</department>
+										</departments>
+			<working_place>
+				<working_place_id>2</working_place_id> 
+				<working_place_name>Redoviti prof. - Trajno zvanje</working_place_name>
+				<working_place_name_eng>Full Professor with Tenure</working_place_name_eng>
+				<election_date>21.10.2014.</election_date>
+			</working_place>
+			<position>
+				<position_id></position_id> 
+				<position_name></position_name>
+				<position_name_eng></position_name_eng>
+			</position>
+			<locations>
+							<location>
+					<building_id>1</building_id> 
+					<building>Fakultet organizacije i informatike, zgrada 1</building> 
+					<building_eng>Faculty Building 1</building_eng> 
+					<floor_id>2</floor_id> 
+					<floor_title>Južno krilo</floor_title> 
+					<floor_title_eng>South Wing</floor_title_eng> 
+					<floor_number>1</floor_number> 
+					<room_id>102</room_id>
+					<room_number>57</room_number>
+					<room>Kabinet</room>
+					<room_eng>Office</room_eng>
+					<room_type_id>3</room_type_id> 
+					<room_type>Kabinet/ured</room_type> 
+					<room_type_eng>Office</room_type_eng> 
+				</location>
+						</locations>
+						<consultation>
+																																																													<term>
+							<type>1</type> 
+							<day>utorak</day> 
+							<day_eng>Tuesday</day_eng> 
+							<time_from>09:00</time_from> 
+							<time_to>12:00</time_to>
+							<note></note>
+						</term>
+																																																																																								<term>
+							<type>1</type> 
+							<day>četvrtak</day> 
+							<day_eng>Thursday</day_eng> 
+							<time_from>09:00</time_from> 
+							<time_to>12:00</time_to>
+							<note></note>
+						</term>
+																																																													<term>
+							<type></type> 
+							<day></day> 
+							<day_eng></day_eng> 
+							<time_from></time_from> 
+							<time_to></time_to>
+							<note>izvanredni studenti prema dogovoru</note>
+						</term>
+																																	</consultation>
+			<alias>vjeran.strahonja</alias>
+			            <hasDescription>false</hasDescription>
+		</employee>
+											<employee>
+			<id>vstrahon</id>
+            			<relation>1</relation>
+			<types>
+							<type>1</type>
+						</types>
+			<firstname>Petra</firstname> 
+			<lastname>Lončar</lastname> 
+			<image>https://services.foi.hr/hr/web/uploads/images/avatar/vstrahon.jpg</image> 
+			<qr>https://services.foi.hr/hr/web/uploads/images/qr/vstrahon.png</qr> 
+			<sex>m</sex> 
+			<unique_scientist_number>95553</unique_scientist_number> 
+			<assistants_association>false</assistants_association>
+			<details>https://services.foi.hr/hr/web/employee/113/show</details>
+			<contact>
+				<email>petloncar2@foi.hr</email> 
+				<www>http://www.foi.hr/nastavnici/strahonja.vjeran/index.html</www> 
+				<tel1>+385 42 390820</tel1> 
+				<tel2>+385 99 3390820</tel2> 
+			</contact>
+			<title>
+				<title_id>2</title_id> 
+				<title_type>2</title_type> 
+				<title_name>Prof. dr. sc.</title_name> 
+				<title_name_eng>Full Prof. %name%, Ph.D.</title_name_eng> 
+			</title>
+			<departments>
+										<department>
+					<department_id>13</department_id> 
+					<department_name>Katedra za razvoj informacijskih sustava</department_name> 
+					<department_name_eng>Department of Information Systems Development</department_name_eng>
+					<role_id>1</role_id>
+					<role>Djelatnik</role>
+					<role_eng>Member of staff</role_eng>
+				</department>
+										</departments>
+			<working_place>
+				<working_place_id>2</working_place_id> 
+				<working_place_name>Redoviti prof. - Trajno zvanje</working_place_name>
+				<working_place_name_eng>Full Professor with Tenure</working_place_name_eng>
+				<election_date>21.10.2014.</election_date>
+			</working_place>
+			<position>
+				<position_id></position_id> 
+				<position_name></position_name>
+				<position_name_eng></position_name_eng>
+			</position>
+			<locations>
+							<location>
+					<building_id>1</building_id> 
+					<building>Fakultet organizacije i informatike, zgrada 1</building> 
+					<building_eng>Faculty Building 1</building_eng> 
+					<floor_id>2</floor_id> 
+					<floor_title>Južno krilo</floor_title> 
+					<floor_title_eng>South Wing</floor_title_eng> 
+					<floor_number>1</floor_number> 
+					<room_id>102</room_id>
+					<room_number>57</room_number>
+					<room>Kabinet</room>
+					<room_eng>Office</room_eng>
+					<room_type_id>3</room_type_id> 
+					<room_type>Kabinet/ured</room_type> 
+					<room_type_eng>Office</room_type_eng> 
+				</location>
+						</locations>
+						<consultation>
+																																																													<term>
+							<type>1</type> 
+							<day>utorak</day> 
+							<day_eng>Tuesday</day_eng> 
+							<time_from>09:00</time_from> 
+							<time_to>12:00</time_to>
+							<note></note>
+						</term>
+																																																																																								<term>
+							<type>1</type> 
+							<day>četvrtak</day> 
+							<day_eng>Thursday</day_eng> 
+							<time_from>09:00</time_from> 
+							<time_to>12:00</time_to>
+							<note></note>
+						</term>
+																																																													<term>
+							<type></type> 
+							<day></day> 
+							<day_eng></day_eng> 
+							<time_from></time_from> 
+							<time_to></time_to>
+							<note>izvanredni studenti prema dogovoru</note>
+						</term>
+																																	</consultation>
+			<alias>vjeran.strahonja</alias>
+			            <hasDescription>false</hasDescription>
+		</employee>
+											<employee>
+			<id>vstrahon</id>
+            			<relation>1</relation>
+			<types>
+							<type>1</type>
+						</types>
+			<firstname>Tomica</firstname> 
+			<lastname>Markulin</lastname> 
+			<image>https://services.foi.hr/hr/web/uploads/images/avatar/vstrahon.jpg</image> 
+			<qr>https://services.foi.hr/hr/web/uploads/images/qr/vstrahon.png</qr> 
+			<sex>m</sex> 
+			<unique_scientist_number>95553</unique_scientist_number> 
+			<assistants_association>false</assistants_association>
+			<details>https://services.foi.hr/hr/web/employee/113/show</details>
+			<contact>
+				<email>tommarkul@foi.hr</email> 
+				<www>http://www.foi.hr/nastavnici/strahonja.vjeran/index.html</www> 
+				<tel1>+385 42 390820</tel1> 
+				<tel2>+385 99 3390820</tel2> 
+			</contact>
+			<title>
+				<title_id>2</title_id> 
+				<title_type>2</title_type> 
+				<title_name>Prof. dr. sc.</title_name> 
+				<title_name_eng>Full Prof. %name%, Ph.D.</title_name_eng> 
+			</title>
+			<departments>
+										<department>
+					<department_id>13</department_id> 
+					<department_name>Katedra za razvoj informacijskih sustava</department_name> 
+					<department_name_eng>Department of Information Systems Development</department_name_eng>
+					<role_id>1</role_id>
+					<role>Djelatnik</role>
+					<role_eng>Member of staff</role_eng>
+				</department>
+										</departments>
+			<working_place>
+				<working_place_id>2</working_place_id> 
+				<working_place_name>Redoviti prof. - Trajno zvanje</working_place_name>
+				<working_place_name_eng>Full Professor with Tenure</working_place_name_eng>
+				<election_date>21.10.2014.</election_date>
+			</working_place>
+			<position>
+				<position_id></position_id> 
+				<position_name></position_name>
+				<position_name_eng></position_name_eng>
+			</position>
+			<locations>
+							<location>
+					<building_id>1</building_id> 
+					<building>Fakultet organizacije i informatike, zgrada 1</building> 
+					<building_eng>Faculty Building 1</building_eng> 
+					<floor_id>2</floor_id> 
+					<floor_title>Južno krilo</floor_title> 
+					<floor_title_eng>South Wing</floor_title_eng> 
+					<floor_number>1</floor_number> 
+					<room_id>102</room_id>
+					<room_number>57</room_number>
+					<room>Kabinet</room>
+					<room_eng>Office</room_eng>
+					<room_type_id>3</room_type_id> 
+					<room_type>Kabinet/ured</room_type> 
+					<room_type_eng>Office</room_type_eng> 
+				</location>
+						</locations>
+						<consultation>
+																																																													<term>
+							<type>1</type> 
+							<day>utorak</day> 
+							<day_eng>Tuesday</day_eng> 
+							<time_from>09:00</time_from> 
+							<time_to>12:00</time_to>
+							<note></note>
+						</term>
+																																																																																								<term>
+							<type>1</type> 
+							<day>četvrtak</day> 
+							<day_eng>Thursday</day_eng> 
+							<time_from>09:00</time_from> 
+							<time_to>12:00</time_to>
+							<note></note>
+						</term>
+																																																													<term>
+							<type></type> 
+							<day></day> 
+							<day_eng></day_eng> 
+							<time_from></time_from> 
+							<time_to></time_to>
+							<note>izvanredni studenti prema dogovoru</note>
+						</term>
+																																	</consultation>
+			<alias>vjeran.strahonja</alias>
+			            <hasDescription>false</hasDescription>
+		</employee>
+
 	</employees>
