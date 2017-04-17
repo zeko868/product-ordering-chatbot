@@ -135,7 +135,6 @@ if (stripos($command, 'konzultacije') === 0) {
 							'recipient' => [ 'id' => $senderId ],
 							'message' => [ 'text' => $answer ]
 						];
-						break;
 
 					foreach($item->consultation->term as $i){
 						//$i->day.' '.$i->time_from.' '.$i->time_to
