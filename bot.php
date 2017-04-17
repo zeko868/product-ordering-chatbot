@@ -132,6 +132,7 @@ if (stripos($command, 'konzultacije') === 0) {
 					'recipient' => [ 'id' => $senderId ],
 					'message' => [ 'text' => $answer ]
 				];
+				array_push($suggestions, $response);
 				break;
 				if (preg_match(get_regex_fullname_with_deviation("$item->firstname $item->lastname"), $prof)===1) {
 					$button = array();
