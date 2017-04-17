@@ -92,12 +92,13 @@ if (stripos($command, 'konzultacije') === 0) {
 
 	$prof = null;
 	if ($term === null) {
-		$prof = localized_strtolower(substr($command, strlen("konzultacije ")));
+		$origProfName = substr($command, strlen("konzultacije "));
 	}
 	else {
 		$termPosition = strpos($command, $term);
-		$prof = localized_strtolower(substr($command, strlen("konzultacije "), $termPosition-1-strlen("konzultacije ")));
+		$origProfName = substr($command, strlen("konzultacije "), $termPosition-1-strlen("konzultacije "));
 	}
+	$prof = localized_strtolower($origProfName);
 	$xml = simplexml_load_file('informacije.xml');
 
 	if ($prof === null) {
@@ -132,11 +133,11 @@ if (stripos($command, 'konzultacije') === 0) {
 					foreach($item->consultation->term as $i){
 						//$i->day.' '.$i->time_from.' '.$i->time_to
 						if($i->day != "utorak")
-							array_push($button, array('type'=>'postback', 'title'=>substr($i->day, 0, 3).' '.$i->time_from.' - '.$i->time_to, 'payload' => "konzultacije $prof $i->day $i->time_from - $i->time_to"));
+							array_push($button, array('type'=>'postback', 'title'=>substr($i->day, 0, 3).' '.$i->time_from.' - '.$i->time_to, 'payload' => "konzultacije $origProfName $i->day $i->time_from - $i->time_to"));
 						else
-							array_push($button, array('type'=>'postback', 'title'=>substr($i->day, 0, 2).' '.$i->time_from.' - '.$i->time_to, 'payload' => "konzultacije $prof $i->day $i->time_from - $i->time_to"));
+							array_push($button, array('type'=>'postback', 'title'=>substr($i->day, 0, 2).' '.$i->time_from.' - '.$i->time_to, 'payload' => "konzultacije $origProfName $i->day $i->time_from - $i->time_to"));
 					}
-					array_push($button, array('type'=>'postback', 'title'=>'-', 'payload' => "konzultacije $prof -"));
+					array_push($button, array('type'=>'postback', 'title'=>'-', 'payload' => "konzultacije $origProfName -"));
 
 					$answer = [
 						'type'=>'template',
@@ -187,11 +188,11 @@ if (stripos($command, 'konzultacije') === 0) {
 			}
 		} else {
 			foreach($xml->employee as $item) {
-				if ("$item->firstname $item->lastname" === $prof) {
+				if ("$item->firstname $item->lastname" === $origProfName) {
 					foreach($item->consultation->term as $i){
-						if ($term === $prof.' '.$i->day.' '.$i->time_from.' - '.$i->time_to) {
+						if ($term === $origProfName.' '.$i->day.' '.$i->time_from.' - '.$i->time_to) {
 							if (send_email_and_get_success_state($senderId, 'Neko ime i prezime', 'eadresa@korisnika', $item->contact->email, $term)) {
-								$answer = "Rezervirano: $prof $term. Javiti ćemo Vam profesorov odgovor.";
+								$answer = "Rezervirano: $origProfName $term. Javiti ćemo Vam profesorov odgovor.";
 							} else {
 								$answer = "Pojavio se neuspjeh kod slanja e-mail poruke profesoru. Molimo Vas da pokušate kasnije.";
 							}
