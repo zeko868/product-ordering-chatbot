@@ -248,17 +248,12 @@ if (stripos($command, 'konzultacije') === 0) {
 	}
 }
 
-$answer = '{
-"setting_type":"call_to_actions",
-"thread_state":"new_thread",
-"call_to_actions":[
-     {
-      "message":{
-      "text":"Welcome to My BOT!"
-     }
-}
-]
-}';
+$answer = {
+  "setting_type":"greeting",
+  "greeting":{
+    "text":"Timeless apparel for the masses."
+  }
+};
 		$response = [
 			'recipient' => [ 'id' => $senderId ],
 			'message' => [ 'text' => $answer ]
