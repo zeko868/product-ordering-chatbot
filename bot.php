@@ -2,6 +2,8 @@
 function get_regex_fullname_with_deviation($str) {
 	global $substitutes;
 	$str = localized_strtolower($str);
+	$str = preg_replace('/(?:ij|(?!adeou)j|i)([aeiou])/', '(ij|i|j)$1', $str);	// furjan=furijan=furian ; mia=mija ; damjan=damian=damijan
+	$str = preg_replace('/(\w)\1+/', '$1$1?', $str);	// schatten=schaten
 	foreach ($substitutes as $spec => $alt) {
 		$str = str_replace($spec, '(' . implode('|', $alt) . "|$spec)", $str);
 	}
@@ -32,8 +34,8 @@ function send_email_and_get_success_state($senderId, $senderName, $senderMail, $
 	}
 	$request = 'http://foi-konzultacije.info/sendmail.php?' . http_build_query($params);
 	$ch = curl_init($request);
+	$result = true;
 	//$result = curl_exec($ch);		// odkomentiranjem ove naredbe se šalju email poruke odabranom nastavniku
-	$result = false;
 	curl_close($ch);
 	return $result;
 }
@@ -69,6 +71,9 @@ $croatianLowercase = [
 	'Đ' => 'đ',
 	'Š' => 'š',
 	'Ž' => 'ž',
+	'Ä' => 'ä',
+	'Ö' => 'ö',
+	'Ü' => 'ü',
 	'-' => ' '
 ];
 $substitutes = [
@@ -77,7 +82,11 @@ $substitutes = [
 	'đ' => ['dj', 'dz', 'd'],
 	'dž' => ['dj', 'dz', 'd'],
 	'š' => ['s'],
-	'ž' => ['z']
+	'ž' => ['z'],
+	'ä' => ['a', 'ae'],
+	'ö' => ['o', 'oe'],
+	'ü' => ['u', 'ue'],
+	'ß' => ['ss', 's']
 ];
 $dayNames = ['ponedjeljak', 'utorak', 'srijeda', 'četvrtak', 'petak', 'subota', 'nedjelja'];
 $termRegex = '/(-|(' .implode('|', $dayNames) . ') \d{2}:\d{2} - \d{2}:\d{2})$/u';
@@ -142,7 +151,7 @@ if (stripos($command, 'konzultacije') === 0) {
 							continue;
 					}
 					array_push($button, array('type'=>'postback', 'title'=>'-', 'payload' => "konzultacije $item->firstname $item->lastname -"));
-                                        
+
 					$answer = [
 						'type'=>'template',
 						'payload'=>[
@@ -195,8 +204,6 @@ if (stripos($command, 'konzultacije') === 0) {
 			foreach($xml->employee as $item) {
 				if ("$item->firstname $item->lastname" === $origProfName) {
 					if ($term === '-') {
-						$answer = "Vaš zahtjev za dodatnim terminom konzultacija je poslan nastavniku $origProfName. Javiti ćemo Vam profesorov odgovor.";
-						break;
 						if (send_email_and_get_success_state($senderId, 'Neko ime i prezime', 'eadresa@korisnika', $item->contact->email, $term)) {
 							$answer = "Vaš zahtjev za dodatnim terminom konzultacija je poslan nastavniku $origProfName. Javiti ćemo Vam profesorov odgovor.";
 						} else {
@@ -205,8 +212,6 @@ if (stripos($command, 'konzultacije') === 0) {
 					}
 					foreach($item->consultation->term as $i){
 						if ($term === "$i->day $i->time_from - $i->time_to") {
-							$answer = "Rezervirano: $origProfName $term. Javiti ćemo Vam profesorov odgovor.";
-							break;
 							if (send_email_and_get_success_state($senderId, 'Neko ime i prezime', 'eadresa@korisnika', $item->contact->email, $term)) {
 								$answer = "Rezervirano: $origProfName $term. Javiti ćemo Vam profesorov odgovor.";
 							} else {
