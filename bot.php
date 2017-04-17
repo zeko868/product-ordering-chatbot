@@ -10,7 +10,7 @@ function get_regex_fullname_with_deviation($str) {
 }
 
 function localized_strtolower($str) {
-	if ($str === null) {
+	if ($str === false) {
 		return null;
 	}
 	global $croatianLowercase;
@@ -100,7 +100,7 @@ if (stripos($command, 'konzultacije') === 0) {
 	}
 	$xml = simplexml_load_file('informacije.xml');
 
-	if ($prof === false) {
+	if ($prof === null) {
 		$button = array();
 		foreach($xml->employee as $item) {
 			array_push($button, array('type'=>'postback', 'title'=>"$item->firstname $item->lastname", 'payload' => "konzultacije $item->firstname $item->lastname"));
