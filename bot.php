@@ -162,13 +162,13 @@ if (stripos($command, 'konzultacije') === 0) {
 					];
 					break;
 				case 1:
-					$response = $suggestions[0];
+					$response = array_values($suggestions)[0];
 					break;
 				default:
 					$button = array();
 					$suggestions = array_keys($suggestions);
 					for($i=0;$i<=count($suggestions);$i++){
-						array_push($button, array('type'=>'postback', 'title'=>$suggestions[i], 'payload' => "konzultacije $suggestions[1]"));
+						array_push($button, array('type'=>'postback', 'title'=>$suggestions[$i], 'payload' => "konzultacije $suggestions[$i]"));
 					}
 					$answer = [
 						'type'=>'template',
