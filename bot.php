@@ -130,6 +130,13 @@ if (stripos($command, 'konzultacije') === 0) {
 			foreach($xml->employee as $item) {
 				if (preg_match(get_regex_fullname_with_deviation("$item->firstname $item->lastname"), $prof)===1) {
 					$button = array();
+						$answer = "$origProfName";
+						$response = [
+							'recipient' => [ 'id' => $senderId ],
+							'message' => [ 'text' => $answer ]
+						];
+						break;
+
 					foreach($item->consultation->term as $i){
 						//$i->day.' '.$i->time_from.' '.$i->time_to
 						if($i->day != "utorak")
