@@ -89,11 +89,11 @@ if (stripos($command, 'konzultacije') === 0) {
 
 	$prof = null;
 	if ($term === null) {
-		$prof = localized_strtolower(substr($command, strlen("konzultacije "));
+		$prof = localized_strtolower(substr($command, strlen("konzultacije ")));
 	}
 	else {
 		$termPosition = strpos($command, $term);
-		$prof = localized_strtolower(substr($command, strlen("konzultacije "), $termPosition-1-strlen("konzultacije "));
+		$prof = localized_strtolower(substr($command, strlen("konzultacije "), $termPosition-1-strlen("konzultacije ")));
 	}
 	$xml = simplexml_load_file('informacije.xml');
 
