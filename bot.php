@@ -134,10 +134,10 @@ if (stripos($command, 'konzultacije') === 0) {
 
 					foreach($item->consultation->term as $i){
 						//$i->day.' '.$i->time_from.' '.$i->time_to
-						if($i->day !== 'utorak')
-							array_push($button, array('type'=>'postback', 'title'=>substr($i->day, 0, 3).' '.$i->time_from.' - '.$i->time_to, 'payload' => "konzultacije $item->firstname $item->lastname $i->day $i->time_from - $i->time_to"));
-						else if ($i->day !== '')
+						if($i->day == 'utorak')
 							array_push($button, array('type'=>'postback', 'title'=>substr($i->day, 0, 2).' '.$i->time_from.' - '.$i->time_to, 'payload' => "konzultacije $item->firstname $item->lastname $i->day $i->time_from - $i->time_to"));
+						else if ($i->day != '')
+							array_push($button, array('type'=>'postback', 'title'=>substr($i->day, 0, 3).' '.$i->time_from.' - '.$i->time_to, 'payload' => "konzultacije $item->firstname $item->lastname $i->day $i->time_from - $i->time_to"));
 						else
 							continue;
 					}
