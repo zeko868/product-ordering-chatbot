@@ -248,7 +248,21 @@ if (stripos($command, 'konzultacije') === 0) {
 	}
 }
 
-
+$answer = '{
+"setting_type":"call_to_actions",
+"thread_state":"new_thread",
+"call_to_actions":[
+     {
+      "message":{
+      "text":"Welcome to My BOT!"
+     }
+}
+]
+}';
+		$response = [
+			'recipient' => [ 'id' => $senderId ],
+			'message' => [ 'text' => $answer ]
+		];
 $ch = curl_init('https://graph.facebook.com/v2.6/me/messages?access_token='.$accessToken);
 curl_setopt($ch, CURLOPT_POST, 1);
 curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($response));
