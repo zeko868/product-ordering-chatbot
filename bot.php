@@ -196,9 +196,9 @@ if (stripos($command, 'konzultacije') === 0) {
 			}
 		} else {
 			foreach($xml->employee as $item) {
-				if ("$item->firstname $item->lastname" === $origProfName) {
+				if (localized_strtolower("$item->firstname $item->lastname") === localized_strtolower($origProfName)) {
 					foreach($item->consultation->term as $i){
-						$answer = "Rezervirano: $origProfName $term. Javiti ćemo Vam profesorov odgovor.";
+						$answer = "Rezervirano: $item->firstname $item->lastname $term. Javiti ćemo Vam profesorov odgovor.";
 						$response = [
 							'recipient' => [ 'id' => $senderId ],
 							'message' => [ 'text' => $answer ]
