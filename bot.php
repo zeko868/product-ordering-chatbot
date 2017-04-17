@@ -79,10 +79,9 @@ $substitutes = [
 	'ž' => ['z']
 ];
 $dayNames = ['ponedjeljak', 'utorak', 'srijeda', 'četvrtak', 'petak', 'subota', 'nedjelja'];
-$termRegex = '/(-|(' .implode('|', $daysNames) . ') \d{2}:\d{2} - \d{2}:\d{2})$/';
-
+$termRegex = '/(-|(' .implode('|', $dayNames) . ') \d{2}:\d{2} - \d{2}:\d{2})$/';
 if (stripos($command, 'konzultacije') === 0) {
-	$termArray = preg_grep($termRegex, $command);
+        preg_match($termRegex, $command, $termArray);
 	if (empty($termArray)) {
 		$term = null;
 	}
@@ -129,12 +128,14 @@ if (stripos($command, 'konzultacije') === 0) {
 			$suggestions = array();
 			foreach($xml->employee as $item) {
 				if (preg_match(get_regex_fullname_with_deviation("$item->firstname $item->lastname"), $prof)===1) {
+                                    
 					$button = array();
-						$answer = "$origProfName";
+						/*$answer = "$origProfName";
 						$response = [
 							'recipient' => [ 'id' => $senderId ],
 							'message' => [ 'text' => $answer ]
 						];
+						break;*/
 
 					foreach($item->consultation->term as $i){
 						//$i->day.' '.$i->time_from.' '.$i->time_to
@@ -161,6 +162,7 @@ if (stripos($command, 'konzultacije') === 0) {
 					$suggestions["$item->firstname $item->lastname"] = $response;
 				}
 			}
+                        
 			switch (count($suggestions)) {
 				case 0:
 					$answer = 'Ne postoji nastavnik u bazi podataka s navedenim imenom';
@@ -196,7 +198,7 @@ if (stripos($command, 'konzultacije') === 0) {
 			foreach($xml->employee as $item) {
 				if ("$item->firstname $item->lastname" === $origProfName) {
 					foreach($item->consultation->term as $i){
-						$answer = "l: '$item->firstname $item->lastname', r: '$origProfName'";
+						$answer = "Rezervirano: $origProfName $term. Javiti ćemo Vam profesorov odgovor.";
 						$response = [
 							'recipient' => [ 'id' => $senderId ],
 							'message' => [ 'text' => $answer ]
@@ -229,14 +231,6 @@ if (stripos($command, 'konzultacije') === 0) {
 			'message' => [ 'text' => $answer ]
 		];
 	}
-}
-
-if ($response === null) {
-	$answer = "Za početak rezervacije termina konzultacija upišite sljedeću naredbu: konzultacije [naziv_nastavnika [termin]]";
-	$response = [
-		'recipient' => [ 'id' => $senderId ],
-		'message' => [ 'text' => $answer ]
-	];
 }
 
 
