@@ -1,7 +1,7 @@
 <?php
 $command = $_GET['konzultacije'];
 $command = preg_replace('/\s{2,}/', ' ', trim($command));
-echo $command;
+print_r($command);
 if (stripos($command, 'konzultacije') === 0) {
 	$termArray = preg_grep($termRegex, $command);
 	if (empty($termArray)) {
