@@ -10,6 +10,9 @@ function get_regex_fullname_with_deviation($str) {
 }
 
 function localized_strtolower($str) {
+	if ($str === null) {
+		return null;
+	}
 	global $croatianLowercase;
 	foreach ($croatianLowercase as $upper => $lower) {
 		$str = str_replace($upper, $lower, $str);
