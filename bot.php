@@ -98,6 +98,7 @@ if (stripos($command, 'konzultacije') === 0) {
 	$xml = simplexml_load_file('informacije.xml');
 
 	if ($prof === null) {
+		$button = array();
 		foreach($xml->employee as $item) {
 			array_push($button, array('type'=>'postback', 'title'=>"$item->firstname $item->lastname", 'payload' => "konzultacije $item->firstname $item->lastname"));
 		}
@@ -119,6 +120,7 @@ if (stripos($command, 'konzultacije') === 0) {
 			$suggestions = array();
 			foreach($xml->employee as $item) {
 				if (preg_match(get_regex_fullname_with_deviation("$item->firstname $item->lastname"), $prof)===1) {
+					$button = array();
 					foreach($item->consultation->term as $i){
 						//$i->day.' '.$i->time_from.' '.$i->time_to
 						if($i->day != "utorak")
