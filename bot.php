@@ -102,8 +102,13 @@ if (stripos($command, 'konzultacije') === 0) {
 
 	if ($prof === null) {
 		$button = array();
+		$i = 0;
 		foreach($xml->employee as $item) {
+			if ($i === 3) {
+				break;
+			}
 			array_push($button, array('type'=>'postback', 'title'=>"$item->firstname $item->lastname", 'payload' => "konzultacije $item->firstname $item->lastname"));
+			$i++;
 		}
 		$answer = [
 			'type'=>'template',
