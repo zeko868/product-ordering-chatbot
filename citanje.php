@@ -79,7 +79,7 @@ if (stripos($command, 'konzultacije') === 0) {
 						'recipient' => [ 'id' => $senderId ],
 						'message' => [ 'attachment' => $answer ]
 					];
-					$ispis = $response;
+					
 					$suggestions["$item->firstname $item->lastname"] = $response;
 				}
 			}
