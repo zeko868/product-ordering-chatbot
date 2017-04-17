@@ -48,8 +48,7 @@ $senderId = $input['entry'][0]['messaging'][0]['sender']['id'];
 $response = null;
 $command = "";
 
-$command = 'konzultacije Boris Aurer -';
-/*if (!empty($input['entry'][0]['messaging'])) { 
+if (!empty($input['entry'][0]['messaging'])) { 
 
 	foreach ($input['entry'][0]['messaging'] as $message) { 
 
@@ -62,7 +61,7 @@ $command = 'konzultacije Boris Aurer -';
              $command = $message['postback']['payload'];
         }
     }
-}*/
+}
 $command = preg_replace('/\s{2,}/', ' ', trim($command));	// brisanje viška razmaka ispred i iza naredbe te zamjena (najčešće slučajno napisanih) višestrukih razmaka s jednostrukim
 $croatianLowercase = [
 	'Č' => 'č',
@@ -219,6 +218,7 @@ if (stripos($command, 'konzultacije') === 0) {
 							} else {
 								$answer = "Pojavio se neuspjeh kod slanja e-mail poruke profesoru. Molimo Vas da pokušate kasnije.";
 							}
+							break;
 						}
 					}
 					$response = [
