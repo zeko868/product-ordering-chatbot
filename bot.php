@@ -5,8 +5,8 @@ function get_regex_fullname_with_deviation($str) {
 	foreach ($substitutes as $spec => $alt) {
 		$str = str_replace($spec, '(' . implode('|', $alt) . "|$spec)", $str);
 	}
-	$str = '(.*?=\b' . implode('\b)(.*?=\b', explode(' ', $str)) . '\b)(?!.*[^(' . implode(')|(', explode(' ', $str)) . ')| ])';	//  po navedenom bi naziv 'Martina Tomičić Furjan' dao sljedeći izraz (?=.*\bmartina\b)(?=.*\bfurjan\b)(?=.*\btomičić\b)(?!.*[^(martina)|(furjan)|(tomičić)| ])  - navedeno prihvaća 'Martina Tomičić Furjan', 'Martina Tomičić-Furjan', 'tomičić Furjan martina', 'tomičić martina furjan', ...
-	return '/^' . $str . '$/';
+	$str = '(?=.*\b' . implode('\b)(?=.*\b', explode(' ', $str)) . '\b)(?!.*[^(' . implode(')|(', explode(' ', $str)) . ')| ])';	//  po navedenom bi naziv 'Martina Tomičić Furjan' dao sljedeći izraz (?=.*\bmartina\b)(?=.*\bfurjan\b)(?=.*\btomičić\b)(?!.*[^(martina)|(furjan)|(tomičić)| ])  - navedeno prihvaća 'Martina Tomičić Furjan', 'Martina Tomičić-Furjan', 'tomičić Furjan martina', 'tomičić martina furjan', ...
+	return '/^' . $str . '.*$/';
 }
 
 function localized_strtolower($str) {
@@ -127,13 +127,6 @@ if (stripos($command, 'konzultacije') === 0) {
 		if ($term === null) {
 			$suggestions = array();
 			foreach($xml->employee as $item) {
-				$answer = 'regex: "' . get_regex_fullname_with_deviation("$item->firstname $item->lastname") . '" prof: "' . $prof . '"';
-				$response = [
-					'recipient' => [ 'id' => $senderId ],
-					'message' => [ 'text' => $answer ]
-				];
-				array_push($suggestions, $response);
-				break;
 				if (preg_match(get_regex_fullname_with_deviation("$item->firstname $item->lastname"), $prof)===1) {
 					$button = array();
 					foreach($item->consultation->term as $i){
