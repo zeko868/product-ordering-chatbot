@@ -39,7 +39,7 @@ function send_email_and_get_success_state($senderId, $senderName, $senderMail, $
 		$recipientMail==='petloncar2@foi.hr' ||
 		$recipientMail==='tommarkul@foi.hr') {
 
-		$result = curl_exec($ch);		// odkomentiranjem ove naredbe se šalju email poruke odabranom nastavniku
+		$result = curl_exec($ch)==='true'?true:false;		// odkomentiranjem ove naredbe se šalju email poruke odabranom nastavniku
 	}
 	else {
 		$result = true;
