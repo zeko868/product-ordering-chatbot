@@ -190,6 +190,13 @@ if (stripos($command, 'konzultacije') === 0) {
 			foreach($xml->employee as $item) {
 				if ("$item->firstname $item->lastname" === $origProfName) {
 					foreach($item->consultation->term as $i){
+						$answer = "l: '"$item->firstname $item->lastname"', r: '$origProfName'";
+						$response = [
+							'recipient' => [ 'id' => $senderId ],
+							'message' => [ 'text' => $answer ]
+						];
+						break;
+
 						if ($term === '-' || $term === "$i->day $i->time_from - $i->time_to") {
 							if (send_email_and_get_success_state($senderId, 'Neko ime i prezime', 'eadresa@korisnika', $item->contact->email, $term)) {
 								$answer = "Rezervirano: $origProfName $term. Javiti ćemo Vam profesorov odgovor.";
