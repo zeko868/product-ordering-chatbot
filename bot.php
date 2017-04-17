@@ -143,7 +143,7 @@ if (stripos($command, 'konzultacije') === 0) {
 						'type'=>'template',
 						'payload'=>[
 							'template_type'=>'button',
-							'text'=>'Kod kojeg profesora želite rezervirati konzultacije?',
+							'text'=>'U kojem od navedenih termina želite rezervirati konzultacije?',
 							'buttons'=> $button
 						]
 					];
@@ -190,7 +190,7 @@ if (stripos($command, 'konzultacije') === 0) {
 			foreach($xml->employee as $item) {
 				if ("$item->firstname $item->lastname" === $origProfName) {
 					foreach($item->consultation->term as $i){
-						if ($term === $origProfName.' '.$i->day.' '.$i->time_from.' - '.$i->time_to) {
+						if ($term === '-' || $term === "$i->day $i->time_from - $i->time_to") {
 							if (send_email_and_get_success_state($senderId, 'Neko ime i prezime', 'eadresa@korisnika', $item->contact->email, $term)) {
 								$answer = "Rezervirano: $origProfName $term. Javiti ćemo Vam profesorov odgovor.";
 							} else {
