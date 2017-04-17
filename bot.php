@@ -6,7 +6,7 @@ function get_regex_fullname_with_deviation($str) {
 		$str = str_replace($spec, '(' . implode('|', $alt) . "|$spec)", $str);
 	}
 	$str = '(?=.*\b' . implode('\b)(?=.*\b', explode(' ', $str)) . '\b)(?!.*[^(' . implode(')|(', explode(' ', $str)) . ')| ])';	//  po navedenom bi naziv 'Martina Tomičić Furjan' dao sljedeći izraz (?=.*\bmartina\b)(?=.*\bfurjan\b)(?=.*\btomičić\b)(?!.*[^(martina)|(furjan)|(tomičić)| ])  - navedeno prihvaća 'Martina Tomičić Furjan', 'Martina Tomičić-Furjan', 'tomičić Furjan martina', 'tomičić martina furjan', ...
-	return '/^' . $str . '.*$/';
+	return '/^' . $str . '.*$/u';
 }
 
 function localized_strtolower($str) {
