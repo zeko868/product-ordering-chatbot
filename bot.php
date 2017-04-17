@@ -79,7 +79,7 @@ $substitutes = [
 	'ž' => ['z']
 ];
 $dayNames = ['ponedjeljak', 'utorak', 'srijeda', 'četvrtak', 'petak', 'subota', 'nedjelja'];
-$termRegex = '/-|(' .implode('|', $daysNames) . ') \d{2}:\d{2} - \d{2}:\d{2}$/';
+$termRegex = '/(-|(' .implode('|', $daysNames) . ') \d{2}:\d{2} - \d{2}:\d{2})$/';
 
 if (stripos($command, 'konzultacije') === 0) {
 	$termArray = preg_grep($termRegex, $command);
