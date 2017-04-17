@@ -152,4 +152,3 @@ if (stripos($command, 'konzultacije') === 0) {
 		];
 	}
 }
-print_r($ispis);
