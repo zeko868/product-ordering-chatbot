@@ -35,16 +35,14 @@ function send_email_and_get_success_state($senderId, $senderName, $senderMail, $
 	$request = 'http://foi-konzultacije.info/sendmail.php?' . http_build_query($params);
 	$ch = curl_init($request);
 	curl_setopt($ch, CURLOPT_VERBOSE, true);	// za potrebe pregleda stanja izvođenja curl naredbe u error logu
-	if ($recipientMail=='zeko868@gmail.com' || 
+	if ($recipientMail=='zeko868@gmail.com' || // nije dozvoljena uporaba operatora identičnosti jer je $recipientMail tipa object, a ne string (zbog xml-a)
 		$recipientMail=='marin.mihajlovic1994@gmail.com' ||
 		$recipientMail=='petloncar2@foi.hr' ||
 		$recipientMail=='tommarkul@foi.hr') {
 
-			error_log('izlaz: ' . curl_exec($ch));
-		//$result = curl_exec($ch)==='true'?true:false;		// odkomentiranjem ove naredbe se šalju email poruke odabranom nastavniku
+		$result = curl_exec($ch)==='true'?true:false;		// odkomentiranjem ove naredbe se šalju email poruke odabranom nastavniku
 	}
 	else {
-		error_log('ovo je else - ne bi smel biti tu');
 		$result = true;
 	}
 	curl_close($ch);
