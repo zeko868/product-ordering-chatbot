@@ -27,7 +27,7 @@ function send_email_and_get_success_state($senderId, $senderName, $senderMail, $
 		'student_id' => $senderId,
 		'student_naziv' => $senderName,
 		'student_email' => $senderMail,
-		'nastavnik_email' => $recipientMail
+		'nastavnik_email' => (string) $recipientMail 	// ovo je xml object pa ga treba castati - inace se uzrokuje da elementu s kljucem 'nastavnik_email' bude dodijeljeno polje, a ne vrijednost (string)
 	);
 	if ($term !== '-') {
 		$params['termin'] = $term;
