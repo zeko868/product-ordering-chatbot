@@ -38,12 +38,13 @@ function send_email_and_get_success_state($senderId, $senderName, $senderMail, $
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 	curl_setopt($ch, CURLOPT_PROTOCOLS, CURLPROTO_HTTP);
+			error_log('ovo je prije if-a');
 	if ($recipientMail==='zeko868@gmail.com' || 
 		$recipientMail==='marin.mihajlovic1994@gmail.com' ||
 		$recipientMail==='petloncar2@foi.hr' ||
 		$recipientMail==='tommarkul@foi.hr') {
 
-			error_log(var_export(curl_exec($ch), true));
+			error_log('ovo je neki izlaz');
 		//$result = curl_exec($ch)==='true'?true:false;		// odkomentiranjem ove naredbe se šalju email poruke odabranom nastavniku
 	}
 	else {
