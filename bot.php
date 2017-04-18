@@ -34,8 +34,8 @@ function send_email_and_get_success_state($senderId, $senderName, $senderMail, $
 	}
 	$request = 'http://foi-konzultacije.info/sendmail.php?' . http_build_query($params);
 	$ch = curl_init($request);
-	if ($recipientMail==='petar.sestak3@foi.hr' || 
-		$recipientMail==='marmihajl@foi.hr' ||
+	if ($recipientMail==='zeko868@gmail.com' || 
+		$recipientMail==='marin.mihajlovic1994@gmail.com' ||
 		$recipientMail==='petloncar2@foi.hr' ||
 		$recipientMail==='tommarkul@foi.hr') {
 
