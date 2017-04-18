@@ -58,6 +58,13 @@ $senderId = $input['entry'][0]['messaging'][0]['sender']['id'];
 $response = null;
 $command = "";
 
+if (!isset($_SERVER['PHP_AUTH_USER'])) {
+    header('WWW-Authenticate: Basic realm="My Realm"');
+    header('HTTP/1.0 401 Unauthorized');
+    echo 'Text to send if user hits Cancel button';
+    exit;
+} 
+
 if (!empty($input['entry'][0]['messaging'])) { 
 
 	foreach ($input['entry'][0]['messaging'] as $message) { 
