@@ -48,6 +48,7 @@ function send_email_and_get_success_state($senderId, $senderName, $senderMail, $
 		//$result = curl_exec($ch)==='true'?true:false;		// odkomentiranjem ove naredbe se šalju email poruke odabranom nastavniku
 	}
 	else {
+		error_log('ovo je else - ne bi smel biti tu');
 		$result = true;
 	}
 	curl_close($ch);
