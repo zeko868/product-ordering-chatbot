@@ -39,8 +39,8 @@ function send_email_and_get_success_state($senderId, $senderName, $senderMail, $
 		$recipientMail=='petloncar2@foi.hr' ||
 		$recipientMail=='tommarkul@foi.hr') {
 
-			error_log('ovo je neki izlaz');
-		$result = curl_exec($ch)==='true'?true:false;		// odkomentiranjem ove naredbe se šalju email poruke odabranom nastavniku
+			error_log('izlaz: ' . curl_exec($ch));
+		//$result = curl_exec($ch)==='true'?true:false;		// odkomentiranjem ove naredbe se šalju email poruke odabranom nastavniku
 	}
 	else {
 		error_log('ovo je else - ne bi smel biti tu');
