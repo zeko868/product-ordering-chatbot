@@ -27,7 +27,7 @@ function send_email_and_get_success_state($senderId, $senderName, $senderMail, $
 		'student_id' => $senderId,
 		'student_naziv' => $senderName,
 		'student_email' => $senderMail,
-		'nastavnik_email' => (string)$recipientMail
+		'nastavnik_email' => $recipientMail
 	);
 	if ($term !== '-') {
 		$params['termin'] = $term;
