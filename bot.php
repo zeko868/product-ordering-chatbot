@@ -39,7 +39,7 @@ function send_email_and_get_success_state($senderId, $senderName, $senderMail, $
 	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 	curl_setopt($ch, CURLOPT_PROTOCOLS, CURLPROTO_HTTP);
 			error_log('ovo je prije if-a');
-			error_log($recipientMail);
+			error_log($recipientMail . '=>'.($recipientMail==='zeko868@gmail.com'));
 	if ($recipientMail==='zeko868@gmail.com' || 
 		$recipientMail==='marin.mihajlovic1994@gmail.com' ||
 		$recipientMail==='petloncar2@foi.hr' ||
