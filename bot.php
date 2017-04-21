@@ -59,39 +59,6 @@ $response = null;
 $command = "";
 
 
-$response = [
-  "setting_type" : "call_to_actions",
-  "thread_state" : "existing_thread",
-  "call_to_actions":[
-    [
-      "type":"postback",
-      "title":"Help",
-      "payload":"DEVELOPER_DEFINED_PAYLOAD_FOR_HELP"
-    ],
-    [
-      "type":"postback",
-      "title":"Latest Posts",
-      "payload":"DEVELOPER_DEFINED_PAYLOAD_FOR_LATEST_POSTS"
-    ],
-    [
-      "type":"web_url",
-      "title":"View Website",
-      "url":"http://yoursite.com/"
-    ]
-  ]
-];
-
-$ch = curl_init('https://graph.facebook.com/v2.6/me/thread_settings?access_token='.$accessToken);
-curl_setopt($ch, CURLOPT_POST, 1);
-curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($response));
-curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-if(!empty($input)){
-	$result = curl_exec($ch);
-}
-curl_close($ch);
-
-
-
 if (!empty($input['entry'][0]['messaging'])) { 
 
 	foreach ($input['entry'][0]['messaging'] as $message) { 
