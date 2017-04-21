@@ -58,17 +58,7 @@ $senderId = $input['entry'][0]['messaging'][0]['sender']['id'];
 $response = null;
 $command = "";
 
-$response = [
-  "setting_type":"call_to_actions",
-  "thread_state":"new_thread",
-  "call_to_actions":[
-    [
-      "message":[
-        "text":"Welcome to My Company!"
-      ]
-    ]
-  ]
-];
+
 
 if (!empty($input['entry'][0]['messaging'])) { 
 
