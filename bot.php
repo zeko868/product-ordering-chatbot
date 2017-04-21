@@ -59,9 +59,14 @@ $response = null;
 $command = "";
 
 $response = [
-  "setting_type":"greeting",
-  "greeting":[
-    "text":"Timeless apparel for the masses."
+  "setting_type":"call_to_actions",
+  "thread_state":"new_thread",
+  "call_to_actions":[
+    [
+      "message":[
+        "text":"Welcome to My Company!"
+      ]
+    ]
   ]
 ];
 
