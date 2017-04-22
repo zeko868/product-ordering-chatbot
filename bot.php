@@ -99,7 +99,7 @@ $substitutes = [
 $dayNames = ['ponedjeljak', 'utorak', 'srijeda', 'četvrtak', 'petak', 'subota', 'nedjelja'];
 $termRegex = '/(-|(' .implode('|', $dayNames) . ') \d{2}:\d{2} - \d{2}:\d{2})$/u';
 if(stripos($command, 'autentikacija') === 0){
-	$answer = "Poterebna je autentikacija";
+	$answer = 'Poterebna je autentikacija za nastavak rada u aplikaciji. Za autentikaciju posjetite link: https://foi-konzultacije.info/prijava.php?senderid=$senderId';
 		$response = [
 			'recipient' => [ 'id' => $senderId ],
 			'message' => [ 'text' => $answer ]
