@@ -108,12 +108,13 @@ if(stripos($command, 'autentikacija') === 0){
 			'message' => [ 'text' => $answer ]
 		];
 }else{
-	$dbHandler = new mysqli('foi-konzultacije.info', 'admin', 'f1f2f3f4', 'konzultacije');
+	/*$dbHandler = new mysqli('foi-konzultacije.info', 'admin', 'f1f2f3f4', 'konzultacije');
 	$dbHandler->set_charset("utf8");
 	$command = "SELECT count(*) FROM users WHERE id = ".$senderId.";";
 
-	$resultSet = $dbHandler->query($command);
-	if(intval($resultSet->fetch_assoc()['count(*)']) === 1){
+	$resultSet = $dbHandler->query($command);*/
+	//intval($resultSet->fetch_assoc()['count(*)'])
+	if(1 === 1){
 		if (stripos($command, 'konzultacije') === 0) {
 			preg_match($termRegex, $command, $termArray);
 			if (empty($termArray)) {
@@ -266,10 +267,10 @@ if(stripos($command, 'autentikacija') === 0){
 		}
 	}else{
 		$answer = "Niste se autenticirali za rad u sustavu. Za autentikaciju pristupite linku: http://foi-konzultacije.info/prijava.php?senderid=".$senderId.". Nakon autentikacije upišite konzultacije [naziv_nastavnika [termin]]";
-	$response = [
-	'recipient' => [ 'id' => $senderId ],
-	'message' => [ 'text' => $answer ]
-	];
+		$response = [
+		'recipient' => [ 'id' => $senderId ],
+		'message' => [ 'text' => $answer ]
+		];
 	}
 }
 
