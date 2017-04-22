@@ -115,7 +115,7 @@ if (stripos($command, 'konzultacije') === 0) {
 	curl_setopt($ch, CURLOPT_HEADER, 0);
 	$output = curl_exec($ch);
 	curl_close($ch);
-	if(intval($output[0])===1){
+	if($output==='1'){
 		
 		preg_match($termRegex, $command, $termArray);
 		if (empty($termArray)) {
