@@ -4,7 +4,7 @@ $dbHandler->set_charset("utf8");
 $command = "SELECT count(*) FROM users WHERE id = ".$_GET['senderid'].";";
 
 $resultSet = $dbHandler->query($command);
-print_r($command);
+print_r($resultSet);
 if(intval($resultSet->fetch_assoc()['count(*)']) === 0){
 	
 }
