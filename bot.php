@@ -58,7 +58,6 @@ $senderId = $input['entry'][0]['messaging'][0]['sender']['id'];
 $response = null;
 $command = "";
 
-
 if (!empty($input['entry'][0]['messaging'])) { 
 
 	foreach ($input['entry'][0]['messaging'] as $message) { 
@@ -99,6 +98,14 @@ $substitutes = [
 ];
 $dayNames = ['ponedjeljak', 'utorak', 'srijeda', 'četvrtak', 'petak', 'subota', 'nedjelja'];
 $termRegex = '/(-|(' .implode('|', $dayNames) . ') \d{2}:\d{2} - \d{2}:\d{2})$/u';
+if(stripos($command, 'autentikacija') === 0){
+	$answer = "Poterebna je autentikacija";
+		$response = [
+			'recipient' => [ 'id' => $senderId ],
+			'message' => [ 'text' => $answer ]
+		];
+	
+}
 if (stripos($command, 'konzultacije') === 0) {
 	preg_match($termRegex, $command, $termArray);
 	if (empty($termArray)) {
