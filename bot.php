@@ -107,170 +107,172 @@ if(stripos($command, 'autentikacija') === 0){
 			'recipient' => [ 'id' => $senderId ],
 			'message' => [ 'text' => $answer ]
 		];
-}
-$dbHandler = new mysqli('foi-konzultacije.info', 'admin', 'f1f2f3f4', 'konzultacije');
-$dbHandler->set_charset("utf8");
-$command = "SELECT count(*) FROM users WHERE id = ".$senderId.";";
+}else{
+	$dbHandler = new mysqli('foi-konzultacije.info', 'admin', 'f1f2f3f4', 'konzultacije');
+	$dbHandler->set_charset("utf8");
+	$command = "SELECT count(*) FROM users WHERE id = ".$senderId.";";
 
-$resultSet = $dbHandler->query($command);
-if(intval($resultSet->fetch_assoc()['count(*)']) === 1){
-	if (stripos($command, 'konzultacije') === 0) {
-		preg_match($termRegex, $command, $termArray);
-		if (empty($termArray)) {
-			$term = null;
-		}
-		else {
-			$term = $termArray[0];
-		}
-
-		$prof = null;
-		if ($term === null) {
-			$origProfName = substr($command, strlen("konzultacije "));
-		}
-		else {
-			$termPosition = strpos($command, $term);
-			$origProfName = substr($command, strlen("konzultacije "), $termPosition-1-strlen("konzultacije "));
-		}
-		$prof = localized_strtolower($origProfName);
-		$xml = simplexml_load_file('informacije.xml');
-
-		if ($prof === null) {
-			$button = array();
-			$i = 0;
-			foreach($xml->employee as $item) {
-				if ($i === 3) {
-					break;
-				}
-				array_push($button, array('type'=>'postback', 'title'=>"$item->firstname $item->lastname", 'payload' => "konzultacije $item->firstname $item->lastname"));
-				$i++;
+	$resultSet = $dbHandler->query($command);
+	if(intval($resultSet->fetch_assoc()['count(*)']) === 1){
+		if (stripos($command, 'konzultacije') === 0) {
+			preg_match($termRegex, $command, $termArray);
+			if (empty($termArray)) {
+				$term = null;
 			}
-			$answer = [
-				'type'=>'template',
-				'payload'=>[
-					'template_type'=>'button',
-					'text'=>'Kod kojeg profesora želite rezervirati konzultacije?',
-					'buttons'=> $button
-				]
-			];
-			$response = [
-				'recipient' => [ 'id' => $senderId ],
-				'message' => [ 'attachment' => $answer ]
-			];
+			else {
+				$term = $termArray[0];
+			}
 
-		} else {
+			$prof = null;
 			if ($term === null) {
-				$suggestions = array();
+				$origProfName = substr($command, strlen("konzultacije "));
+			}
+			else {
+				$termPosition = strpos($command, $term);
+				$origProfName = substr($command, strlen("konzultacije "), $termPosition-1-strlen("konzultacije "));
+			}
+			$prof = localized_strtolower($origProfName);
+			$xml = simplexml_load_file('informacije.xml');
+
+			if ($prof === null) {
+				$button = array();
+				$i = 0;
 				foreach($xml->employee as $item) {
-					if (preg_match(get_regex_fullname_with_deviation("$item->firstname $item->lastname"), $prof)===1) {
-						
-						$button = array();
-
-						foreach($item->consultation->term as $i){
-							//$i->day.' '.$i->time_from.' '.$i->time_to
-							if($i->day == 'utorak')
-								array_push($button, array('type'=>'postback', 'title'=>substr($i->day, 0, 2).' '.$i->time_from.' - '.$i->time_to, 'payload' => "konzultacije $item->firstname $item->lastname $i->day $i->time_from - $i->time_to"));
-							else if ($i->day != '')
-								array_push($button, array('type'=>'postback', 'title'=>substr($i->day, 0, 3).' '.$i->time_from.' - '.$i->time_to, 'payload' => "konzultacije $item->firstname $item->lastname $i->day $i->time_from - $i->time_to"));
-							else
-								continue;
-						}
-						array_push($button, array('type'=>'postback', 'title'=>'-', 'payload' => "konzultacije $item->firstname $item->lastname -"));
-
-						$answer = [
-							'type'=>'template',
-							'payload'=>[
-								'template_type'=>'button',
-								'text'=>'U kojem od navedenih termina želite rezervirati konzultacije?',
-								'buttons'=> $button
-							]
-						];
-						$response = [
-							'recipient' => [ 'id' => $senderId ],
-							'message' => [ 'attachment' => $answer ]
-						];
-
-						$suggestions["$item->firstname $item->lastname"] = $response;
+					if ($i === 3) {
+						break;
 					}
+					array_push($button, array('type'=>'postback', 'title'=>"$item->firstname $item->lastname", 'payload' => "konzultacije $item->firstname $item->lastname"));
+					$i++;
 				}
-				switch (count($suggestions)) {
-					case 0:
-						$answer = 'Ne postoji nastavnik u bazi podataka s navedenim imenom';
-						$response = [
-							'recipient' => [ 'id' => $senderId ],
-							'message' => [ 'text' => $answer ]
-						];
-						break;
-					case 1:
-						$response = array_values($suggestions)[0];
-						break;
-					default:
-						$button = array();
-						$suggestions = array_keys($suggestions);
-						for($i=0;$i<=count($suggestions);$i++){
-							array_push($button, array('type'=>'postback', 'title'=>$suggestions[$i], 'payload' => "konzultacije $suggestions[$i]"));
-						}
-											
-						$answer = [
-							'type'=>'template',
-							'payload'=>[
-								'template_type'=>'button',
-								'text'=>'Neuspjeh kod prepoznavanja. Kod kojeg profesora želite rezervirati konzultacije?',
-								'buttons'=> $button
-							]
-						];
-						$response = [
-							'recipient' => [ 'id' => $senderId ],
-							'message' => [ 'attachment' => $answer ]
-						];
-						break;
-				}
+				$answer = [
+					'type'=>'template',
+					'payload'=>[
+						'template_type'=>'button',
+						'text'=>'Kod kojeg profesora želite rezervirati konzultacije?',
+						'buttons'=> $button
+					]
+				];
+				$response = [
+					'recipient' => [ 'id' => $senderId ],
+					'message' => [ 'attachment' => $answer ]
+				];
+
 			} else {
-				foreach($xml->employee as $item) {
-					if ("$item->firstname $item->lastname" === $origProfName) {
-						if ($term === '-') {
-							if (send_email_and_get_success_state($senderId, 'Neko ime i prezime', 'eadresa@korisnika', $item->contact->email, $term)) {
-								$answer = "Vaš zahtjev za dodatnim terminom konzultacija je poslan nastavniku $origProfName. Javiti ćemo Vam profesorov odgovor.";
-							} else {
-								$answer = "Pojavio se neuspjeh kod slanja e-mail poruke profesoru. Molimo Vas da pokušate kasnije.";
+				if ($term === null) {
+					$suggestions = array();
+					foreach($xml->employee as $item) {
+						if (preg_match(get_regex_fullname_with_deviation("$item->firstname $item->lastname"), $prof)===1) {
+							
+							$button = array();
+
+							foreach($item->consultation->term as $i){
+								//$i->day.' '.$i->time_from.' '.$i->time_to
+								if($i->day == 'utorak')
+									array_push($button, array('type'=>'postback', 'title'=>substr($i->day, 0, 2).' '.$i->time_from.' - '.$i->time_to, 'payload' => "konzultacije $item->firstname $item->lastname $i->day $i->time_from - $i->time_to"));
+								else if ($i->day != '')
+									array_push($button, array('type'=>'postback', 'title'=>substr($i->day, 0, 3).' '.$i->time_from.' - '.$i->time_to, 'payload' => "konzultacije $item->firstname $item->lastname $i->day $i->time_from - $i->time_to"));
+								else
+									continue;
 							}
+							array_push($button, array('type'=>'postback', 'title'=>'-', 'payload' => "konzultacije $item->firstname $item->lastname -"));
+
+							$answer = [
+								'type'=>'template',
+								'payload'=>[
+									'template_type'=>'button',
+									'text'=>'U kojem od navedenih termina želite rezervirati konzultacije?',
+									'buttons'=> $button
+								]
+							];
+							$response = [
+								'recipient' => [ 'id' => $senderId ],
+								'message' => [ 'attachment' => $answer ]
+							];
+
+							$suggestions["$item->firstname $item->lastname"] = $response;
 						}
-						foreach($item->consultation->term as $i){
-							if ($term === "$i->day $i->time_from - $i->time_to") {
+					}
+					switch (count($suggestions)) {
+						case 0:
+							$answer = 'Ne postoji nastavnik u bazi podataka s navedenim imenom';
+							$response = [
+								'recipient' => [ 'id' => $senderId ],
+								'message' => [ 'text' => $answer ]
+							];
+							break;
+						case 1:
+							$response = array_values($suggestions)[0];
+							break;
+						default:
+							$button = array();
+							$suggestions = array_keys($suggestions);
+							for($i=0;$i<=count($suggestions);$i++){
+								array_push($button, array('type'=>'postback', 'title'=>$suggestions[$i], 'payload' => "konzultacije $suggestions[$i]"));
+							}
+												
+							$answer = [
+								'type'=>'template',
+								'payload'=>[
+									'template_type'=>'button',
+									'text'=>'Neuspjeh kod prepoznavanja. Kod kojeg profesora želite rezervirati konzultacije?',
+									'buttons'=> $button
+								]
+							];
+							$response = [
+								'recipient' => [ 'id' => $senderId ],
+								'message' => [ 'attachment' => $answer ]
+							];
+							break;
+					}
+				} else {
+					foreach($xml->employee as $item) {
+						if ("$item->firstname $item->lastname" === $origProfName) {
+							if ($term === '-') {
 								if (send_email_and_get_success_state($senderId, 'Neko ime i prezime', 'eadresa@korisnika', $item->contact->email, $term)) {
-									$answer = "Rezervirano: $origProfName $term. Javiti ćemo Vam profesorov odgovor.";
+									$answer = "Vaš zahtjev za dodatnim terminom konzultacija je poslan nastavniku $origProfName. Javiti ćemo Vam profesorov odgovor.";
 								} else {
 									$answer = "Pojavio se neuspjeh kod slanja e-mail poruke profesoru. Molimo Vas da pokušate kasnije.";
 								}
-								break;
 							}
-						}
-						$response = [
-							'recipient' => [ 'id' => $senderId ],
-							'message' => [ 'text' => $answer ]
-						];
+							foreach($item->consultation->term as $i){
+								if ($term === "$i->day $i->time_from - $i->time_to") {
+									if (send_email_and_get_success_state($senderId, 'Neko ime i prezime', 'eadresa@korisnika', $item->contact->email, $term)) {
+										$answer = "Rezervirano: $origProfName $term. Javiti ćemo Vam profesorov odgovor.";
+									} else {
+										$answer = "Pojavio se neuspjeh kod slanja e-mail poruke profesoru. Molimo Vas da pokušate kasnije.";
+									}
+									break;
+								}
+							}
+							$response = [
+								'recipient' => [ 'id' => $senderId ],
+								'message' => [ 'text' => $answer ]
+							];
 
-						break;
+							break;
+						}
 					}
 				}
 			}
-		}
 
-		if ($response === null) {
-			$answer = "Pojavila se pogreška kod pokušaja izvršavanja Vaše naredbe. Ispravan format naredbe je sljedeći: konzultacije [naziv_nastavnika [termin]]";
-			$response = [
-				'recipient' => [ 'id' => $senderId ],
-				'message' => [ 'text' => $answer ]
-			];
+			if ($response === null) {
+				$answer = "Pojavila se pogreška kod pokušaja izvršavanja Vaše naredbe. Ispravan format naredbe je sljedeći: konzultacije [naziv_nastavnika [termin]]";
+				$response = [
+					'recipient' => [ 'id' => $senderId ],
+					'message' => [ 'text' => $answer ]
+				];
+			}
+			
 		}
-		
+	}else{
+		$answer = "Niste se autenticirali za rad u sustavu. Za autentikaciju pristupite linku: http://foi-konzultacije.info/prijava.php?senderid=".$senderId.". Nakon autentikacije upišite konzultacije [naziv_nastavnika [termin]]";
+	$response = [
+	'recipient' => [ 'id' => $senderId ],
+	'message' => [ 'text' => $answer ]
+	];
 	}
-}else{
-	$answer = "Niste se autenticirali za rad u sustavu. Za autentikaciju pristupite linku: http://foi-konzultacije.info/prijava.php?senderid=".$senderId.". Nakon autentikacije upišite konzultacije [naziv_nastavnika [termin]]";
-$response = [
-'recipient' => [ 'id' => $senderId ],
-'message' => [ 'text' => $answer ]
-];
 }
+
 
 $ch = curl_init('https://graph.facebook.com/v2.6/me/messages?access_token='.$accessToken);
 	curl_setopt($ch, CURLOPT_POST, 1);
