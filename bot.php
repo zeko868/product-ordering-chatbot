@@ -58,6 +58,14 @@ $senderId = $input['entry'][0]['messaging'][0]['sender']['id'];
 $response = null;
 $command = "";
 
+if (!isset($_GET['senderid'])) {
+	$answer = "Uspješno ste se autenticirali.";
+	$response = [
+		'recipient' => [ 'id' => $_GET['senderid']],
+		'message' => [ 'text' => $answer ]
+	];
+}
+	
 if (!empty($input['entry'][0]['messaging'])) { 
 
 	foreach ($input['entry'][0]['messaging'] as $message) { 
