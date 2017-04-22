@@ -64,6 +64,13 @@ if (!isset($_GET['senderid'])) {
 		'recipient' => [ 'id' => $_GET['senderid']],
 		'message' => [ 'text' => $answer ]
 	];
+	curl_setopt($ch, CURLOPT_POST, 1);
+	curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($response));
+	curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+	if(!empty($input)){
+		$result = curl_exec($ch);
+	}
+	curl_close($ch);
 }
 	
 if (!empty($input['entry'][0]['messaging'])) { 
@@ -113,7 +120,13 @@ if(stripos($command, 'autentikacija') === 0){
 			'recipient' => [ 'id' => $senderId ],
 			'message' => [ 'text' => $answer ]
 		];
-	
+	$ch = curl_init('https://graph.facebook.com/v2.6/me/messages?access_token='.$accessToken);
+	curl_setopt($ch, CURLOPT_POST, 1);
+	curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($response));
+	curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+	if(!empty($input)){
+		$result = curl_exec($ch);
+	}
 }
 if (stripos($command, 'konzultacije') === 0) {
 	preg_match($termRegex, $command, $termArray);
@@ -263,12 +276,12 @@ if (stripos($command, 'konzultacije') === 0) {
 			'message' => [ 'text' => $answer ]
 		];
 	}
+	$ch = curl_init('https://graph.facebook.com/v2.6/me/messages?access_token='.$accessToken);
+	curl_setopt($ch, CURLOPT_POST, 1);
+	curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($response));
+	curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+	if(!empty($input)){
+		$result = curl_exec($ch);
+	}
+	curl_close($ch);
 }
-$ch = curl_init('https://graph.facebook.com/v2.6/me/messages?access_token='.$accessToken);
-curl_setopt($ch, CURLOPT_POST, 1);
-curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($response));
-curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-if(!empty($input)){
-	$result = curl_exec($ch);
-}
-curl_close($ch);
