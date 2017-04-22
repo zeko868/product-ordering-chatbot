@@ -108,8 +108,8 @@ if(stripos($command, 'autentikacija') === 0){
 			'message' => [ 'text' => $answer ]
 		];
 }else{
-	$dbHandler = new mysqli('foi-konzultacije.info', 'admin', 'f1f2f3f4', 'konzultacije');
-	$dbHandler->set_charset("utf8");
+	//$dbHandler = new mysqli('foi-konzultacije.info', 'admin', 'f1f2f3f4', 'konzultacije');
+	//$dbHandler->set_charset("utf8");
 	$command = "SELECT count(*) FROM users WHERE id = ".$senderId.";";
 	$answer = $command;
 		$response = [
