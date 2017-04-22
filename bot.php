@@ -108,11 +108,15 @@ if(stripos($command, 'autentikacija') === 0){
 			'message' => [ 'text' => $answer ]
 		];
 }else{
-	/*$dbHandler = new mysqli('foi-konzultacije.info', 'admin', 'f1f2f3f4', 'konzultacije');
+	$dbHandler = new mysqli('foi-konzultacije.info', 'admin', 'f1f2f3f4', 'konzultacije');
 	$dbHandler->set_charset("utf8");
 	$command = "SELECT count(*) FROM users WHERE id = ".$senderId.";";
-
-	$resultSet = $dbHandler->query($command);*/
+	$answer = $command;
+		$response = [
+			'recipient' => [ 'id' => $senderId ],
+			'message' => [ 'text' => $answer ]
+		];
+	/*$resultSet = $dbHandler->query($command);*/
 	//intval($resultSet->fetch_assoc()['count(*)'])
 	if(1 === 1){
 		if (stripos($command, 'konzultacije') === 0) {
