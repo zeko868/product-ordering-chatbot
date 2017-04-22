@@ -58,8 +58,6 @@ $senderId = $input['entry'][0]['messaging'][0]['sender']['id'];
 $response = null;
 $command = "";
 
-
-	
 if (!empty($input['entry'][0]['messaging'])) { 
 
 	foreach ($input['entry'][0]['messaging'] as $message) { 
@@ -74,7 +72,7 @@ if (!empty($input['entry'][0]['messaging'])) {
         }
     }
 }
-//$command = "konzultacije marin mihajlovič";
+
 $command = preg_replace('/\s{2,}/', ' ', trim($command));	// brisanje viška razmaka ispred i iza naredbe te zamjena (najčešće slučajno napisanih) višestrukih razmaka s jednostrukim
 $croatianLowercase = [
 	'Č' => 'č',
@@ -101,22 +99,20 @@ $substitutes = [
 ];
 $dayNames = ['ponedjeljak', 'utorak', 'srijeda', 'četvrtak', 'petak', 'subota', 'nedjelja'];
 $termRegex = '/(-|(' .implode('|', $dayNames) . ') \d{2}:\d{2} - \d{2}:\d{2})$/u';
-if(stripos($command, 'autentikacija') === 0){
-	$answer = "Poterebna je autentikacija za rad u sustavu. Za autentikaciju pristupite linku: http://foi-konzultacije.info/prijava.php?senderid=".$senderId.". Nakon autentikacije upišite konzultacije [naziv_nastavnika [termin]]";
-		$response = [
-			'recipient' => [ 'id' => $senderId ],
-			'message' => [ 'text' => $answer ]
-		];
+if (preg_match('/^autenti(fi)?kacija /', $command) === true){
+	$answer = "Potrebna je autentikacija za rad u sustavu. Za autentikaciju pristupite linku: http://foi-konzultacije.info/prijava.php?senderid=".$senderId.". Nakon autentikacije upišite konzultacije [naziv_nastavnika [termin]]";
+	$response = [
+		'recipient' => [ 'id' => $senderId ],
+		'message' => [ 'text' => $answer ]
+	];
 }
-if (stripos($command, 'konzultacije') === 0) {
-	
+else if (stripos($command, 'konzultacije') === 0) {
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, "http://foi-konzultacije.info/curl.php?senderid=$senderId");
 	curl_setopt($ch, CURLOPT_HEADER, 0);
 	$output = curl_exec($ch);
 	curl_close($ch);
-	if(stripos($output[0], '1') === 0){
-		
+	if ($output) {
 		preg_match($termRegex, $command, $termArray);
 		if (empty($termArray)) {
 			$term = null;
