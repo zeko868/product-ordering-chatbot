@@ -35,8 +35,8 @@ function send_email_and_get_success_state($senderId, $senderName, $senderMail, $
 	$request = 'http://foi-konzultacije.info/sendmail.php?' . http_build_query($params);
 	$ch = curl_init($request);
 	curl_setopt($ch, CURLOPT_VERBOSE, true);	// za potrebe pregleda stanja izvođenja curl naredbe u error logu
-	if ($recipientMail=='zeko868@gmail.com' || // nije dozvoljena uporaba operatora identičnosti jer je $recipientMail tipa object, a ne string (zbog xml-a)
-		$recipientMail=='marin.mihajlovic1994@gmail.com' ||
+	if ($recipientMail=='petar.sestak3@foi.hr' || // nije dozvoljena uporaba operatora identičnosti jer je $recipientMail tipa object, a ne string (zbog xml-a)
+		$recipientMail=='marmihajl@foi.hr' ||
 		$recipientMail=='petloncar2@foi.hr' ||
 		$recipientMail=='tommarkul@foi.hr') {
 		$result = curl_exec($ch)=='true'?true:false;		// odkomentiranjem ove naredbe se šalju email poruke odabranom nastavniku
@@ -57,7 +57,7 @@ $input = json_decode(file_get_contents("php://input"), true, 512, JSON_BIGINT_AS
 $senderId = $input['entry'][0]['messaging'][0]['sender']['id'];
 $response = null;
 $command = "";
-
+/*
 if (!empty($input['entry'][0]['messaging'])) { 
 
 	foreach ($input['entry'][0]['messaging'] as $message) { 
@@ -71,7 +71,7 @@ if (!empty($input['entry'][0]['messaging'])) {
              $command = $message['postback']['payload'];
         }
     }
-}
+}*/ $command = "konzultacije marin mihajlovič";
 $command = preg_replace('/\s{2,}/', ' ', trim($command));	// brisanje viška razmaka ispred i iza naredbe te zamjena (najčešće slučajno napisanih) višestrukih razmaka s jednostrukim
 $croatianLowercase = [
 	'Č' => 'č',
@@ -85,12 +85,12 @@ $croatianLowercase = [
 	'-' => ' '
 ];
 $substitutes = [
-	'č' => ['c'],
-	'ć' => ['c'],
-	'đ' => ['dj', 'dz', 'd'],
-	'dž' => ['dj', 'dz', 'd'],
+	'č' => ['c', 'ć'],
+	'ć' => ['c', 'č'],
 	'š' => ['s'],
 	'ž' => ['z'],
+	'đ' => ['dj', 'dz', 'd', 'dž'],
+	'dž' => ['dj', 'dz', 'd', 'đ'],
 	'ä' => ['a', 'ae'],
 	'ö' => ['o', 'oe'],
 	'ü' => ['u', 'ue'],
@@ -99,7 +99,7 @@ $substitutes = [
 $dayNames = ['ponedjeljak', 'utorak', 'srijeda', 'četvrtak', 'petak', 'subota', 'nedjelja'];
 $termRegex = '/(-|(' .implode('|', $dayNames) . ') \d{2}:\d{2} - \d{2}:\d{2})$/u';
 if(stripos($command, 'autentikacija') === 0){
-	$answer = 'Poterebna je autentikacija za nastavak rada u aplikaciji. Za autentikaciju posjetite link: https://foi-konzultacije.info/prijava.php?senderid='.$senderId;
+	$answer = "Poterebna je autentikacija";
 		$response = [
 			'recipient' => [ 'id' => $senderId ],
 			'message' => [ 'text' => $answer ]
@@ -154,7 +154,7 @@ if (stripos($command, 'konzultacije') === 0) {
 			$suggestions = array();
 			foreach($xml->employee as $item) {
 				if (preg_match(get_regex_fullname_with_deviation("$item->firstname $item->lastname"), $prof)===1) {
-                                    
+                    
 					$button = array();
 
 					foreach($item->consultation->term as $i){
