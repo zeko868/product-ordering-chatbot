@@ -264,6 +264,12 @@ if (stripos($command, 'konzultacije') === 0) {
 				'message' => [ 'text' => $answer ]
 			];
 		}
+	}else{
+		$answer = "Niste se autenticirali za rad u sustavu. Za autentikaciju pristupite linku: http://foi-konzultacije.info/prijava.php?senderid=".$senderId.". Nakon autentikacije upišite konzultacije [naziv_nastavnika [termin]]";
+		$response = [
+			'recipient' => [ 'id' => $senderId ],
+			'message' => [ 'text' => $answer ]
+		];
 	}
 	
 	
