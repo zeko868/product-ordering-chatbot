@@ -57,6 +57,15 @@ $input = json_decode(file_get_contents("php://input"), true, 512, JSON_BIGINT_AS
 $senderId = $input['entry'][0]['messaging'][0]['sender']['id'];
 $response = null;
 $command = "";
+
+if(!empty($_GET)){
+	$senderId = $_GET['senderId'];
+	$answer = "Uspješno ste izvršili autentikaciju.";
+		$response = [
+			'recipient' => [ 'id' => $senderId ],
+			'message' => [ 'text' => $answer ]
+		];
+}
 /*
 if (!empty($input['entry'][0]['messaging'])) { 
 
