@@ -66,7 +66,7 @@ if(!empty($_GET)){
 			'message' => [ 'text' => $answer ]
 		];
 }
-/*
+
 if (!empty($input['entry'][0]['messaging'])) { 
 
 	foreach ($input['entry'][0]['messaging'] as $message) { 
@@ -80,7 +80,8 @@ if (!empty($input['entry'][0]['messaging'])) {
              $command = $message['postback']['payload'];
         }
     }
-}*/ $command = "konzultacije marin mihajlovič";
+}
+//$command = "konzultacije marin mihajlovič";
 $command = preg_replace('/\s{2,}/', ' ', trim($command));	// brisanje viška razmaka ispred i iza naredbe te zamjena (najčešće slučajno napisanih) višestrukih razmaka s jednostrukim
 $croatianLowercase = [
 	'Č' => 'č',
