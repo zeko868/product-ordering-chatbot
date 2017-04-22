@@ -1,10 +1,8 @@
 <?php
-$dbHandler = new mysqli('207.154.255.63', 'admin', 'f1f2f3f4', 'konzultacije');
-$dbHandler->set_charset("utf8");
-$command = "SELECT count(*) FROM users WHERE id = ".$_GET['senderid'].";";
-print_r($dbHandler);
-$resultSet = $dbHandler->query($command);
-
-if(intval($resultSet->fetch_assoc()['count(*)']) === 0){
-	
-}
+$senderId = $_GET['senderid'];
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, "http://foi-konzultacije.info/curl.php?senderid=$senderId");
+curl_setopt($ch, CURLOPT_HEADER, 0);
+$output = curl_exec($ch);
+curl_close($ch);
+echo $output;
