@@ -116,6 +116,7 @@ if(stripos($command, 'autentikacija') === 0){
 			'recipient' => [ 'id' => $senderId ],
 			'message' => [ 'text' => $answer ]
 		];
+		break;
 	/*$resultSet = $dbHandler->query($command);*/
 	//intval($resultSet->fetch_assoc()['count(*)'])
 	if(1 === 1){
