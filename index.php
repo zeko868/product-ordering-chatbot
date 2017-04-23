@@ -3,7 +3,7 @@ $vars="{ 'channels':
 	[ 'SMS' ], 
 	'destinations': 
 		[ 
-			{ 'phoneNumber': '0955541310' } 
+			{ 'phoneNumber': '385955541310' } 
 		], 
 	'sms': { 
 		'sender': 'smssender', 
@@ -17,7 +17,6 @@ curl_setopt($ch, CURLOPT_POSTFIELDS,$vars);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
 $headers = [
-	'Host: omni1.mobile-gw.com:9010',
 	'Authorization: Basic aGVsaXhuZWJ1bGE6K0t7YEc9LWNgNEJ0bjtVWA==',
 	'Content-Type: application/json',
 	'Accept: application/json'
