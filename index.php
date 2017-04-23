@@ -28,5 +28,5 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 //$server_output = curl_exec ($ch);
 
 curl_close ($ch);
-echo $ch;
+print_r($ch);
 //print  $server_output ;
