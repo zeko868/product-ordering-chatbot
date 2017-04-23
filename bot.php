@@ -108,11 +108,13 @@ if (preg_match('/^autenti(fi)?kacija /', $command) === true){
 }
 else if (stripos($command, 'konzultacije') === 0) {
 	$ch = curl_init();
-	curl_setopt($ch, CURLOPT_URL, "http://foi-konzultacije.info/curl.php?senderid=$senderId");
+	curl_setopt($ch, CURLOPT_URL, 'http://foi-konzultacije.info/curl.php?' . http_build_query(array('senderid' => $senderId)));
+	curl_setopt($ch, CURLOPT_HTTPGET, 1);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);	// bez ovoga se vraća true ako je dohvaćanje uspjela, a inače false - sada vraća dobavljenu vrijednost
 	curl_setopt($ch, CURLOPT_HEADER, 0);
 	$output = curl_exec($ch);
 	curl_close($ch);
-	if ($output) {
+	if ($output === '1') {
 		preg_match($termRegex, $command, $termArray);
 		if (empty($termArray)) {
 			$term = null;
