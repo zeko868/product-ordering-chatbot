@@ -252,8 +252,9 @@ else if (stripos($command, 'konzultacije') === 0) {
 								curl_setopt($ch, CURLOPT_HEADER, 0);
 								$output = curl_exec($ch);
 								curl_close($ch);
-								if (send_email_and_get_success_state($senderId, 'Neko ime i prezime', 'eadresa@korisnika', $item->contact->email, $term)) {
-									$answer = "Rezervirano: $origProfName $term. Javiti ćemo Vam profesorov odgovor.";
+								$u =(array)json_decode($output);
+								if (send_email_and_get_success_state($senderId, $u['fullName'], $u['email'], "marmihajl@foi.hr", "-")) {
+									$answer = "Vaš zahtjev za dodatnim terminom konzultacija je poslan nastavniku ime. Javiti ćemo Vam profesorov odgovor.";
 								} else {
 									$answer = "Pojavio se neuspjeh kod slanja e-mail poruke profesoru. Molimo Vas da pokušate kasnije.";
 								}
