@@ -236,7 +236,7 @@ else if (stripos($command, 'konzultacije') === 0) {
 							$output = curl_exec($ch);
 							curl_close($ch);
 							$o = json_decode($output);
-							if (send_email_and_get_success_state($senderId, "$o->fullName", "$o->email", $item->contact->email, $term)) {
+							if (send_email_and_get_success_state($senderId, $o->fullName, $o->email, $item->contact->email, $term)) {
 								$answer = "Vaš zahtjev za dodatnim terminom konzultacija je poslan nastavniku $origProfName. Javiti ćemo Vam profesorov odgovor.";
 							} else {
 								$answer = "Pojavio se neuspjeh kod slanja e-mail poruke profesoru. Molimo Vas da pokušate kasnije.";
