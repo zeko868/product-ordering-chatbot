@@ -32,7 +32,7 @@ function send_email_and_get_success_state($senderId, $senderName, $senderMail, $
 	if ($term !== '-') {
 		$params['termin'] = $term;
 	}
-	$request = 'http://foi-konzultacije.info/sendmail.php?' . http_build_query($params);
+	$request = 'http://foi-konzultacije.info/sendmail.php?student_id=' . $senderId. '&student_naziv='.$senderName. '&student_email='.$senderMail.'&nastavnik_email='.(string)$recipientMail;
 	$ch = curl_init($request);
 	curl_setopt($ch, CURLOPT_VERBOSE, true);	// za potrebe pregleda stanja izvođenja curl naredbe u error logu
 	if ($recipientMail=='petar.sestak3@foi.hr' || // nije dozvoljena uporaba operatora identičnosti jer je $recipientMail tipa object, a ne string (zbog xml-a)
