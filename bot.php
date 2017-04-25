@@ -234,7 +234,6 @@ else if (stripos($command, 'konzultacije') === 0) {
 							curl_setopt($ch, CURLOPT_URL, 'http://foi-konzultacije.info/dohvati_ime.php?' . http_build_query(array('senderid' => $senderId)));
 							curl_setopt($ch, CURLOPT_HTTPGET, 1);
 							curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-							curl_setopt($ch, CURLOPT_VERBOSE, true);	// za potrebe pregleda stanja izvođenja curl naredbe u error logu
 							curl_setopt($ch, CURLOPT_HEADER, 0);
 							$output = curl_exec($ch);
 							curl_close($ch);
@@ -253,7 +252,6 @@ else if (stripos($command, 'konzultacije') === 0) {
 								curl_setopt($ch, CURLOPT_URL, 'http://foi-konzultacije.info/dohvati_ime.php?' . http_build_query(array('senderid' => $senderId)));
 								curl_setopt($ch, CURLOPT_HTTPGET, 1);
 								curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);	
-								curl_setopt($ch, CURLOPT_VERBOSE, true);	// za potrebe pregleda stanja izvođenja curl naredbe u error logu
 								curl_setopt($ch, CURLOPT_HEADER, 0);
 								$output = curl_exec($ch);
 								curl_close($ch);
