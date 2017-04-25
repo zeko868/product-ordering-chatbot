@@ -23,11 +23,12 @@ function localized_strtolower($str) {
 }
 
 function send_email_and_get_success_state($senderId, $senderName, $senderMail, $recipientMail, $term) {
+	$recipientMail = (string) $recipientMail;
 	$params = array(
 		'student_id' => $senderId,
 		'student_naziv' => $senderName,
 		'student_email' => $senderMail,
-		'nastavnik_email' => (string) $recipientMail 	// ovo je xml object pa ga treba castati - inace se uzrokuje da elementu s kljucem 'nastavnik_email' bude dodijeljeno polje, a ne vrijednost (string)
+		'nastavnik_email' => $recipientMail 	// ovo je xml object pa ga treba castati - inace se uzrokuje da elementu s kljucem 'nastavnik_email' bude dodijeljeno polje, a ne vrijednost (string)
 	);
 	if ($term !== '-') {
 		$params['termin'] = $term;
@@ -35,11 +36,11 @@ function send_email_and_get_success_state($senderId, $senderName, $senderMail, $
 	$request = 'http://foi-konzultacije.info/sendmail.php?' . http_build_query($params);
 	$ch = curl_init($request);
 	curl_setopt($ch, CURLOPT_VERBOSE, true);	// za potrebe pregleda stanja izvođenja curl naredbe u error logu
-	if ($recipientMail=='petar.sestak3@foi.hr' || // nije dozvoljena uporaba operatora identičnosti jer je $recipientMail tipa object, a ne string (zbog xml-a)
-		$recipientMail=='marmihajl@foi.hr' ||
-		$recipientMail=='petloncar2@foi.hr' ||
-		$recipientMail=='tommarkul@foi.hr') {
-		$result = curl_exec($ch)=='true'?true:false;		// odkomentiranjem ove naredbe se šalju email poruke odabranom nastavniku
+	if ($recipientMail==='petsestak3@foi.hr' || // nije dozvoljena uporaba operatora identičnosti jer je $recipientMail tipa object, a ne string (zbog xml-a)
+		$recipientMail==='marmihajl@foi.hr' ||
+		$recipientMail==='petloncar2@foi.hr' ||
+		$recipientMail==='tommarkul@foi.hr') {
+		$result = curl_exec($ch)==='true'?true:false;		// odkomentiranjem ove naredbe se šalju email poruke odabranom nastavniku
 	}
 	else {
 		$result = true;
@@ -71,7 +72,7 @@ if (!empty($input['entry'][0]['messaging'])) {
              $command = $message['postback']['payload'];
         }
     }
-}
+}	/* 	$command = 'konzultacije Petar Šestak -'; $senderId = '1532028376807777';	//for debugging purposes */
 
 $command = preg_replace('/\s{2,}/', ' ', trim($command));	// brisanje viška razmaka ispred i iza naredbe te zamjena (najčešće slučajno napisanih) višestrukih razmaka s jednostrukim
 $croatianLowercase = [
@@ -229,7 +230,7 @@ else if (stripos($command, 'konzultacije') === 0) {
 					if ("$item->firstname $item->lastname" === $origProfName) {
 						if ($term === '-') {
 							$ch = curl_init();
-							curl_setopt($ch, CURLOPT_URL, 'http://foi-konzultacije.info/dohvati_ime.php?id=' . http_build_query(array('senderid' => $senderId)));
+							curl_setopt($ch, CURLOPT_URL, 'http://foi-konzultacije.info/dohvati_ime.php?' . http_build_query(array('senderid' => $senderId)));
 							curl_setopt($ch, CURLOPT_HTTPGET, 1);
 							curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);	
 							curl_setopt($ch, CURLOPT_HEADER, 0);
@@ -237,7 +238,8 @@ else if (stripos($command, 'konzultacije') === 0) {
 							curl_close($ch);
 							$o = json_decode($output);
 							$name = $o->fullName;
-							if (send_email_and_get_success_state($senderId, $name, 'eadresa@korisnika', $item->contact->email, $term)) {
+							$email = $o->email;
+							if (send_email_and_get_success_state($senderId, $name, $email, $item->contact->email, $term)) {
 								$answer = "Vaš zahtjev za dodatnim terminom konzultacija je poslan nastavniku $origProfName. Javiti ćemo Vam profesorov odgovor.";
 							} else {
 								$answer = "Pojavio se neuspjeh kod slanja e-mail poruke profesoru. Molimo Vas da pokušate kasnije.";
@@ -252,8 +254,10 @@ else if (stripos($command, 'konzultacije') === 0) {
 								curl_setopt($ch, CURLOPT_HEADER, 0);
 								$output = curl_exec($ch);
 								curl_close($ch);
-								$u =(array)json_decode($output);
-								if (send_email_and_get_success_state($senderId, $u['fullName'], $u['email'], "marmihajl@foi.hr", "-")) {
+								$o = json_decode($output);
+								$name = $o->fullName;
+								$email = $o->email;
+								if (send_email_and_get_success_state($senderId, $name, $email, "marmihajl@foi.hr", "-")) {
 									$answer = "Vaš zahtjev za dodatnim terminom konzultacija je poslan nastavniku ime. Javiti ćemo Vam profesorov odgovor.";
 								} else {
 									$answer = "Pojavio se neuspjeh kod slanja e-mail poruke profesoru. Molimo Vas da pokušate kasnije.";
