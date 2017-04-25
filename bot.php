@@ -35,6 +35,7 @@ function send_email_and_get_success_state($senderId, $senderName, $senderMail, $
 	}
 	$request = 'http://foi-konzultacije.info/sendmail.php?' . http_build_query($params);
 	$ch = curl_init($request);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 	curl_setopt($ch, CURLOPT_VERBOSE, true);	// za potrebe pregleda stanja izvođenja curl naredbe u error logu
 	if ($recipientMail==='petsestak3@foi.hr' || // nije dozvoljena uporaba operatora identičnosti jer je $recipientMail tipa object, a ne string (zbog xml-a)
 		$recipientMail==='marmihajl@foi.hr' ||
@@ -72,7 +73,7 @@ if (!empty($input['entry'][0]['messaging'])) {
              $command = $message['postback']['payload'];
         }
     }
-}	/* 	$command = 'konzultacije Petar Šestak -'; $senderId = '1532028376807777';	//for debugging purposes */
+}/*	 	$command = 'konzultacije Petar Šestak -'; $senderId = '1532028376807777';	//for debugging purposes */
 
 $command = preg_replace('/\s{2,}/', ' ', trim($command));	// brisanje viška razmaka ispred i iza naredbe te zamjena (najčešće slučajno napisanih) višestrukih razmaka s jednostrukim
 $croatianLowercase = [
@@ -257,7 +258,7 @@ else if (stripos($command, 'konzultacije') === 0) {
 								$o = json_decode($output);
 								$name = $o->fullName;
 								$email = $o->email;
-								if (send_email_and_get_success_state($senderId, $name, $email, "marmihajl@foi.hr", "-")) {
+								if (send_email_and_get_success_state($senderId, $name, $email, $item->contact->email, "-")) {
 									$answer = "Vaš zahtjev za dodatnim terminom konzultacija je poslan nastavniku ime. Javiti ćemo Vam profesorov odgovor.";
 								} else {
 									$answer = "Pojavio se neuspjeh kod slanja e-mail poruke profesoru. Molimo Vas da pokušate kasnije.";
