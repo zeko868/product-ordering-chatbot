@@ -41,10 +41,10 @@ function send_email_and_get_success_state($senderId, $senderName, $senderMail, $
 		$recipientMail==='marmihajl@foi.hr' ||
 		$recipientMail==='petloncar2@foi.hr' ||
 		$recipientMail==='tommarkul@foi.hr') {
-		$result = curl_exec($ch)==='true'?true:false;		// odkomentiranjem ove naredbe se šalju email poruke odabranom nastavniku
+		$result = curl_exec($ch);
 	}
 	else {
-		$result = true;
+		$result = 'true';
 	}
 	curl_close($ch);
 	return $result;
@@ -240,10 +240,16 @@ else if (stripos($command, 'konzultacije') === 0) {
 							$o = json_decode($output);
 							$name = $o->fullName;
 							$email = $o->email;
-							if (send_email_and_get_success_state($senderId, $name, $email, $item->contact->email, $term)) {
-								$answer = "Vaš zahtjev za dodatnim terminom konzultacija je poslan nastavniku $origProfName. Javiti ćemo Vam profesorov odgovor.";
-							} else {
-								$answer = "Pojavio se neuspjeh kod slanja e-mail poruke profesoru. Molimo Vas da pokušate kasnije.";
+							switch (send_email_and_get_success_state($senderId, $name, $email, $item->contact->email, '-')) {
+								case 'true':
+									$answer = "Vaš zahtjev za dodatnim terminom konzultacija je poslan nastavniku $origProfName. Javiti ćemo Vam profesorov odgovor.";
+									break;
+								case 'false':
+									$answer = 'Pojavio se neuspjeh kod slanja e-mail poruke profesoru. Molimo Vas da pokušate kasnije.';
+									break;
+								case 'wait':
+									$answer = 'Već ste poslali zahtjev za dodatnim terminom konzultacija te je sada na nastavniku da ga obradi. Bez brige, bit ćete na vrijeme kontaktirani';
+									break;
 							}
 						}
 						foreach($item->consultation->term as $i){
@@ -258,10 +264,16 @@ else if (stripos($command, 'konzultacije') === 0) {
 								$o = json_decode($output);
 								$name = $o->fullName;
 								$email = $o->email;
-								if (send_email_and_get_success_state($senderId, $name, $email, $item->contact->email, "-")) {
-									$answer = "Vaš zahtjev za dodatnim terminom konzultacija je poslan nastavniku ime. Javiti ćemo Vam profesorov odgovor.";
-								} else {
-									$answer = "Pojavio se neuspjeh kod slanja e-mail poruke profesoru. Molimo Vas da pokušate kasnije.";
+								switch (send_email_and_get_success_state($senderId, $name, $email, $item->contact->email, $term)) {
+									case 'true':
+										$answer = "Vaš zahtjev za rezervacijom konzultacija je uspješno poslan nastavniku $origProfName. Javiti ćemo Vam profesorov odgovor.";
+										break;
+									case 'false':
+										$answer = 'Pojavio se neuspjeh kod slanja e-mail poruke profesoru. Molimo Vas da pokušate kasnije.';
+										break;
+									case 'wait':
+										$answer = 'Već ste prethodno poslali zahtjev za rezervacijom konzultacija te je sada na nastavniku da ga obradi. Bez brige, bit ćete na vrijeme kontaktirani';
+										break;
 								}
 								break;
 							}
