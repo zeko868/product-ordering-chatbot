@@ -264,8 +264,6 @@ else if (stripos($command, 'konzultacije') === 0) {
 								$o = json_decode($output);
 								$name = $o->fullName;
 								$email = $o->email;
-								$dayName = substr($term, 0, strpos($term, ' '));
-								$term = substr_replace($term, array_search($dayName, $dayNames)+1, 0, strlen($dayName));
 								switch (send_email_and_get_success_state($senderId, $name, $email, $item->contact->email, $term)) {
 									case 'true':
 										$answer = "Vaš zahtjev za rezervacijom konzultacija je uspješno poslan nastavniku $origProfName. Javiti ćemo Vam profesorov odgovor.";
