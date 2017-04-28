@@ -54,266 +54,257 @@ function send_email_and_get_success_state($senderId, $senderName, $senderMail, $
 $hubVerifyToken = 'bot';
 $accessToken = 'EAACN8hwDY8QBAEcLkz9b9FZB2QXVgr92ZBduX8cEU1rfZBR7kOtzurRUtiWkZCan496HmhLyiWLnk86RAKsfMSiYKxZBdnIC6KftcZBy7EODHgPBERWpjFZCgqvPYWGUQyutGc76VccANwiCvrPxa9BCO7f3jnbTs2jXjZCzXk06OgZDZD';
 
-if(!empty($_GET)){
-	// handle bot's anwser
-	$input = json_decode(file_get_contents("php://input"), true, 512, JSON_BIGINT_AS_STRING);
-	$senderId = $input['entry'][0]['messaging'][0]['sender']['id'];
-	$response = null;
-	$command = "";
+// handle bot's anwser
+$input = json_decode(file_get_contents("php://input"), true, 512, JSON_BIGINT_AS_STRING);
+$senderId = $input['entry'][0]['messaging'][0]['sender']['id'];
+$response = null;
+$command = "";
 
-	if (!empty($input['entry'][0]['messaging'])) { 
+if (!empty($input['entry'][0]['messaging'])) { 
 
-		foreach ($input['entry'][0]['messaging'] as $message) { 
+	foreach ($input['entry'][0]['messaging'] as $message) { 
 
-			// When bot receive message from user
-			if (!empty($message['message'])) {
-				 $command = $message['message']['text'];           
-			}
-			 // When bot receive button click from user
-			 else if (!empty($message['postback'])) {
-				 $command = $message['postback']['payload'];
-			}
+        // When bot receive message from user
+        if (!empty($message['message'])) {
+             $command = $message['message']['text'];           
+        }
+         // When bot receive button click from user
+         else if (!empty($message['postback'])) {
+             $command = $message['postback']['payload'];
+        }
+    }
+}/*	 	$command = 'konzultacije Petar Šestak -'; $senderId = '1532028376807777';	//for debugging purposes */
+
+$command = preg_replace('/\s{2,}/', ' ', trim($command));	// brisanje viška razmaka ispred i iza naredbe te zamjena (najčešće slučajno napisanih) višestrukih razmaka s jednostrukim
+$croatianLowercase = [
+	'Č' => 'č',
+	'Ć' => 'ć',
+	'Đ' => 'đ',
+	'Š' => 'š',
+	'Ž' => 'ž',
+	'Ä' => 'ä',
+	'Ö' => 'ö',
+	'Ü' => 'ü',
+	'-' => ' '
+];
+$substitutes = [
+	'č' => ['c', 'ć'],
+	'ć' => ['c', 'č'],
+	'š' => ['s'],
+	'ž' => ['z'],
+	'đ' => ['dj', 'dz', 'd', 'dž'],
+	'dž' => ['dj', 'dz', 'd', 'đ'],
+	'ä' => ['a', 'ae'],
+	'ö' => ['o', 'oe'],
+	'ü' => ['u', 'ue'],
+	'ß' => ['ss', 's']
+];
+$dayNames = ['ponedjeljak', 'utorak', 'srijeda', 'četvrtak', 'petak', 'subota', 'nedjelja'];
+$termRegex = '/(-|(' .implode('|', $dayNames) . ') \d{2}:\d{2} - \d{2}:\d{2})$/u';
+if (preg_match('/^autenti(fi)?kacija$/', $command) === 1){
+	$answer = "Potrebna je autentikacija za rad u sustavu. Za autentikaciju pristupite linku: http://foi-konzultacije.info/student/prijava.php?senderid=".$senderId.". Nakon autentikacije upišite konzultacije [naziv_nastavnika [termin]]";
+	$response = [
+		'recipient' => [ 'id' => $senderId ],
+		'message' => [ 'text' => $answer ]
+	];
+}
+else if (stripos($command, 'konzultacije') === 0) {
+	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_URL, 'http://foi-konzultacije.info/curl.php?' . http_build_query(array('senderid' => $senderId)));
+	curl_setopt($ch, CURLOPT_HTTPGET, 1);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);	// bez ovoga se vraća true ako je dohvaćanje uspjela, a inače false - sada vraća dobavljenu vrijednost
+	curl_setopt($ch, CURLOPT_HEADER, 0);
+	$output = curl_exec($ch);
+	curl_close($ch);
+	if ($output === '1') {
+		preg_match($termRegex, $command, $termArray);
+		if (empty($termArray)) {
+			$term = null;
 		}
-	}/*	 	$command = 'konzultacije Petar Šestak -'; $senderId = '1532028376807777';	//for debugging purposes */
+		else {
+			$term = $termArray[0];
+		}
 
-	$command = preg_replace('/\s{2,}/', ' ', trim($command));	// brisanje viška razmaka ispred i iza naredbe te zamjena (najčešće slučajno napisanih) višestrukih razmaka s jednostrukim
-	$croatianLowercase = [
-		'Č' => 'č',
-		'Ć' => 'ć',
-		'Đ' => 'đ',
-		'Š' => 'š',
-		'Ž' => 'ž',
-		'Ä' => 'ä',
-		'Ö' => 'ö',
-		'Ü' => 'ü',
-		'-' => ' '
-	];
-	$substitutes = [
-		'č' => ['c', 'ć'],
-		'ć' => ['c', 'č'],
-		'š' => ['s'],
-		'ž' => ['z'],
-		'đ' => ['dj', 'dz', 'd', 'dž'],
-		'dž' => ['dj', 'dz', 'd', 'đ'],
-		'ä' => ['a', 'ae'],
-		'ö' => ['o', 'oe'],
-		'ü' => ['u', 'ue'],
-		'ß' => ['ss', 's']
-	];
-	$dayNames = ['ponedjeljak', 'utorak', 'srijeda', 'četvrtak', 'petak', 'subota', 'nedjelja'];
-	$termRegex = '/(-|(' .implode('|', $dayNames) . ') \d{2}:\d{2} - \d{2}:\d{2})$/u';
-	if (preg_match('/^autenti(fi)?kacija$/', $command) === 1){
-		$answer = "Potrebna je autentikacija za rad u sustavu. Za autentikaciju pristupite linku: http://foi-konzultacije.info/student/prijava.php?senderid=".$senderId.". Nakon autentikacije upišite konzultacije [naziv_nastavnika [termin]]";
-		$response = [
-			'recipient' => [ 'id' => $senderId ],
-			'message' => [ 'text' => $answer ]
-		];
-	}
-	else if (stripos($command, 'konzultacije') === 0) {
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, 'http://foi-konzultacije.info/curl.php?' . http_build_query(array('senderid' => $senderId)));
-		curl_setopt($ch, CURLOPT_HTTPGET, 1);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);	// bez ovoga se vraća true ako je dohvaćanje uspjela, a inače false - sada vraća dobavljenu vrijednost
-		curl_setopt($ch, CURLOPT_HEADER, 0);
-		$output = curl_exec($ch);
-		curl_close($ch);
-		if ($output === '1') {
-			preg_match($termRegex, $command, $termArray);
-			if (empty($termArray)) {
-				$term = null;
-			}
-			else {
-				$term = $termArray[0];
-			}
+		$prof = null;
+		if ($term === null) {
+			$origProfName = substr($command, strlen("konzultacije "));
+		}
+		else {
+			$termPosition = strpos($command, $term);
+			$origProfName = substr($command, strlen("konzultacije "), $termPosition-1-strlen("konzultacije "));
+		}
+		$prof = localized_strtolower($origProfName);
+		$xml = simplexml_load_file('informacije.xml');
 
-			$prof = null;
-			if ($term === null) {
-				$origProfName = substr($command, strlen("konzultacije "));
-			}
-			else {
-				$termPosition = strpos($command, $term);
-				$origProfName = substr($command, strlen("konzultacije "), $termPosition-1-strlen("konzultacije "));
-			}
-			$prof = localized_strtolower($origProfName);
-			$xml = simplexml_load_file('informacije.xml');
-
-			if ($prof === null) {
-				$button = array();
-				$i = 0;
-				foreach($xml->employee as $item) {
-					if ($i === 3) {
-						break;
-					}
-					array_push($button, array('type'=>'postback', 'title'=>"$item->firstname $item->lastname", 'payload' => "konzultacije $item->firstname $item->lastname"));
-					$i++;
+		if ($prof === null) {
+			$button = array();
+			$i = 0;
+			foreach($xml->employee as $item) {
+				if ($i === 3) {
+					break;
 				}
-				$answer = [
-					'type'=>'template',
-					'payload'=>[
-						'template_type'=>'button',
-						'text'=>'Kod kojeg profesora želite rezervirati konzultacije?',
-						'buttons'=> $button
-					]
-				];
-				$response = [
-					'recipient' => [ 'id' => $senderId ],
-					'message' => [ 'attachment' => $answer ]
-				];
+				array_push($button, array('type'=>'postback', 'title'=>"$item->firstname $item->lastname", 'payload' => "konzultacije $item->firstname $item->lastname"));
+				$i++;
+			}
+			$answer = [
+				'type'=>'template',
+				'payload'=>[
+					'template_type'=>'button',
+					'text'=>'Kod kojeg profesora želite rezervirati konzultacije?',
+					'buttons'=> $button
+				]
+			];
+			$response = [
+				'recipient' => [ 'id' => $senderId ],
+				'message' => [ 'attachment' => $answer ]
+			];
 
-			} else {
-				if ($term === null) {
-					$suggestions = array();
-					foreach($xml->employee as $item) {
-						if (preg_match(get_regex_fullname_with_deviation("$item->firstname $item->lastname"), $prof)===1) {
-							
-							$button = array();
+		} else {
+			if ($term === null) {
+				$suggestions = array();
+				foreach($xml->employee as $item) {
+					if (preg_match(get_regex_fullname_with_deviation("$item->firstname $item->lastname"), $prof)===1) {
+						
+						$button = array();
 
-							foreach($item->consultation->term as $i){
-								//$i->day.' '.$i->time_from.' '.$i->time_to
-								if($i->day == 'utorak')
-									array_push($button, array('type'=>'postback', 'title'=>substr($i->day, 0, 2).' '.$i->time_from.' - '.$i->time_to, 'payload' => "konzultacije $item->firstname $item->lastname $i->day $i->time_from - $i->time_to"));
-								else if ($i->day != '')
-									array_push($button, array('type'=>'postback', 'title'=>substr($i->day, 0, 3).' '.$i->time_from.' - '.$i->time_to, 'payload' => "konzultacije $item->firstname $item->lastname $i->day $i->time_from - $i->time_to"));
-								else
-									continue;
-							}
-							array_push($button, array('type'=>'postback', 'title'=>'-', 'payload' => "konzultacije $item->firstname $item->lastname -"));
-
-							$answer = [
-								'type'=>'template',
-								'payload'=>[
-									'template_type'=>'button',
-									'text'=>'U kojem od navedenih termina želite rezervirati konzultacije?',
-									'buttons'=> $button
-								]
-							];
-							$response = [
-								'recipient' => [ 'id' => $senderId ],
-								'message' => [ 'attachment' => $answer ]
-							];
-
-							$suggestions["$item->firstname $item->lastname"] = $response;
+						foreach($item->consultation->term as $i){
+							//$i->day.' '.$i->time_from.' '.$i->time_to
+							if($i->day == 'utorak')
+								array_push($button, array('type'=>'postback', 'title'=>substr($i->day, 0, 2).' '.$i->time_from.' - '.$i->time_to, 'payload' => "konzultacije $item->firstname $item->lastname $i->day $i->time_from - $i->time_to"));
+							else if ($i->day != '')
+								array_push($button, array('type'=>'postback', 'title'=>substr($i->day, 0, 3).' '.$i->time_from.' - '.$i->time_to, 'payload' => "konzultacije $item->firstname $item->lastname $i->day $i->time_from - $i->time_to"));
+							else
+								continue;
 						}
+						array_push($button, array('type'=>'postback', 'title'=>'-', 'payload' => "konzultacije $item->firstname $item->lastname -"));
+
+						$answer = [
+							'type'=>'template',
+							'payload'=>[
+								'template_type'=>'button',
+								'text'=>'U kojem od navedenih termina želite rezervirati konzultacije?',
+								'buttons'=> $button
+							]
+						];
+						$response = [
+							'recipient' => [ 'id' => $senderId ],
+							'message' => [ 'attachment' => $answer ]
+						];
+
+						$suggestions["$item->firstname $item->lastname"] = $response;
 					}
-					switch (count($suggestions)) {
-						case 0:
-							$answer = 'Ne postoji nastavnik u bazi podataka s navedenim imenom';
-							$response = [
-								'recipient' => [ 'id' => $senderId ],
-								'message' => [ 'text' => $answer ]
-							];
-							break;
-						case 1:
-							$response = array_values($suggestions)[0];
-							break;
-						default:
-							$button = array();
-							$suggestions = array_keys($suggestions);
-							for($i=0;$i<=count($suggestions);$i++){
-								array_push($button, array('type'=>'postback', 'title'=>$suggestions[$i], 'payload' => "konzultacije $suggestions[$i]"));
+				}
+				switch (count($suggestions)) {
+					case 0:
+						$answer = 'Ne postoji nastavnik u bazi podataka s navedenim imenom';
+						$response = [
+							'recipient' => [ 'id' => $senderId ],
+							'message' => [ 'text' => $answer ]
+						];
+						break;
+					case 1:
+						$response = array_values($suggestions)[0];
+						break;
+					default:
+						$button = array();
+						$suggestions = array_keys($suggestions);
+						for($i=0;$i<=count($suggestions);$i++){
+							array_push($button, array('type'=>'postback', 'title'=>$suggestions[$i], 'payload' => "konzultacije $suggestions[$i]"));
+						}
+											
+						$answer = [
+							'type'=>'template',
+							'payload'=>[
+								'template_type'=>'button',
+								'text'=>'Neuspjeh kod prepoznavanja. Kod kojeg profesora želite rezervirati konzultacije?',
+								'buttons'=> $button
+							]
+						];
+						$response = [
+							'recipient' => [ 'id' => $senderId ],
+							'message' => [ 'attachment' => $answer ]
+						];
+						break;
+				}
+			} else {
+				foreach($xml->employee as $item) {
+					if ("$item->firstname $item->lastname" === $origProfName) {
+						if ($term === '-') {
+							$ch = curl_init();
+							curl_setopt($ch, CURLOPT_URL, 'http://foi-konzultacije.info/dohvati_ime.php?' . http_build_query(array('senderid' => $senderId)));
+							curl_setopt($ch, CURLOPT_HTTPGET, 1);
+							curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+							curl_setopt($ch, CURLOPT_HEADER, 0);
+							$output = curl_exec($ch);
+							curl_close($ch);
+							$o = json_decode($output);
+							$name = $o->fullName;
+							$email = $o->email;
+							switch (send_email_and_get_success_state($senderId, $name, $email, $item->contact->email, '-')) {
+								case 'true':
+									$answer = "Vaš zahtjev za dodatnim terminom konzultacija je poslan nastavniku $origProfName. Javiti ćemo Vam profesorov odgovor.";
+									break;
+								case 'false':
+									$answer = 'Pojavio se neuspjeh kod slanja e-mail poruke profesoru. Molimo Vas da pokušate kasnije.';
+									break;
+								case 'wait':
+									$answer = 'Već ste poslali zahtjev za dodatnim terminom konzultacija te je sada na nastavniku da ga obradi. Bez brige, bit ćete na vrijeme kontaktirani';
+									break;
 							}
-												
-							$answer = [
-								'type'=>'template',
-								'payload'=>[
-									'template_type'=>'button',
-									'text'=>'Neuspjeh kod prepoznavanja. Kod kojeg profesora želite rezervirati konzultacije?',
-									'buttons'=> $button
-								]
-							];
-							$response = [
-								'recipient' => [ 'id' => $senderId ],
-								'message' => [ 'attachment' => $answer ]
-							];
-							break;
-					}
-				} else {
-					foreach($xml->employee as $item) {
-						if ("$item->firstname $item->lastname" === $origProfName) {
-							if ($term === '-') {
+						}
+						foreach($item->consultation->term as $i){
+							if ($term === "$i->day $i->time_from - $i->time_to") {
 								$ch = curl_init();
 								curl_setopt($ch, CURLOPT_URL, 'http://foi-konzultacije.info/dohvati_ime.php?' . http_build_query(array('senderid' => $senderId)));
 								curl_setopt($ch, CURLOPT_HTTPGET, 1);
-								curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+								curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);	
 								curl_setopt($ch, CURLOPT_HEADER, 0);
 								$output = curl_exec($ch);
 								curl_close($ch);
 								$o = json_decode($output);
 								$name = $o->fullName;
 								$email = $o->email;
-								switch (send_email_and_get_success_state($senderId, $name, $email, $item->contact->email, '-')) {
+								switch (send_email_and_get_success_state($senderId, $name, $email, $item->contact->email, $term)) {
 									case 'true':
-										$answer = "Vaš zahtjev za dodatnim terminom konzultacija je poslan nastavniku $origProfName. Javiti ćemo Vam profesorov odgovor.";
+										$answer = "Vaš zahtjev za rezervacijom konzultacija je uspješno poslan nastavniku $origProfName. Javiti ćemo Vam profesorov odgovor.";
 										break;
 									case 'false':
 										$answer = 'Pojavio se neuspjeh kod slanja e-mail poruke profesoru. Molimo Vas da pokušate kasnije.';
 										break;
 									case 'wait':
-										$answer = 'Već ste poslali zahtjev za dodatnim terminom konzultacija te je sada na nastavniku da ga obradi. Bez brige, bit ćete na vrijeme kontaktirani';
+										$answer = 'Već ste prethodno poslali zahtjev za rezervacijom konzultacija te je sada na nastavniku da ga obradi. Bez brige, bit ćete na vrijeme kontaktirani';
 										break;
 								}
+								break;
 							}
-							foreach($item->consultation->term as $i){
-								if ($term === "$i->day $i->time_from - $i->time_to") {
-									$ch = curl_init();
-									curl_setopt($ch, CURLOPT_URL, 'http://foi-konzultacije.info/dohvati_ime.php?' . http_build_query(array('senderid' => $senderId)));
-									curl_setopt($ch, CURLOPT_HTTPGET, 1);
-									curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);	
-									curl_setopt($ch, CURLOPT_HEADER, 0);
-									$output = curl_exec($ch);
-									curl_close($ch);
-									$o = json_decode($output);
-									$name = $o->fullName;
-									$email = $o->email;
-									switch (send_email_and_get_success_state($senderId, $name, $email, $item->contact->email, $term)) {
-										case 'true':
-											$answer = "Vaš zahtjev za rezervacijom konzultacija je uspješno poslan nastavniku $origProfName. Javiti ćemo Vam profesorov odgovor.";
-											break;
-										case 'false':
-											$answer = 'Pojavio se neuspjeh kod slanja e-mail poruke profesoru. Molimo Vas da pokušate kasnije.';
-											break;
-										case 'wait':
-											$answer = 'Već ste prethodno poslali zahtjev za rezervacijom konzultacija te je sada na nastavniku da ga obradi. Bez brige, bit ćete na vrijeme kontaktirani';
-											break;
-									}
-									break;
-								}
-							}
-							$response = [
-								'recipient' => [ 'id' => $senderId ],
-								'message' => [ 'text' => $answer ]
-							];
-
-							break;
 						}
+						$response = [
+							'recipient' => [ 'id' => $senderId ],
+							'message' => [ 'text' => $answer ]
+						];
+
+						break;
 					}
 				}
 			}
+		}
 
-			if ($response === null) {
-				$answer = "Pojavila se pogreška kod pokušaja izvršavanja Vaše naredbe. Ispravan format naredbe je sljedeći: konzultacije [naziv_nastavnika [termin]]";
-				$response = [
-					'recipient' => [ 'id' => $senderId ],
-					'message' => [ 'text' => $answer ]
-				];
-			}
-		}else{
-			$answer = "Niste se autenticirali za rad u sustavu. Za autentikaciju pristupite linku: http://foi-konzultacije.info/student/prijava.php?senderid=".$senderId.". Nakon autentikacije upišite konzultacije [naziv_nastavnika [termin]]";
+		if ($response === null) {
+			$answer = "Pojavila se pogreška kod pokušaja izvršavanja Vaše naredbe. Ispravan format naredbe je sljedeći: konzultacije [naziv_nastavnika [termin]]";
 			$response = [
 				'recipient' => [ 'id' => $senderId ],
 				'message' => [ 'text' => $answer ]
 			];
 		}
-		
-		
+	}else{
+		$answer = "Niste se autenticirali za rad u sustavu. Za autentikaciju pristupite linku: http://foi-konzultacije.info/student/prijava.php?senderid=".$senderId.". Nakon autentikacije upišite konzultacije [naziv_nastavnika [termin]]";
+		$response = [
+			'recipient' => [ 'id' => $senderId ],
+			'message' => [ 'text' => $answer ]
+		];
 	}
-}else{
-	$answer = $_GET['tekst'];
-	$senderId = $_GET['id'];
-	$response = [
-		'recipient' => [ 'id' => $senderId ],
-		'message' => [ 'text' => $answer ]
-	];
+	
+	
 }
 
 
