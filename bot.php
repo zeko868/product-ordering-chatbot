@@ -112,6 +112,13 @@ else if(stripos($command, 'odbijam') === 0){
 	$origProfName = substr($command, strlen("konzultacije "));
 	
 }
+else if(stripos($command, 'prihvacam') === 0){
+	$answer = "Uspješno ste dogovorili konzultacije u dodatnom terminu.";
+	$response = [
+		'recipient' => [ 'id' => $senderId ],
+		'message' => [ 'text' => $answer ]
+	];
+}
 else if (stripos($command, 'konzultacije') === 0) {
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, 'http://foi-konzultacije.info/curl.php?' . http_build_query(array('senderid' => $senderId)));
