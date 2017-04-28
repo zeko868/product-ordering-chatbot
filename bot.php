@@ -54,7 +54,7 @@ function send_email_and_get_success_state($senderId, $senderName, $senderMail, $
 $hubVerifyToken = 'bot';
 $accessToken = 'EAACN8hwDY8QBAEcLkz9b9FZB2QXVgr92ZBduX8cEU1rfZBR7kOtzurRUtiWkZCan496HmhLyiWLnk86RAKsfMSiYKxZBdnIC6KftcZBy7EODHgPBERWpjFZCgqvPYWGUQyutGc76VccANwiCvrPxa9BCO7f3jnbTs2jXjZCzXk06OgZDZD';
 
-if(!isset($_GET['tekst']){
+if(!empty($_GET)){
 	// handle bot's anwser
 	$input = json_decode(file_get_contents("php://input"), true, 512, JSON_BIGINT_AS_STRING);
 	$senderId = $input['entry'][0]['messaging'][0]['sender']['id'];
