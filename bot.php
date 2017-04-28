@@ -22,14 +22,13 @@ function localized_strtolower($str) {
 	return strtolower($str);
 }
 
-function send_email_and_get_success_state($senderId, $senderName, $senderMail, $recipientMail, $term, $type) {
+function send_email_and_get_success_state($senderId, $senderName, $senderMail, $recipientMail, $term) {
 	$recipientMail = (string) $recipientMail;
 	$params = array(
 		'student_id' => $senderId,
 		'student_naziv' => $senderName,
 		'student_email' => $senderMail,
-		'nastavnik_email' => $recipientMail, 	// ovo je xml object pa ga treba castati - inace se uzrokuje da elementu s kljucem 'nastavnik_email' bude dodijeljeno polje, a ne vrijednost (string)
-		'type' => $type
+		'nastavnik_email' => $recipientMail 	// ovo je xml object pa ga treba castati - inace se uzrokuje da elementu s kljucem 'nastavnik_email' bude dodijeljeno polje, a ne vrijednost (string)
 	);
 	if ($term !== '-') {
 		$params['termin'] = $term;
@@ -110,19 +109,8 @@ if (preg_match('/^autenti(fi)?kacija$/', $command) === 1){
 	];
 }
 else if(stripos($command, 'odbijam') === 0){
-	$emailProf = substr($command, strlen("odbijam "));
-	curl_setopt($ch, CURLOPT_URL, 'http://foi-konzultacije.info/dohvati_ime.php?' . http_build_query(array('senderid' => $senderId)));
-	curl_setopt($ch, CURLOPT_HTTPGET, 1);
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt($ch, CURLOPT_HEADER, 0);
-	$output = curl_exec($ch);
-	curl_close($ch);
-	$o = json_decode($output);
-	$name = $o->fullName;
-	$email = $o->email;
-
-	send_email_and_get_success_state($senderId, $name, $email, $emailProf, "predloženi termin", 1);
-	$ch = curl_init();
+	$origProfName = substr($command, strlen("konzultacije "));
+	
 }
 else if (stripos($command, 'konzultacije') === 0) {
 	$ch = curl_init();
@@ -256,7 +244,7 @@ else if (stripos($command, 'konzultacije') === 0) {
 							$o = json_decode($output);
 							$name = $o->fullName;
 							$email = $o->email;
-							switch (send_email_and_get_success_state($senderId, $name, $email, $item->contact->email, '-', 0)) {
+							switch (send_email_and_get_success_state($senderId, $name, $email, $item->contact->email, '-')) {
 								case 'true':
 									$answer = "Vaš zahtjev za dodatnim terminom konzultacija je poslan nastavniku $origProfName. Javiti ćemo Vam profesorov odgovor.";
 									break;
@@ -280,7 +268,7 @@ else if (stripos($command, 'konzultacije') === 0) {
 								$o = json_decode($output);
 								$name = $o->fullName;
 								$email = $o->email;
-								switch (send_email_and_get_success_state($senderId, $name, $email, $item->contact->email, $term, 0)) {
+								switch (send_email_and_get_success_state($senderId, $name, $email, $item->contact->email, $term)) {
 									case 'true':
 										$answer = "Vaš zahtjev za rezervacijom konzultacija je uspješno poslan nastavniku $origProfName. Javiti ćemo Vam profesorov odgovor.";
 										break;
