@@ -120,7 +120,7 @@ else if (preg_match('/^(?<odgovor>prihvaćam|odbijam) prijedlog konzultacija nas
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 	curl_setopt($ch, CURLOPT_VERBOSE, true);
 	if (curl_exec($ch) === 'true') {
-		$answer = "Uspješno ste dogovorili konzultacije u dodatnom terminu.";
+		$answer = $captures['odgovor']==='prihvaćam' ? "Uspješno ste dogovorili konzultacije u dodatnom terminu." : "Uspješno ste odbili predloženi zahtjev za konzultacijama.";
 	}
 	else {
 		$answer = "Dogodio se neuspjeh kod obrade Vašeg odgovora. Molimo pokušajte kasnije";
