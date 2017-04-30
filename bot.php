@@ -101,7 +101,14 @@ $substitutes = [
 ];
 $dayNames = ['ponedjeljak', 'utorak', 'srijeda', 'četvrtak', 'petak', 'subota', 'nedjelja'];
 $termRegex = '/(-|(' .implode('|', $dayNames) . ') \d{2}:\d{2} - \d{2}:\d{2})$/u';
-if (preg_match('/^autenti(fi)?kacija$/', $command) === 1){
+if (true) {
+	$answer = $command;
+	$response = [
+		'recipient' => [ 'id' => $senderId ],
+		'message' => [ 'text' => $answer ]
+	];
+}
+else if (preg_match('/^autenti(fi)?kacija$/', $command) === 1){
 	$answer = "Potrebna je autentikacija za rad u sustavu. Za autentikaciju pristupite linku: http://foi-konzultacije.info/student/prijava.php?senderid=".$senderId.". Nakon autentikacije upišite konzultacije [naziv_nastavnika [termin]]";
 	$response = [
 		'recipient' => [ 'id' => $senderId ],
@@ -109,15 +116,6 @@ if (preg_match('/^autenti(fi)?kacija$/', $command) === 1){
 	];
 }
 else if (preg_match('/^(?<odgovor>prihvaćam|odbijam) prijedlog konzultacija nastavnika (?<nastavnik>.+) u terminu (?<termin>.+)$/u', $command, $captures)) {
-	$answer = 'do ovde prolazi';
-	$response = [
-		'recipient' => [ 'id' => $senderId ],
-		'message' => [ 'text' => $answer ]
-	];
-	if (true) {
-
-	}
-else {
 	$params = array(
 		'student' => $senderId,
 		'prihvat' => ($captures['odgovor']==='prihvaćam'?'true':'false'),
@@ -139,7 +137,6 @@ else {
 		'recipient' => [ 'id' => $senderId ],
 		'message' => [ 'text' => $answer ]
 	];
-}
 }
 else if (stripos($command, 'konzultacije') === 0) {
 	$ch = curl_init();
