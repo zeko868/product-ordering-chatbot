@@ -111,7 +111,7 @@ if (preg_match('/^autenti(fi)?kacija$/', $command) === 1){
 else if (preg_match('/(?<odgovor>prihvaćam|odbijam) prijedlog konzultacija nastavnika (?<nastavnik>.+) u terminu (?<termin>.+)/u', $command, $captures)) {
 	$params = array(
 		'student' => $senderId,
-		'prihvat' => ($captures['odgovor']==='prihvaćam'),
+		'prihvat' => ($captures['odgovor']==='prihvaćam'?'true':'false'),
 		'nastavnik' => $captures['nastavnik'],
 		'termin' => $captures['termin']
 	);
