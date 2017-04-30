@@ -108,7 +108,16 @@ if (preg_match('/^autenti(fi)?kacija$/', $command) === 1){
 		'message' => [ 'text' => $answer ]
 	];
 }
-else if (preg_match('/(?<odgovor>prihvaćam|odbijam) prijedlog konzultacija nastavnika (?<nastavnik>.+) u terminu (?<termin>.+)/u', $command, $captures)) {
+else if (preg_match('/^(?<odgovor>prihvaćam|odbijam) prijedlog konzultacija nastavnika (?<nastavnik>.+) u terminu (?<termin>.+)$/u', $command, $captures)) {
+	$answer = 'do ovde prolazi';
+	$response = [
+		'recipient' => [ 'id' => $senderId ],
+		'message' => [ 'text' => $answer ]
+	];
+	if (true) {
+
+	}
+else {
 	$params = array(
 		'student' => $senderId,
 		'prihvat' => ($captures['odgovor']==='prihvaćam'?'true':'false'),
@@ -130,6 +139,7 @@ else if (preg_match('/(?<odgovor>prihvaćam|odbijam) prijedlog konzultacija nast
 		'recipient' => [ 'id' => $senderId ],
 		'message' => [ 'text' => $answer ]
 	];
+}
 }
 else if (stripos($command, 'konzultacije') === 0) {
 	$ch = curl_init();
