@@ -108,12 +108,24 @@ if (preg_match('/^autenti(fi)?kacija$/', $command) === 1){
 		'message' => [ 'text' => $answer ]
 	];
 }
-else if(stripos($command, 'odbijam') === 0){
-	$origProfName = substr($command, strlen("konzultacije "));
-	
-}
-else if(stripos($command, 'prihvacam') === 0){
-	$answer = "Uspješno ste dogovorili konzultacije u dodatnom terminu.";
+else if (preg_match('/(?<odgovor>prihvaćam|odbijam) prijedlog konzultacija nastavnika (?<nastavnik>.+) u terminu (?<termin>.+)/u', $command, $captures)) {
+	$params = array(
+		'student' => $senderId,
+		'prihvat' => ($captures['odgovor']==='prihvaćam'),
+		'nastavnik' => $captures['nastavnik'],
+		'termin' => $captures['termin']
+	);
+	$request = 'http://foi-konzultacije.info/odgovor.php?' . http_build_query($params);
+	$ch = curl_init($request);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_VERBOSE, true);
+	if (curl_exec($ch) === 'true') {
+		$answer = "Uspješno ste dogovorili konzultacije u dodatnom terminu.";
+	}
+	else {
+		$answer = "Dogodio se neuspjeh kod obrade Vašeg odgovora. Molimo pokušajte kasnije";
+	}
+	curl_close($ch);
 	$response = [
 		'recipient' => [ 'id' => $senderId ],
 		'message' => [ 'text' => $answer ]
