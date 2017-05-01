@@ -329,6 +329,13 @@ else if (stripos($command, 'konzultacije') === 0) {
 	
 	
 }
+else {
+	$answer = "Poslana poruka se ne može interpretirati kao naredba. Pokušajte unijeti 'konzultacije' kako biste započeli s procesom rezervacije konzultacija";
+	$response = [
+		'recipient' => [ 'id' => $senderId ],
+		'message' => [ 'text' => $answer ]
+	];
+}
 
 
 $ch = curl_init('https://graph.facebook.com/v2.6/me/messages?access_token='.$accessToken);
