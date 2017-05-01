@@ -102,7 +102,7 @@ $substitutes = [
 $dayNames = ['ponedjeljak', 'utorak', 'srijeda', 'četvrtak', 'petak', 'subota', 'nedjelja'];
 $termRegex = '/(-|(' .implode('|', $dayNames) . ') \d{2}:\d{2} - \d{2}:\d{2})$/u';
 if (preg_match('/^autenti(fi)?kacija$/', $command) === 1){
-	$answer = "Potrebna je autentikacija za rad u sustavu. Za autentikaciju pristupite linku: http://foi-konzultacije.info/student/prijava.php?senderid=".$senderId.". Nakon autentikacije upišite konzultacije [naziv_nastavnika [termin]]";
+	$answer = "Potrebna je autentikacija za rad u sustavu. Za autentikaciju pristupite linku: http://foi-konzultacije.info/student?senderid=".$senderId.". Nakon autentikacije upišite konzultacije [naziv_nastavnika [termin]]";
 	$response = [
 		'recipient' => [ 'id' => $senderId ],
 		'message' => [ 'text' => $answer ]
@@ -320,7 +320,7 @@ else if (stripos($command, 'konzultacije') === 0) {
 			];
 		}
 	}else{
-		$answer = "Niste se autenticirali za rad u sustavu. Za autentikaciju pristupite linku: http://foi-konzultacije.info/student/prijava.php?senderid=".$senderId.". Nakon autentikacije upišite konzultacije [naziv_nastavnika [termin]]";
+		$answer = "Niste se autenticirali za rad u sustavu. Za autentikaciju pristupite linku: http://foi-konzultacije.info/student?senderid=".$senderId.". Nakon autentikacije upišite konzultacije [naziv_nastavnika [termin]]";
 		$response = [
 			'recipient' => [ 'id' => $senderId ],
 			'message' => [ 'text' => $answer ]
