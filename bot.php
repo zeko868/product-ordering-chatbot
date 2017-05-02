@@ -161,12 +161,14 @@ else if (stripos($command, 'konzultacije') === 0) {
 
 		if ($prof === null) {
 			$ch = curl_init();
-			curl_setopt($ch, CURLOPT_URL, 'https://foi-konzultacije.info/student_profesor.php?' . http_build_query(array('id' => $senderId)));
+			curl_setopt($ch, CURLOPT_URL, 'http://foi-konzultacije.info/student_profesor.php?' . http_build_query(array('id' => $senderId)));
 			curl_setopt($ch, CURLOPT_HTTPGET, 1);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);	// bez ovoga se vraća true ako je dohvaćanje uspjela, a inače false - sada vraća dobavljenu vrijednost
 			curl_setopt($ch, CURLOPT_HEADER, 0);
-			curl_exec($ch);
+			$output = curl_exec($ch);
 			curl_close($ch);
 			break;
+
 		} else {
 			if ($term === null) {
 				$suggestions = array();
