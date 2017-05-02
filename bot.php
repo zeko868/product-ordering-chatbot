@@ -160,27 +160,12 @@ else if (stripos($command, 'konzultacije') === 0) {
 		$xml = simplexml_load_file('informacije.xml');
 
 		if ($prof === null) {
-			$button = array();
-			$i = 0;
-			foreach($xml->employee as $item) {
-				if ($i === 3) {
-					break;
-				}
-				array_push($button, array('type'=>'postback', 'title'=>"$item->firstname $item->lastname", 'payload' => "konzultacije $item->firstname $item->lastname"));
-				$i++;
-			}
-			$answer = [
-				'type'=>'template',
-				'payload'=>[
-					'template_type'=>'button',
-					'text'=>'Kod kojeg profesora želite rezervirati konzultacije?',
-					'buttons'=> $button
-				]
-			];
-			$response = [
-				'recipient' => [ 'id' => $senderId ],
-				'message' => [ 'attachment' => $answer ]
-			];
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL, 'https://foi-konzultacije.info/student_profesor.php?' . http_build_query(array('id' => $senderId)));
+			curl_setopt($ch, CURLOPT_HTTPGET, 1);
+			curl_setopt($ch, CURLOPT_HEADER, 0);
+			curl_exec($ch);
+			curl_close($ch);
 
 		} else {
 			if ($term === null) {
