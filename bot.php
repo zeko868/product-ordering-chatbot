@@ -191,7 +191,9 @@ else if (stripos($command, 'konzultacije') === 0) {
 								break;
 							}
 						}
-						array_push($button, array('type'=>'postback', 'title'=>'Dodatni termin', 'payload' => "konzultacije $item->firstname $item->lastname -"));
+						if ($termsNumber!==3) {
+							array_push($button, array('type'=>'postback', 'title'=>'Dodatni termin', 'payload' => "konzultacije $item->firstname $item->lastname -"));
+						}
 
 						$answer = [
 							'type'=>'template',
