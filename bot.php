@@ -115,7 +115,7 @@ else if (preg_match('/^(?<odgovor>prihvaćam|odbijam) prijedlog konzultacija nas
 		'nastavnik' => $captures['nastavnik'],
 		'termin' => $captures['termin']
 	);
-	$request = 'http://foi-konzultacije.info/odgovor.php?' . http_build_query($params);
+	$request = 'http://foi-konzultacije.info/odgovor-na-predlozeni-termin.php?' . http_build_query($params);
 	$ch = curl_init($request);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 	curl_setopt($ch, CURLOPT_VERBOSE, true);
