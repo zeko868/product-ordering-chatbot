@@ -186,7 +186,7 @@ else if (stripos($command, 'konzultacije') === 0) {
 							else
 								continue;
 						}
-						array_push($button, array('type'=>'postback', 'title'=>'-', 'payload' => "konzultacije $item->firstname $item->lastname -"));
+						array_push($button, array('type'=>'postback', 'title'=>'Dodatni termin', 'payload' => "konzultacije $item->firstname $item->lastname -"));
 
 						$answer = [
 							'type'=>'template',
