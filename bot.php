@@ -176,6 +176,7 @@ else if (stripos($command, 'konzultacije') === 0) {
 					if (preg_match(get_regex_fullname_with_deviation("$item->firstname $item->lastname"), $prof)===1) {
 						
 						$button = array();
+						$termsNumber = 0;
 
 						foreach($item->consultation->term as $i){
 							//$i->day.' '.$i->time_from.' '.$i->time_to
@@ -185,6 +186,10 @@ else if (stripos($command, 'konzultacije') === 0) {
 								array_push($button, array('type'=>'postback', 'title'=>substr($i->day, 0, 3).' '.$i->time_from.' - '.$i->time_to, 'payload' => "konzultacije $item->firstname $item->lastname $i->day $i->time_from - $i->time_to"));
 							else
 								continue;
+							$termsNumber++;
+							if ($termsNumber===3) {
+								break;
+							}
 						}
 						array_push($button, array('type'=>'postback', 'title'=>'Dodatni termin', 'payload' => "konzultacije $item->firstname $item->lastname -"));
 
