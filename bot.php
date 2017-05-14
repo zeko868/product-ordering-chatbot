@@ -75,6 +75,24 @@ if (!empty($input['entry'][0]['messaging'])) {
     }
 }/*	 	$command = 'konzultacije Petar Šestak -'; $senderId = '1532028376807777';	//for debugging purposes */
 
+/* "server is down" message */
+$answer = "Ova aplikacija je trenutno van uporabe.";
+$response = [
+	'recipient' => [ 'id' => $senderId ],
+	'message' => [ 'text' => $answer ]
+];
+
+$ch = curl_init('https://graph.facebook.com/v2.6/me/messages?access_token='.$accessToken);
+curl_setopt($ch, CURLOPT_POST, 1);
+curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($response));
+curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+if(!empty($input)){
+	$result = curl_exec($ch);
+}
+curl_close($ch);
+exit();
+/* end of "server is down" message */
+
 $command = preg_replace('/\s{2,}/', ' ', trim($command));	// brisanje viška razmaka ispred i iza naredbe te zamjena (najčešće slučajno napisanih) višestrukih razmaka s jednostrukim
 $croatianLowercase = [
 	'Č' => 'č',
