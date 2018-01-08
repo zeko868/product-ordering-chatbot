@@ -3,8 +3,8 @@ ob_start();
 header('Content-Type: text/html; charset=utf-8');
 ini_set("allow_url_fopen", 1);
 $trazilica = "https://www.links.hr/hr/search?q=";
-$pojamZaPretragu = "i7"; //Trenutno hardcoded
-$url = $trazilica . $pojamZaPretragu;
+$pojamZaPretragu = "grafička"; //Trenutno hardcoded
+$url = $trazilica . urlencode($pojamZaPretragu);
 
 $lines = file($url);
 
@@ -13,11 +13,11 @@ echo $url . "<br/>";
 
 for ($index = 0; $index < count($lines); $index++) {
     $polje = array();
-    if (strpos($lines[$index], "Nisu nađeni proizvodi koji odgovaraju zadanim kriterijima")) {
+    /*if (strpos($lines[$index], "Nisu nađeni proizvodi koji odgovaraju zadanim kriterijima")) {
         echo "Nisu nađeni proizvodi koji odgovaraju zadanim kriterijima <br/>";
         $nadjeno = FALSE;
         break;
-    }
+    }*/
     if (strpos($lines[$index], "div class=\"product-item\"")) {
         for ($i = $index; $i < $index + 54; $i++) {
             $polje[] = $lines[$i];
