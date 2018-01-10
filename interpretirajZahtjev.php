@@ -4,7 +4,14 @@ header('Content-Type: text/html; charset=utf-8');
 
 const API_KEY = 'AIzaSyByjQCWlKAH_uKFlnN0fCUYduP8sXnjQLo';
 
+function strtolower_cro($string)
+{
+    $low=array("Č" => "č","ć" => "ć", "Đ" => "đ", "Š" => "š", "Ž" => "ž");
+    return strtolower(strtr($string,$low));
+}
+
 function translateInput($inputText, $target){
+    $inputText = strtolower_cro($inputText);
     $curl = curl_init();
 
     curl_setopt_array($curl, array(
@@ -28,10 +35,9 @@ function translateInput($inputText, $target){
     curl_close($curl);
 
     $data = $json["data"]["translations"][0];
-
     if($data['detectedSourceLanguage'] == 'hr' || $target == 'hr'){
         $returnValue['status'] = "OK";
-        $returnValue['translate'] = $data["translatedText"];
+        $returnValue['translate'] = strtoupper($data["translatedText"]);
     }else{
         $returnValue['status'] = "ERROR";
     }
@@ -86,6 +92,7 @@ function NLPtext($translatedText){
     if(isset($nlp['proizvod']))
         $string .= $nlp['proizvod'];
     
+
     if(!isset($nlp['proizvodac']) && !isset($nlp['proizvod'])){
         echo "Doslo je do pogreske!";
         exit();
@@ -94,8 +101,21 @@ function NLPtext($translatedText){
 }
 
 function prilagodiZahtjev($inputText){
-    if(strpos($inputText, "procesor")){
-        $input = substr($inputText, 0, strpos($inputText, "procesor")) . "računalni " . substr($inputText, strpos($inputText, "procesor"), strlen($inputText));
+    $inputText = str_replace("INTELOV", "INTEL", $inputText);
+    $inputText = str_replace("AMDA", "AMD", $inputText);
+    
+    if(strpos($inputText, "PROCESOR") && !strpos($inputText, "RAČUNALNI")){
+        $input = substr($inputText, 0, strpos($inputText, "PROCESOR")) . "RAČUNALNI " . substr($inputText, strpos($inputText, "PROCESOR"), strlen($inputText));
+        return $input;
+    }
+    
+    return $inputText;
+}
+
+function urediIzlaz($inputText){
+    $inputText = strtolower_cro($inputText);
+    if(strpos($inputText, "računalni")){
+        $input = substr($inputText, 0, strpos($inputText, "računalni")) . substr($inputText, strpos($inputText, "računalni") + 11, strlen($inputText));
         return $input;
     }
     return $inputText;
@@ -104,8 +124,11 @@ function prilagodiZahtjev($inputText){
 $inputText = "Želim Lenovo laptop.";
 //$inputText = "Želim grafičku karticu od AMDa.";
 //$inputText = "Molim Vas ponudu za Intel procesor.";
+//$inputText = "hoću kupiti intelov procesor.";
 
-$input = prilagodiZahtjev($inputText);
+
+$input = prilagodiZahtjev(strtoupper($inputText));
+
 $translatedInput = translateInput($input, 'en');
 
 if($translatedInput['status'] == "OK"){
@@ -124,5 +147,6 @@ if($translatedOutput['status'] == "OK"){
     exit();
 }
 
+$translated = urediIzlaz($translatedOutputText);
 
-echo "<br/>Kupac pretražuje: " . $translatedOutputText;
+echo "<br/>Kupac pretražuje: " . strtolower_cro($translated);
