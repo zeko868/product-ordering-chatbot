@@ -51,12 +51,13 @@ function parsiranjeSkladista($polje) {
             if ($naziv) {
                 $n = TRUE;
             }
+            else {
+                $n = FALSE;
+            }
         }
-        else if (strpos($polje[$i], "class=\"circle active\"")) {
+        else if ($n && strpos($polje[$i], "class=\"circle active\"")) {
             $dostupnost = parsirajDostupnost($polje[$i]);
             $d = TRUE;
-        }
-        else if ($d && $n) {
             $obj[] = (object) ["naziv" => $naziv, "dostupnost" => $dostupnost];
             $n = FALSE;
             $d = FALSE;
