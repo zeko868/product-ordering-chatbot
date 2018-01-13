@@ -18,7 +18,7 @@ $dostupnosti = [
     ['naziv' => 'Vinkovci', 'dostupnost' => 'OnRequest'],
     ['naziv' => 'Zadar', 'dostupnost' => 'Available'],
     ['naziv' => 'Zagreb Dubrava', 'dostupnost' => 'OnRequest'],
-    ['naziv' => 'Zagreb Trešnjevka', 'dostupnost' => 'OnRequest']
+    ['naziv' => 'Zagreb Trešnjevka', 'dostupnost' => 'OnRequest'],
     ['naziv' => 'Varaždin', 'dostupnost' => 'Available'],
     ['naziv' => 'Vinkovci', 'dostupnost' => 'OnRequest'],
     ['naziv' => 'Zadar', 'dostupnost' => 'OnRequest'],
