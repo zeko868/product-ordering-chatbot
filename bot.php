@@ -1,4 +1,5 @@
 <?php
+include "./interpretirajZahtjev.php";
 function get_regex_fullname_with_deviation($str) {
 	global $substitutes;
 	$str = localized_strtolower($str);
@@ -76,7 +77,34 @@ if (!empty($input['entry'][0]['messaging'])) {
 }/*	 	$command = 'konzultacije Petar Šestak -'; $senderId = '1532028376807777';	//for debugging purposes */
 
 /* "server is down" message */
-$answer = $command;
+
+$input = prilagodiZahtjev(strtoupper($command));
+
+$translatedInput = translateInput($input, 'en');
+
+if($translatedInput['status'] == "OK"){
+    $nlpText = NLPtext($translatedInput['translate']);
+}else{
+    $answer = "Unesena je narudzba na krivom jeziku!";
+    exit();
+}
+
+//var_dump($nlpText);
+
+$translatedOutput = translateInput($nlpText['tekst'], 'hr');
+
+if($translatedOutput['status'] == "OK"){
+    $translatedOutputText = $translatedOutput['translate'];
+}else{
+    $answer = "Doslo je do pogreske!";
+    exit();
+}
+
+$translated = urediIzlaz($translatedOutputText);
+
+$answer = strtolower_cro($translated);
+
+
 $response = [
 	'recipient' => [ 'id' => $senderId ],
 	'message' => [ 'text' => $answer ]
