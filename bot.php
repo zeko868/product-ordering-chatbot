@@ -1,4 +1,5 @@
 <?php
+include "./interpretirajZahtjev.php";
 function get_regex_fullname_with_deviation($str) {
 	global $substitutes;
 	$str = localized_strtolower($str);

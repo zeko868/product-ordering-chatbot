@@ -192,10 +192,10 @@ function urediIzlaz($inputText){
 //$inputText = "Želim grafičku karticu nvidia geforce mx 440 cijene veće od 2000 kuna.";
 //$inputText = "Želim grafičku karticu nvidia geforce mx 440 cijene manje od 3000 kuna.";
 //$inputText = "Želim grafičku karticu nvidia geforce mx 440 cijene između 1000 i 3000 kn.";
-$inputText = "Želim grafičku karticu nvidia geforce mx 440 cijene veće od 1000 i manje od 3000 kuna.";
+//$inputText = "Želim grafičku karticu nvidia geforce mx 440 cijene veće od 1000 i manje od 3000 kuna.";
 
 
-$input = prilagodiZahtjev(strtoupper($inputText));
+/*$input = prilagodiZahtjev(strtoupper($inputText));
 
 $translatedInput = translateInput($input, 'en');
 
@@ -219,4 +219,28 @@ if($translatedOutput['status'] == "OK"){
 
 $translated = urediIzlaz($translatedOutputText);
 
-echo "<br/>Kupac pretražuje: " . strtolower_cro($translated);
+echo "<br/>Kupac pretražuje: " . strtolower_cro($translated);$input = prilagodiZahtjev(strtoupper($inputText));
+
+$translatedInput = translateInput($input, 'en');
+
+if($translatedInput['status'] == "OK"){
+    $nlpText = NLPtext($translatedInput['translate']);
+}else{
+    echo "Unesena je narudzba na krivom jeziku!";
+    exit();
+}
+
+var_dump($nlpText);
+
+$translatedOutput = translateInput($nlpText['tekst'], 'hr');
+
+if($translatedOutput['status'] == "OK"){
+    $translatedOutputText = $translatedOutput['translate'];
+}else{
+    echo "Doslo je do pogreske!";
+    exit();
+}
+
+$translated = urediIzlaz($translatedOutputText);
+
+echo "<br/>Kupac pretražuje: " . strtolower_cro($translated);*/
