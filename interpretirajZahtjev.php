@@ -11,8 +11,13 @@ function strtolower_cro($string)
 }
 
 function translateInput($inputText, $target){
+    
     $inputText = strtolower_cro($inputText);
     $curl = curl_init();
+    if(strpos($inputText, "kn")){
+        $inputText = str_replace("kn", "KN", $inputText);
+    }
+
 
     curl_setopt_array($curl, array(
     CURLOPT_URL => "https://translation.googleapis.com/language/translate/v2?key=" . API_KEY,
@@ -30,7 +35,7 @@ function translateInput($inputText, $target){
     ));
 
     $response = curl_exec($curl);
-    $json = json_decode($response, true);
+    $json = json_decode($response, true); 
 
     curl_close($curl);
 
@@ -99,7 +104,7 @@ function NLPtext($translatedText){
     }
 
     $curl = curl_init();
-
+    
     $ostalo = array();
 
     curl_setopt_array($curl, array(
@@ -122,16 +127,34 @@ function NLPtext($translatedText){
     $json = json_decode($response,true);
     $data = $json['tokens'];
 
-    foreach($data as $dio){
-        if(!strpos($string, $dio['text']['content']) && $dio['partOfSpeech']['tag'] == "NOUN"){
-            array_push($ostalo,translateInput($dio['text']['content'],'hr')['translate']);
+    $ost = array();
+
+    for($i = 0; $i < sizeof($data); $i++){
+        if(!strpos($string, $data[$i]['text']['content']) && $data[$i]['partOfSpeech']['tag'] == "NOUN"){
+            array_push($ost,translateInput($data[$i]['text']['content'],'hr')['translate']);
+        }
+        $ostalo['ostaliFilteri'] = $ost;
+        if($data[$i]['partOfSpeech']['tag'] == "NUM"){
+            for($j = $i; $j >= 0; $j--){
+                if($data[$j]['partOfSpeech']['tag'] == "ADJ" || $data[$j]['partOfSpeech']['tag'] == "ADP" && $data[$j]['text']['content'] == "OVER"){
+                    $ostalo['cijenaOd'] = intval($data[$i]['text']['content']);
+                    break;
+                }
+                if($data[$j]['partOfSpeech']['tag'] == "ADJ" || $data[$j]['partOfSpeech']['tag'] == "ADP" && $data[$j]['text']['content'] == "LESS"){
+                    $ostalo['cijenaDo'] = intval($data[$i]['text']['content']);
+                    break;
+                }
+            }
+        }else if($data[$i]['partOfSpeech']['tag'] == "ADP" && $data[$i]['text']['content'] == "BETWEEN"){
+            $ostalo['cijenaOd'] = intval($data[$i+1]['text']['content']);
+            $ostalo['cijenaDo'] = intval($data[$i+3]['text']['content']);
         }
     }
 
-    var_dump($ostalo);
-
     curl_close($curl);
-    return $string;
+    $s['tekst'] = $string;
+    $s['ostalo'] = $ostalo;
+    return $s;
 }
 
 function prilagodiZahtjev($inputText){
@@ -165,8 +188,10 @@ function urediIzlaz($inputText){
 //$inputText = "Želim grafičku karticu od AMDa.";
 //$inputText = "Molim Vas ponudu za Intel procesor.";
 //$inputText = "hoću kupiti intelov procesor.";
-//$inputText = "hoću kupiti intel i3 procesor.";
-$inputText = "Želim grafičku karticu nvidia geforce mx 440.";
+//$inputText = "hoću kupiti intel i3 procesor cijene manje od 1500 kuna.";
+//$inputText = "Želim grafičku karticu nvidia geforce mx 440 cijene veće od 2000 kuna.";
+//$inputText = "Želim grafičku karticu nvidia geforce mx 440 cijene manje od 3000 kuna.";
+$inputText = "Želim grafičku karticu nvidia geforce mx 440 cijene između 1000 i 3000 kn.";
 
 
 $input = prilagodiZahtjev(strtoupper($inputText));
@@ -180,7 +205,9 @@ if($translatedInput['status'] == "OK"){
     exit();
 }
 
-$translatedOutput = translateInput($nlpText, 'hr');
+var_dump($nlpText);
+
+$translatedOutput = translateInput($nlpText['tekst'], 'hr');
 
 if($translatedOutput['status'] == "OK"){
     $translatedOutputText = $translatedOutput['translate'];
