@@ -49,7 +49,7 @@ function NLPtext($translatedText){
     $curl = curl_init();
 
     curl_setopt_array($curl, array(
-    CURLOPT_URL => "https://language.googleapis.com/v1beta2/documents:analyzeEntities?key=AIzaSyByjQCWlKAH_uKFlnN0fCUYduP8sXnjQLo",
+    CURLOPT_URL => "https://language.googleapis.com/v1beta2/documents:analyzeEntities?key=" . API_KEY,
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_ENCODING => "",
     CURLOPT_MAXREDIRS => 10,
@@ -97,12 +97,52 @@ function NLPtext($translatedText){
         echo "Doslo je do pogreske!";
         exit();
     }
+
+    $curl = curl_init();
+
+    $ostalo = array();
+
+    curl_setopt_array($curl, array(
+    CURLOPT_URL => "https://language.googleapis.com/v1/documents:analyzeSyntax?key=" . API_KEY,
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_ENCODING => "",
+    CURLOPT_MAXREDIRS => 10,
+    CURLOPT_TIMEOUT => 30,
+    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+    CURLOPT_CUSTOMREQUEST => "POST",
+    CURLOPT_POSTFIELDS => "{\r\n  \"document\":{\r\n    \"type\":\"plain_text\",\r\n    \"language\": \"en\",\r\n    \"content\":\"$translatedText\"\r\n  },\r\n  \"encodingType\":\"UTF8\"\r\n}",
+    CURLOPT_HTTPHEADER => array(
+        "cache-control: no-cache",
+        "content-type: application/json"
+    ),
+    ));
+
+    $response = curl_exec($curl);
+    
+    $json = json_decode($response,true);
+    $data = $json['tokens'];
+
+    foreach($data as $dio){
+        if(!strpos($string, $dio['text']['content']) && $dio['partOfSpeech']['tag'] == "NOUN"){
+            array_push($ostalo,translateInput($dio['text']['content'],'hr')['translate']);
+        }
+    }
+
+    var_dump($ostalo);
+
+    curl_close($curl);
     return $string;
 }
 
 function prilagodiZahtjev($inputText){
-    $inputText = str_replace("INTELOV", "INTEL", $inputText);
-    $inputText = str_replace("AMDA", "AMD", $inputText);
+    $json_params = file_get_contents("./promjeneUZahtjevu.json");
+
+    $json = json_decode($json_params, true);
+
+    
+    foreach($json as $val){
+        $inputText = str_replace($val['original'], $val['promjena'], $inputText);
+    }    
     
     if(strpos($inputText, "PROCESOR") && !strpos($inputText, "RAČUNALNI")){
         $input = substr($inputText, 0, strpos($inputText, "PROCESOR")) . "RAČUNALNI " . substr($inputText, strpos($inputText, "PROCESOR"), strlen($inputText));
@@ -121,10 +161,12 @@ function urediIzlaz($inputText){
     return $inputText;
 }
 
-$inputText = "Želim Lenovo laptop.";
+//$inputText = "Želim Lenovo laptop.";
 //$inputText = "Želim grafičku karticu od AMDa.";
 //$inputText = "Molim Vas ponudu za Intel procesor.";
 //$inputText = "hoću kupiti intelov procesor.";
+//$inputText = "hoću kupiti intel i3 procesor.";
+$inputText = "Želim grafičku karticu nvidia geforce mx 440.";
 
 
 $input = prilagodiZahtjev(strtoupper($inputText));
