@@ -121,7 +121,7 @@ function NLPtext($translatedText){
         "content-type: application/json"
     ),
     ));
-
+    
     $response = curl_exec($curl);
     
     $json = json_decode($response,true);
@@ -134,9 +134,9 @@ function NLPtext($translatedText){
             array_push($ost,translateInput($data[$i]['text']['content'],'hr')['translate']);
         }
         $ostalo['ostaliFilteri'] = $ost;
-        if($data[$i]['partOfSpeech']['tag'] == "NUM"){
+        if($data[$i]['partOfSpeech']['tag'] == "NUM" && !strpos($string, $data[$i]['text']['content'])){
             for($j = $i; $j >= 0; $j--){
-                if($data[$j]['partOfSpeech']['tag'] == "ADJ" || $data[$j]['partOfSpeech']['tag'] == "ADP" && $data[$j]['text']['content'] == "OVER"){
+                if(($data[$j]['partOfSpeech']['tag'] == "ADJ" || $data[$j]['partOfSpeech']['tag'] == "ADP") && ($data[$j]['text']['content'] == "OVER" || $data[$j]['text']['content'] == "MORE")){
                     $ostalo['cijenaOd'] = intval($data[$i]['text']['content']);
                     break;
                 }
@@ -191,7 +191,8 @@ function urediIzlaz($inputText){
 //$inputText = "hoću kupiti intel i3 procesor cijene manje od 1500 kuna.";
 //$inputText = "Želim grafičku karticu nvidia geforce mx 440 cijene veće od 2000 kuna.";
 //$inputText = "Želim grafičku karticu nvidia geforce mx 440 cijene manje od 3000 kuna.";
-$inputText = "Želim grafičku karticu nvidia geforce mx 440 cijene između 1000 i 3000 kn.";
+//$inputText = "Želim grafičku karticu nvidia geforce mx 440 cijene između 1000 i 3000 kn.";
+$inputText = "Želim grafičku karticu nvidia geforce mx 440 cijene veće od 1000 i manje od 3000 kuna.";
 
 
 $input = prilagodiZahtjev(strtoupper($inputText));
