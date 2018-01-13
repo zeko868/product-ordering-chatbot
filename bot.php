@@ -76,7 +76,7 @@ if (!empty($input['entry'][0]['messaging'])) {
 }/*	 	$command = 'konzultacije Petar Šestak -'; $senderId = '1532028376807777';	//for debugging purposes */
 
 /* "server is down" message */
-$answer = "Ova aplikacija vraća se u upotrebu";
+$answer = "Ova aplikacija ponovno će se koristiti.";
 $response = [
 	'recipient' => [ 'id' => $senderId ],
 	'message' => [ 'text' => $answer ]
