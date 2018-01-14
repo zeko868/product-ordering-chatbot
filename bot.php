@@ -49,7 +49,7 @@ if (!empty($input['entry'][0]['messaging'])) {
 
 /* "server is down" message */
 
-/*$input = prilagodiZahtjev(strtoupper($command));
+$input = prilagodiZahtjev(strtoupper($command));
 
 $translatedInput = translateInput($input, 'en');
 
@@ -73,9 +73,7 @@ if($translatedOutput['status'] == "OK"){
 
 $translated = urediIzlaz($translatedOutputText);
 
-$answer = strtolower_cro($translated);*/
-
-$answer = $command;
+$answer = strtolower_cro($translated);
 $response = [
 	'recipient' => [ 'id' => $senderId ],
 	'message' => [ 'text' => $answer ]
