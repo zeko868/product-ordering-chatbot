@@ -23,36 +23,7 @@ function localized_strtolower($str) {
 	return strtolower($str);
 }
 
-function send_email_and_get_success_state($senderId, $senderName, $senderMail, $recipientMail, $term) {
-	$recipientMail = (string) $recipientMail;
-	$params = array(
-		'student_id' => $senderId,
-		'student_naziv' => $senderName,
-		'student_email' => $senderMail,
-		'nastavnik_email' => $recipientMail 	// ovo je xml object pa ga treba castati - inace se uzrokuje da elementu s kljucem 'nastavnik_email' bude dodijeljeno polje, a ne vrijednost (string)
-	);
-	if ($term !== '-') {
-		$params['termin'] = $term;
-	}
-	$request = 'http://foi-konzultacije.info/sendmail.php?' . http_build_query($params);
-	$ch = curl_init($request);
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt($ch, CURLOPT_VERBOSE, true);	// za potrebe pregleda stanja izvođenja curl naredbe u error logu
-	if ($recipientMail==='petsestak3@foi.hr' || // nije dozvoljena uporaba operatora identičnosti jer je $recipientMail tipa object, a ne string (zbog xml-a)
-		$recipientMail==='marmihajl@foi.hr' ||
-		$recipientMail==='petloncar2@foi.hr' ||
-		$recipientMail==='tommarkul@foi.hr') {
-		$result = curl_exec($ch);
-	}
-	else {
-		$result = 'true';
-	}
-	curl_close($ch);
-	return $result;
-}
-
 // parameters
-$hubVerifyToken = 'bot';
 $accessToken = 'EAACN8hwDY8QBAEcLkz9b9FZB2QXVgr92ZBduX8cEU1rfZBR7kOtzurRUtiWkZCan496HmhLyiWLnk86RAKsfMSiYKxZBdnIC6KftcZBy7EODHgPBERWpjFZCgqvPYWGUQyutGc76VccANwiCvrPxa9BCO7f3jnbTs2jXjZCzXk06OgZDZD';
 
 // handle bot's anwser
@@ -110,7 +81,7 @@ $response = [
 	'message' => [ 'text' => $answer ]
 ];
 
-$ch = curl_init('https://graph.facebook.com/v2.6/me/messages?access_token='.$accessToken);
+$ch = curl_init("https://graph.facebook.com/v2.6/me/messages?access_token=$accessToken");
 curl_setopt($ch, CURLOPT_POST, 1);
 curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($response));
 curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
