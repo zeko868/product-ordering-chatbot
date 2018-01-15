@@ -7,16 +7,16 @@ $trazilica = "/hr/search?q=";
 
 //popunjavanje podacima koirsnika
 $dodatak = "&adv=true&adv=false"; //??? vjerojatno treba za search
-$pojamZaPretragu = $translated->tekst; 
+$pojamZaPretragu = $translated["tekst"]; 
 $proizvodac = 0; // --- 0 ako nije navedeno
 
-if(isset($translated->ostalo->cijenaOd)){
-    $cMin = $translated->ostalo->cijenaOd;
+if(isset($translated["ostalo"]["cijenaOd"])){
+    $cMin = $translated["ostalo"]["cijenaOd"];
 }else {
     $cMin="";
 }
-if(isset($translated->ostalo->cijenaDo)){
-    $cMax =$translated->ostalo->cijenaDo;
+if(isset($translated["ostalo"]["cijenaDo"])){
+    $cMax =$translated["ostalo"]["cijenaDo"];
 }else{
     $cMax="";
 }

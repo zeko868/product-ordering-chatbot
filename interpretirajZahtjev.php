@@ -192,10 +192,10 @@ function urediIzlaz($inputText){
 //$inputText = "Želim grafičku karticu nvidia geforce mx 440 cijene veće od 2000 kuna.";
 //$inputText = "Želim grafičku karticu nvidia geforce mx 440 cijene manje od 3000 kuna.";
 //$inputText = "Želim grafičku karticu nvidia geforce mx 440 cijene između 1000 i 3000 kn.";
-//$inputText = "Želim grafičku karticu nvidia geforce mx 440 cijene veće od 1000 i manje od 3000 kuna.";
+/*$inputText = "Želim grafičku karticu nvidia geforce mx 440 cijene veće od 1000 i manje od 3000 kuna.";
 
 
-/*$input = prilagodiZahtjev(strtoupper($inputText));
+$input = prilagodiZahtjev(strtoupper($inputText));
 
 $translatedInput = translateInput($input, 'en');
 
@@ -206,7 +206,6 @@ if($translatedInput['status'] == "OK"){
     exit();
 }
 
-var_dump($nlpText);
 
 $translatedOutput = translateInput($nlpText['tekst'], 'hr');
 
@@ -219,7 +218,7 @@ if($translatedOutput['status'] == "OK"){
 
 $translated = urediIzlaz($translatedOutputText);
 
-echo "<br/>Kupac pretražuje: " . strtolower_cro($translated);$input = prilagodiZahtjev(strtoupper($inputText));
+$input = prilagodiZahtjev(strtoupper($inputText));
 
 $translatedInput = translateInput($input, 'en');
 
@@ -230,7 +229,6 @@ if($translatedInput['status'] == "OK"){
     exit();
 }
 
-var_dump($nlpText);
 
 $translatedOutput = translateInput($nlpText['tekst'], 'hr');
 
@@ -241,6 +239,11 @@ if($translatedOutput['status'] == "OK"){
     exit();
 }
 
-$translated = urediIzlaz($translatedOutputText);
+$trans = urediIzlaz($translatedOutputText);
+$nlpText['tekst'] = $trans;
+$translated = $nlpText;
+//echo "<br/>Kupac pretražuje: " . strtolower_cro($translated);
 
-echo "<br/>Kupac pretražuje: " . strtolower_cro($translated);*/
+include "./traziRobu.php";
+
+var_dump($obj);*/
