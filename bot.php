@@ -83,7 +83,7 @@ $button = array();
 array_push($button, array('type'=>'postback', 'title'=>"test 1", 'payload' => "test 1"));
 array_push($button, array('type'=>'postback', 'title'=>"test 2", 'payload' => "test 2"));
 array_push($button, array('type'=>'postback', 'title'=>"test 3", 'payload' => "test 3"));
-array_push($button, array('type'=>'postback', 'title'=>"test 4", 'payload' => "test 4"));
+//array_push($button, array('type'=>'postback', 'title'=>"test 4", 'payload' => "test 4"));
 					
 $answer = [
 	'type'=>'template',
