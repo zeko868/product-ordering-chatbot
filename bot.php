@@ -75,17 +75,15 @@ $translated = urediIzlaz($translatedOutputText);
 
 //$answer = strtolower_cro($translated);
 
-$trans = urediIzlaz($translatedOutputText);
-$nlpText['tekst'] = $trans;
-$translated = $nlpText;
-
-include "./traziRobu.php";
-//var_dump(var_dump($obj[0]->naziv););
-
 $button = array();
-for($i=0;$i<=count($obj);$i++){
+/*for($i=0;$i<=count($obj);$i++){
 	array_push($button, array('type'=>'postback', 'title'=>$obj[$i]->naziv, 'payload' => $obj[$i]->naziv));
-}
+}*/
+
+array_push($button, array('type'=>'postback', 'title'=>"test 1", 'payload' => "test 1"));
+array_push($button, array('type'=>'postback', 'title'=>"test 2", 'payload' => "test 2"));
+array_push($button, array('type'=>'postback', 'title'=>"test 3", 'payload' => "test 3"));
+//array_push($button, array('type'=>'postback', 'title'=>"test 4", 'payload' => "test 4"));
 					
 $answer = [
 	'type'=>'template',
