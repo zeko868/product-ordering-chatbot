@@ -5,7 +5,6 @@
  */
 package Orderer;
 
-import com.gargoylesoftware.htmlunit.javascript.host.html.Option;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.logging.Level;
@@ -40,8 +39,8 @@ public class Orderer {
             //System.setProperty("webdriver.chrome.driver", Paths.get(System.getProperty("user.dir"), "chromedriver.exe").toString());
             //System.setProperty("webdriver.chrome.driver", "/usr/local/bin/chromedriver");
             //driver = new ChromeDriver();
-            //System.setProperty("phantomjs.binary.path", Paths.get(System.getProperty("user.dir"), "orderer", "phantomjs").toString());
-            //System.setProperty("phantomjs.binary.path", "D:\\Users\\zeko868\\Documents\\NetBeansProjects\\narudzba\\phantomjs.exe");
+            System.setProperty("phantomjs.binary.path", "vendor/phantomjs/bin/phantomjs");
+            //System.setProperty("phantomjs.binary.path", "D:\\Users\\zeko868\\Documents\\GitHub\\foi-konzultacije\\orderer\\phantomjs.exe");
             driver = new PhantomJSDriver();
             //driver = new HtmlUnitDriver(true);
             
@@ -160,8 +159,8 @@ public class Orderer {
                 List<WebElement> options = select.getOptions();
                 int optionsNum = options.size();
                 for (int i=0; i<optionsNum; i++) {
-                    Option option = (Option) options.get(i);
-                    if (option.getValue().contains(pickupStore)) {
+                    WebElement option = options.get(i);
+                    if (option.getAttribute("value").contains(pickupStore)) {
                         select.selectByIndex(i);
                         break;
                     }

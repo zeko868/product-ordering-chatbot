@@ -65,7 +65,7 @@ switch (count($json)) {
         for ($i=0; $i<$argNum; $i++) {
             $args[$i] = escapeshellarg($args[$i]);
         }
-        $output = shell_exec('java -jar orderer/dist/orderer.jar ' . implode(' ', $args));
+        $output = shell_exec('java -jar ~/orderer/dist/orderer.jar ' . implode(' ', $args));
         echo $output;
         break;
     case 0:
