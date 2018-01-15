@@ -1,15 +1,25 @@
 <?php
-ob_start();
 header('Content-Type: text/html; charset=utf-8');
 ini_set("allow_url_fopen", 1);
 
 $stranica = "https://www.links.hr";
 $trazilica = "/hr/search?q=";
-$pojamZaPretragu = "procesor"; //Trenutno hardcoded
+
+//popunjavanje podacima koirsnika
 $dodatak = "&adv=true&adv=false"; //??? vjerojatno treba za search
-$proizvodac = 658; // AMD --- 0 ako nije navedeno
-$cMin = 1000;
-$cMax = 20000;
+$pojamZaPretragu = $translated->tekst; 
+$proizvodac = 0; // --- 0 ako nije navedeno
+
+if(isset($translated->ostalo->cijenaOd)){
+    $cMin = $translated->ostalo->cijenaOd;
+}else {
+    $cMin="";
+}
+if(isset($translated->ostalo->cijenaDo)){
+    $cMax =$translated->ostalo->cijenaDo;
+}else{
+    $cMax="";
+}
 
 $asc = "&orderby=10";
 $desc = "&orderby=11";
@@ -23,8 +33,6 @@ $lines = file($url);
 
 //filteri
 $filterProizvodac = "";
-$filterCijenaMin = "";
-$filterCijenaMax = "";
 
 
 $nadjeno = FALSE;
@@ -50,12 +58,6 @@ if ($filterProizvodac !== "") {
     }
     $proizvodac = $filterProizvodac;
 }
-if ($filterCijenaMin !== "") {
-    $cMin = $filterCijenaMin;
-}
-if ($filterCijenaMax !== "") {
-    $cMax = $filterCijenaMax;
-}
 
 $url1 = $stranica . $trazilica . urlencode($pojamZaPretragu)
         . $proizvodi . $proizvodac
@@ -63,14 +65,14 @@ $url1 = $stranica . $trazilica . urlencode($pojamZaPretragu)
         . $cijenaOd . $cMin
         . $cijenaDo . $cMax
         . $asc;
-echo $url1 . "<br/>";
+//echo $url1 . "<br/>";
 
 $lines1 = file($url1);
 
 for ($index = 0; $index < count($lines1); $index++) {
     $polje = array();
     if (strpos($lines1[$index], "Nisu nađeni proizvodi koji odgovaraju zadanim kriterijima")) {
-        echo "Nisu nađeni proizvodi koji odgovaraju zadanim kriterijima <br/>";
+        $obj[] = null;
         break;
     }
     if (strpos($lines1[$index], "div class=\"product-item\"")) {
@@ -85,9 +87,9 @@ for ($index = 0; $index < count($lines1); $index++) {
     }
 }
 
-if ($nadjeno) {
+/*if ($nadjeno) {
     echo json_encode($obj, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-}
+}*/
 
 function parsiranjeProizvoda($polje) {
     $naziv = "";
@@ -145,22 +147,5 @@ function nadjiProizvodaca($naziv, $pro) {
     return FALSE;
 }
 
-nadjiProizvodaca("AMD", $pro);
 ?>
-<!DOCTYPE html>
-<!--
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
--->
-<html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-        <title></title>
-    </head>
-    <body>
-        <?php
-        ob_flush();
-        ?>
-    </body>
-</html>
+
