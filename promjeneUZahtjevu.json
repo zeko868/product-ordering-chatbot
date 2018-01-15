@@ -1,0 +1,26 @@
+[
+    {
+        "original":"INTELOV",
+        "promjena":"INTEL"
+    },
+    {
+        "original":"INTELA",
+        "promjena":"INTEL"
+    },
+    {
+        "original":"AMDOV",
+        "promjena":"AMD"
+    },
+    {
+        "original":"AMDA",
+        "promjena":"AMD"
+    },
+    {
+        "original":"NVIDIJIN",
+        "promjena":"NVIDIA"
+    },
+    {
+        "original":"PROCESOR",
+        "promjena":"RAČUNALNI PROCESOR"
+    }
+]
