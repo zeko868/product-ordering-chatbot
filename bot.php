@@ -73,7 +73,7 @@ if($translatedOutput['status'] == "OK"){
 
 $translated = urediIzlaz($translatedOutputText);
 
-$answer = strtolower_cro($translated);
+//$answer = strtolower_cro($translated);
 
 $trans = urediIzlaz($translatedOutputText);
 $nlpText['tekst'] = $trans;
