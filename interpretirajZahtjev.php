@@ -261,7 +261,7 @@ $answer = [
 	]
 ];
 $response = [
-	'recipient' => [ 'id' => $senderId ],
+	'recipient' => [ 'id' => "1155662414560805" ],
 	'message' => [ 'attachment' => $answer ]
 ];
 

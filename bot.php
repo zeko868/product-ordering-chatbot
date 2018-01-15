@@ -74,10 +74,27 @@ if($translatedOutput['status'] == "OK"){
 $translated = urediIzlaz($translatedOutputText);
 
 //$answer = strtolower_cro($translated);
-$answer = $senderId;
+
+$button = array();
+/*for($i=0;$i<=count($obj);$i++){
+	array_push($button, array('type'=>'postback', 'title'=>$obj[$i]->naziv, 'payload' => $obj[$i]->naziv));
+}*/
+
+array_push($button, array('type'=>'postback', 'title'=>"test 1", 'payload' => "test 1"));
+array_push($button, array('type'=>'postback', 'title'=>"test 2", 'payload' => "test 2"));
+array_push($button, array('type'=>'postback', 'title'=>"test 3", 'payload' => "test 3"));
+					
+$answer = [
+	'type'=>'template',
+	'payload'=>[
+		'template_type'=>'button',
+		'text'=>'Ponudeni artikli:',
+		'buttons'=> $button
+	]
+];
 $response = [
 	'recipient' => [ 'id' => $senderId ],
-	'message' => [ 'text' => $answer ]
+	'message' => [ 'attachment' => $answer ]
 ];
 
 $ch = curl_init("https://graph.facebook.com/v2.6/me/messages?access_token=$accessToken");
