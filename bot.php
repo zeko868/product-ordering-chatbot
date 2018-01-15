@@ -71,15 +71,13 @@ if($translatedOutput['status'] == "OK"){
     exit();
 }
 
-$translated = urediIzlaz($translatedOutputText);
-
 //$answer = strtolower_cro($translated);
 $answer = $senderId;
 $trans = urediIzlaz($translatedOutputText);
 $nlpText['tekst'] = $trans;
 $translated = $nlpText;
 
-include "./traziRobu.php";
+//include "./traziRobu.php";
 //var_dump(var_dump($obj[0]->naziv););
 /*
 $button = array();
