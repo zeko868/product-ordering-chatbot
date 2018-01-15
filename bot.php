@@ -73,8 +73,8 @@ if($translatedOutput['status'] == "OK"){
 
 $translated = urediIzlaz($translatedOutputText);
 
-$answer = strtolower_cro($translated);
-
+//$answer = strtolower_cro($translated);
+$answer = $senderId;
 $response = [
 	'recipient' => [ 'id' => $senderId ],
 	'message' => [ 'text' => $answer ]
