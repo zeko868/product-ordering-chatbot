@@ -74,14 +74,14 @@ if($translatedOutput['status'] == "OK"){
 $translated = urediIzlaz($translatedOutputText);
 
 //$answer = strtolower_cro($translated);
-
+$answer = $senderId;
 $trans = urediIzlaz($translatedOutputText);
 $nlpText['tekst'] = $trans;
 $translated = $nlpText;
 
 include "./traziRobu.php";
 //var_dump(var_dump($obj[0]->naziv););
-
+/*
 $button = array();
 for($i=0;$i<=count($obj);$i++){
 	array_push($button, array('type'=>'postback', 'title'=>$obj[$i]->naziv, 'payload' => $obj[$i]->naziv));
@@ -98,6 +98,11 @@ $answer = [
 $response = [
 	'recipient' => [ 'id' => $senderId ],
 	'message' => [ 'attachment' => $answer ]
+];
+*/
+$response = [
+	'recipient' => [ 'id' => $senderId ],
+	'message' => [ 'text' => $answer ]
 ];
 
 $ch = curl_init("https://graph.facebook.com/v2.6/me/messages?access_token=$accessToken");

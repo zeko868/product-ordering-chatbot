@@ -192,7 +192,7 @@ function urediIzlaz($inputText){
 //$inputText = "Želim grafičku karticu nvidia geforce mx 440 cijene veće od 2000 kuna.";
 //$inputText = "Želim grafičku karticu nvidia geforce mx 440 cijene manje od 3000 kuna.";
 //$inputText = "Želim grafičku karticu nvidia geforce mx 440 cijene između 1000 i 3000 kn.";
-/*$inputText = "Želim grafičku karticu nvidia geforce mx 440 cijene veće od 1000 i manje od 3000 kuna.";
+$inputText = "Želim grafičku karticu nvidia geforce mx 440 cijene veće od 1000 i manje od 3000 kuna.";
 
 
 $input = prilagodiZahtjev(strtoupper($inputText));
@@ -246,4 +246,23 @@ $translated = $nlpText;
 
 include "./traziRobu.php";
 
-var_dump($obj);*/
+$button = array();
+for($i=0;$i<count($obj);$i++){
+	array_push($button, array('type'=>'postback', 'title'=>$obj[$i]->naziv, 'payload' => $obj[$i]->naziv));
+}
+
+
+$answer = [
+	'type'=>'template',
+	'payload'=>[
+		'template_type'=>'button',
+		'text'=>'Ponudeni artikli:',
+		'buttons'=> $button
+	]
+];
+$response = [
+	'recipient' => [ 'id' => $senderId ],
+	'message' => [ 'attachment' => $answer ]
+];
+
+echo json_encode($response);
