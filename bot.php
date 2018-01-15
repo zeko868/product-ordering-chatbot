@@ -49,7 +49,7 @@ if (!empty($input['entry'][0]['messaging'])) {
 
 /* "server is down" message */
 
-$input = prilagodiZahtjev(strtoupper($command));
+/*$input = prilagodiZahtjev(strtoupper($command));
 
 $translatedInput = translateInput($input, 'en');
 
@@ -71,33 +71,11 @@ if($translatedOutput['status'] == "OK"){
     exit();
 }
 
-//$answer = strtolower_cro($translated);
-$answer = $senderId;
-$trans = urediIzlaz($translatedOutputText);
-$nlpText['tekst'] = $trans;
-$translated = $nlpText;
+$translated = urediIzlaz($translatedOutputText);
 
-//include "./traziRobu.php";
-//var_dump(var_dump($obj[0]->naziv););
-/*
-$button = array();
-for($i=0;$i<=count($obj);$i++){
-	array_push($button, array('type'=>'postback', 'title'=>$obj[$i]->naziv, 'payload' => $obj[$i]->naziv));
-}
-					
-$answer = [
-	'type'=>'template',
-	'payload'=>[
-		'template_type'=>'button',
-		'text'=>'Ponudeni artikli:',
-		'buttons'=> $button
-	]
-];
-$response = [
-	'recipient' => [ 'id' => $senderId ],
-	'message' => [ 'attachment' => $answer ]
-];
-*/
+$answer = strtolower_cro($translated);*/
+
+$answer = $command;
 $response = [
 	'recipient' => [ 'id' => $senderId ],
 	'message' => [ 'text' => $answer ]
