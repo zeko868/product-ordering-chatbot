@@ -1,4 +1,5 @@
 <?php
+
 header('Content-Type: text/html; charset=utf-8');
 ini_set("allow_url_fopen", 1);
 
@@ -7,18 +8,17 @@ $trazilica = "/hr/search?q=";
 
 //popunjavanje podacima koirsnika
 $dodatak = "&adv=true&adv=false"; //??? vjerojatno treba za search
-$pojamZaPretragu = $translated["tekst"]; 
-$proizvodac = 0; // --- 0 ako nije navedeno
+$pojamZaPretragu = $translated["tekst"];
 
-if(isset($translated["ostalo"]["cijenaOd"])){
+if (isset($translated["ostalo"]["cijenaOd"])) {
     $cMin = $translated["ostalo"]["cijenaOd"];
-}else {
-    $cMin="";
+} else {
+    $cMin = "";
 }
-if(isset($translated["ostalo"]["cijenaDo"])){
-    $cMax =$translated["ostalo"]["cijenaDo"];
-}else{
-    $cMax="";
+if (isset($translated["ostalo"]["cijenaDo"])) {
+    $cMax = $translated["ostalo"]["cijenaDo"];
+} else {
+    $cMax = "";
 }
 
 $asc = "&orderby=10";
@@ -48,12 +48,12 @@ for ($i = 0; $i < count($lines); $i++) {
     }
 }
 //echo json_encode($pro, JSON_UNESCAPED_UNICODE);
-
-
+//filteri -- proizvođač
+$proizvodac = nadjiProizvodaca($translated["ostalo"]["ostaliFilteri"], $pro); // 0 ako nije naveden
 //url za pretragu
 if ($filterProizvodac !== "") {
     $rez = nadjiProizvodaca($filterProizvodac, $pro);
-    if($rez === FALSE){
+    if ($rez === FALSE) {
         
     }
     $proizvodac = $filterProizvodac;
@@ -87,9 +87,9 @@ for ($index = 0; $index < count($lines1); $index++) {
     }
 }
 
-/*if ($nadjeno) {
-    echo json_encode($obj, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-}*/
+/* if ($nadjeno) {
+  echo json_encode($obj, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+  } */
 
 function parsiranjeProizvoda($polje) {
     $naziv = "";
@@ -139,13 +139,14 @@ function parsirajProizvodace($linija) {
 }
 
 function nadjiProizvodaca($naziv, $pro) {
-    foreach ($pro as $object) {
-        if ($object->proizvodac === $naziv) {
-            return $object->id;
+    for ($i = 0; $i < count($naziv); $i++) {
+        foreach ($pro as $object) {
+            if ($object->proizvodac === $naziv[$i]) {
+                return $object->id;
+            }
         }
     }
-    return FALSE;
+    return 0;
 }
-
 ?>
 
