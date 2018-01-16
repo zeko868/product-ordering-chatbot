@@ -48,12 +48,12 @@ if (!empty($input['entry'][0]['messaging'])) {
 }/*	 	$command = 'konzultacije Petar Šestak -'; $senderId = '1532028376807777';	//for debugging purposes */
 
 /* "server is down" message */
-if(strpos($command,"\/hr\/")){
 
-	include "./provjeraDostupnosti";
+
+if(strpos($command,"/hr/") == 0){
+	
 	$linkProizovada = $command;
-
-	$answer = $command;
+	include "./provjeraDostupnosti.php";
 	$response = [
 		'recipient' => [ 'id' => $senderId ],
 		'message' => [ 'text' => $answer ]
@@ -108,13 +108,13 @@ if(strpos($command,"\/hr\/")){
 		'message' => [ 'attachment' => $answer ]
 	];
 }
-
 $ch = curl_init("https://graph.facebook.com/v2.6/me/messages?access_token=$accessToken");
 curl_setopt($ch, CURLOPT_POST, 1);
 curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($response));
 curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-if(!empty($input)){
+if($command != ""){
 	$result = curl_exec($ch);
+	var_dump($result);
 }
 curl_close($ch);
 exit();

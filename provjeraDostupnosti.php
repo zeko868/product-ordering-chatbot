@@ -38,6 +38,11 @@ for ($index = 0; $index < count($lines); $index++) {
 
 if (!$nedostupno) {
     echo json_encode($obj, JSON_UNESCAPED_UNICODE);
+    //slijedecu liniju slobodno makni kad ces implementirati sve ostalo
+    $answer = "Proizvod je dostupan";
+    //tu bi se trebao nastaviti proces narucivanja
+}else{
+    $answer = "Ispričavamo se, proizvod trenutno nije dostupan!";
 }
 
 function parsiranjeSkladista($polje) {
