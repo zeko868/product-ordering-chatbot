@@ -247,7 +247,7 @@ $translated = $nlpText;
 include "./traziRobu.php";
 
 $button = array();
-$allButtons = array();
+
 for($i=0;$i<count($obj);$i++){
 	array_push($button, array('title'=>$obj[$i]->naziv, 'image_url'=>$obj[$i]->slika, 'subtitle' => $obj[$i]->naziv . ", cijena: " . $obj[$i]->cijena, 'buttons' => array(array('type' => 'web_url', 'url' => "links.hr" . $obj[$i]->link, 'title' => 'Naruči proizvod'))));
     if(sizeof($button) == 3){
@@ -264,9 +264,17 @@ for($i=0;$i<count($obj);$i++){
             'message' => [ 'attachment' => $answer ]
         ];
 
+		/*$ch = curl_init("https://graph.facebook.com/v2.6/me/messages?access_token=$accessToken");
+		curl_setopt($ch, CURLOPT_POST, 1);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($response));
+		curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+		if(!empty($input)){
+			$result = curl_exec($ch);
+		}
+		curl_close($ch);*/
+        var_dump($response);
+        echo "<br/>------------------------------------------------------------------------<br/>";
         $button = array();
-        echo json_encode($response);
-        return;
     }
 }
 if(sizeof($button) != 0){
@@ -282,4 +290,18 @@ if(sizeof($button) != 0){
 		'recipient' => [ 'id' => "1155662414560805" ],
 		'message' => [ 'attachment' => $answer ]
 	];
-}*/
+
+    var_dump($response);
+    echo "<br/>------------------------------------------------------------------------<br/>";
+
+	/*$ch = curl_init("https://graph.facebook.com/v2.6/me/messages?access_token=$accessToken");
+	curl_setopt($ch, CURLOPT_POST, 1);
+	curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($response));
+	curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+	if(!empty($input)){
+		$result = curl_exec($ch);
+	}
+	curl_close($ch);*/
+}
+
+exit();*/
