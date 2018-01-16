@@ -71,9 +71,12 @@ if($translatedOutput['status'] == "OK"){
     exit();
 }
 
-$translated = urediIzlaz($translatedOutputText);
+$trans = urediIzlaz($translatedOutputText);
+$nlpText['tekst'] = $trans;
+$translated = $nlpText;
+//echo "<br/>Kupac pretražuje: " . strtolower_cro($translated);
 
-//$answer = strtolower_cro($translated);
+include "./traziRobu.php";
 
 $button = array();
 $allButtons = array();
