@@ -76,34 +76,58 @@ $translated = urediIzlaz($translatedOutputText);
 //$answer = strtolower_cro($translated);
 
 $button = array();
-/*for($i=0;$i<=count($obj);$i++){
-	array_push($button, array('type'=>'postback', 'title'=>$obj[$i]->naziv, 'payload' => $obj[$i]->naziv));
-}*/
+$allButtons = array();
+for($i=0;$i<count($obj);$i++){
+	array_push($button, array('title'=>$obj[$i]->naziv, 'image_url'=>$obj[$i]->slika, 'subtitle' => $obj[$i]->naziv . ", cijena: " . $obj[$i]->cijena, 'buttons' => array(array('type' => 'web_url', 'url' => $obj[$i]->link, 'title' => 'Naruči proizvod'))));
+    if(sizeof($button) == 3){
+        $answer = [
+            'type'=>'template',
+            'payload'=>[
+                'template_type'=>'list',
+                'elements'=> $button
+            ]
+        ];
 
-array_push($button, array('type'=>'postback', 'title'=>"test 1", 'payload' => "test 1"));
-array_push($button, array('type'=>'postback', 'title'=>"test 2", 'payload' => "test 2"));
-array_push($button, array('type'=>'postback', 'title'=>"test 3", 'payload' => "test 3"));
-//array_push($button, array('type'=>'postback', 'title'=>"test 4", 'payload' => "test 4"));
-					
-$answer = [
-	'type'=>'template',
-	'payload'=>[
-		'template_type'=>'button',
-		'text'=>'Ponudeni artikli:',
-		'buttons'=> $button
-	]
-];
-$response = [
-	'recipient' => [ 'id' => $senderId ],
-	'message' => [ 'attachment' => $answer ]
-];
+        $response = [
+            'recipient' => [ 'id' => "1155662414560805" ],
+            'message' => [ 'attachment' => $answer ]
+        ];
 
-$ch = curl_init("https://graph.facebook.com/v2.6/me/messages?access_token=$accessToken");
-curl_setopt($ch, CURLOPT_POST, 1);
-curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($response));
-curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-if(!empty($input)){
-	$result = curl_exec($ch);
+		$ch = curl_init("https://graph.facebook.com/v2.6/me/messages?access_token=$accessToken");
+		curl_setopt($ch, CURLOPT_POST, 1);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($response));
+		curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+		if(!empty($input)){
+			$result = curl_exec($ch);
+		}
+		curl_close($ch);
+
+        $button = array();
+    }
 }
-curl_close($ch);
+if(sizeof($button) != 0){
+    $answer = [
+		'type'=>'template',
+		'payload'=>[
+			'template_type'=>'list',
+			'elements'=> $button
+		]
+	];
+
+	$response = [
+		'recipient' => [ 'id' => "1155662414560805" ],
+		'message' => [ 'attachment' => $answer ]
+	];
+
+	$ch = curl_init("https://graph.facebook.com/v2.6/me/messages?access_token=$accessToken");
+	curl_setopt($ch, CURLOPT_POST, 1);
+	curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($response));
+	curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+	if(!empty($input)){
+		$result = curl_exec($ch);
+	}
+	curl_close($ch);
+}
+
+
 exit();

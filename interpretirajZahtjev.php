@@ -245,24 +245,3 @@ $translated = $nlpText;
 //echo "<br/>Kupac pretražuje: " . strtolower_cro($translated);
 
 include "./traziRobu.php";
-
-$button = array();
-for($i=0;$i<count($obj);$i++){
-	array_push($button, array('type'=>'postback', 'title'=>$obj[$i]->naziv, 'payload' => $obj[$i]->naziv));
-}
-
-
-$answer = [
-	'type'=>'template',
-	'payload'=>[
-		'template_type'=>'button',
-		'text'=>'Ponudeni artikli:',
-		'buttons'=> $button
-	]
-];
-$response = [
-	'recipient' => [ 'id' => "1155662414560805" ],
-	'message' => [ 'attachment' => $answer ]
-];
-
-echo json_encode($response);
