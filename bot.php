@@ -50,7 +50,7 @@ if (!empty($input['entry'][0]['messaging'])) {
 /* "server is down" message */
 
 
-if(strpos($command,"hr/")){
+if(strpos($command,'/hr/') === 0){
 	
 	$linkProizovada = $command;
 	include "./provjeraDostupnosti.php";
