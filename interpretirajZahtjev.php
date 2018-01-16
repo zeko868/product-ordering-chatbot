@@ -248,60 +248,31 @@ include "./traziRobu.php";
 
 $button = array();
 
-for($i=0;$i<count($obj);$i++){
-	array_push($button, array('title'=>$obj[$i]->naziv, 'image_url'=>$obj[$i]->slika, 'subtitle' => $obj[$i]->naziv . ", cijena: " . $obj[$i]->cijena, 'buttons' => array(array('type' => 'web_url', 'url' => "links.hr" . $obj[$i]->link, 'title' => 'Naruči proizvod'))));
-    if(sizeof($button) == 3){
-        $answer = [
-            'type'=>'template',
-            'payload'=>[
-                'template_type'=>'list',
-                'elements'=> $button
-            ]
-        ];
-
-        $response = [
-            'recipient' => [ 'id' => "1155662414560805" ],
-            'message' => [ 'attachment' => $answer ]
-        ];
-
-		/*$ch = curl_init("https://graph.facebook.com/v2.6/me/messages?access_token=$accessToken");
-		curl_setopt($ch, CURLOPT_POST, 1);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($response));
-		curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-		if(!empty($input)){
-			$result = curl_exec($ch);
-		}
-		curl_close($ch);*/
-        var_dump($response);
-        echo "<br/>------------------------------------------------------------------------<br/>";
-        $button = array();
-    }
+for($i=0;$i<10 && $i < count($obj);$i++){
+	array_push($button, array('title'=>htmlentities($obj[$i]->naziv), 'image_url'=>$obj[$i]->slika, 'subtitle' => htmlentities($obj[$i]->naziv) . ", cijena: " . $obj[$i]->cijena, 'buttons' => array(array('type' => 'web_url', 'url' => "links.hr" . $obj[$i]->link, 'title' => 'Naruči proizvod'))));
 }
-if(sizeof($button) != 0){
-    $answer = [
-		'type'=>'template',
-		'payload'=>[
-			'template_type'=>'list',
-			'elements'=> $button
-		]
-	];
 
-	$response = [
-		'recipient' => [ 'id' => "1155662414560805" ],
-		'message' => [ 'attachment' => $answer ]
-	];
+$answer = [
+	'type'=>'template',
+	'payload'=>[
+		'template_type'=>'generic',
+		'elements'=> $button
+	]
+];
 
-    var_dump($response);
-    echo "<br/>------------------------------------------------------------------------<br/>";
+$response = [
+	'recipient' => [ 'id' => "1155662414560805" ],
+	'message' => [ 'attachment' => $answer ]
+];
 
-	/*$ch = curl_init("https://graph.facebook.com/v2.6/me/messages?access_token=$accessToken");
-	curl_setopt($ch, CURLOPT_POST, 1);
-	curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($response));
-	curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-	if(!empty($input)){
-		$result = curl_exec($ch);
-	}
-	curl_close($ch);*/
+/*$ch = curl_init("https://graph.facebook.com/v2.6/me/messages?access_token=$accessToken");
+curl_setopt($ch, CURLOPT_POST, 1);
+curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($response));
+curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+if(!empty($input)){
+	$result = curl_exec($ch);
 }
+curl_close($ch);*/
+echo json_encode($response);
 
 exit();*/

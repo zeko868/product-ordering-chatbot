@@ -80,8 +80,8 @@ include "./traziRobu.php";
 
 $button = array();
 
-for($i=0;$i<count($obj);$i++){
-	array_push($button, array('title'=>$obj[$i]->naziv, 'image_url'=>$obj[$i]->slika, 'subtitle' => $obj[$i]->naziv . ", cijena: " . $obj[$i]->cijena, 'buttons' => array(array('type' => 'web_url', 'url' => "links.hr" . $obj[$i]->link, 'title' => 'Naruči proizvod'))));
+for($i=0;$i<10 && $i < count($obj);$i++){
+	array_push($button, array('title'=>htmlentities($obj[$i]->naziv), 'image_url'=>$obj[$i]->slika, 'subtitle' => htmlentities($obj[$i]->naziv) . ", cijena: " . $obj[$i]->cijena, 'buttons' => array(array('type' => 'web_url', 'url' => "links.hr" . $obj[$i]->link, 'title' => 'Naruči proizvod'))));
 }
 
 $answer = [
