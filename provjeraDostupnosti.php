@@ -3,7 +3,7 @@
 ob_start();
 header('Content-Type: text/html; charset=utf-8');
 //hardcoded za sad
-$linkProizovada = "/hr/graficka-kartica-used-pci-e-gainward-geforce-gtx-970-phoenix-4gb-ddr5-dvi-hdmi-mdp-8100001048";
+//$linkProizovada = "/hr/graficka-kartica-used-pci-e-gainward-geforce-gtx-970-phoenix-4gb-ddr5-dvi-hdmi-mdp-8100001048";
 //nedostupno
 //$linkNedostupno = "/hr/graficka-kartica-used-pci-e-gainward-geforce-gtx-960-phantom-glh-2gb-ddr5-dualdvi-hdmi-dp-810000861";
 $nedostupno = FALSE;

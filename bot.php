@@ -48,54 +48,66 @@ if (!empty($input['entry'][0]['messaging'])) {
 }/*	 	$command = 'konzultacije Petar Šestak -'; $senderId = '1532028376807777';	//for debugging purposes */
 
 /* "server is down" message */
+if(strpos($command,"\/hr\/")){
 
-$input = prilagodiZahtjev(strtoupper($command));
+	include "./provjeraDostupnosti";
+	$linkProizovada = $command;
 
-$translatedInput = translateInput($input, 'en');
+	$answer = $command;
+	$response = [
+		'recipient' => [ 'id' => $senderId ],
+		'message' => [ 'text' => $answer ]
+	];
 
-if($translatedInput['status'] == "OK"){
-    $nlpText = NLPtext($translatedInput['translate']);
 }else{
-    $answer = "Unesena je narudzba na krivom jeziku!";
-    exit();
+	$input = prilagodiZahtjev(strtoupper($command));
+
+	$translatedInput = translateInput($input, 'en');
+
+	if($translatedInput['status'] == "OK"){
+		$nlpText = NLPtext($translatedInput['translate']);
+	}else{
+		$answer = "Unesena je narudzba na krivom jeziku!";
+		exit();
+	}
+
+	//var_dump($nlpText);
+
+	$translatedOutput = translateInput($nlpText['tekst'], 'hr');
+
+	if($translatedOutput['status'] == "OK"){
+		$translatedOutputText = $translatedOutput['translate'];
+	}else{
+		$answer = "Doslo je do pogreske!";
+		exit();
+	}
+
+	$trans = urediIzlaz($translatedOutputText);
+	$nlpText['tekst'] = $trans;
+	$translated = $nlpText;
+	//echo "<br/>Kupac pretražuje: " . strtolower_cro($translated);
+
+	include "./traziRobu.php";
+
+	$button = array();
+
+	for($i=0;$i<10 && $i < count($obj);$i++){
+		array_push($button, array('title'=>htmlentities($obj[$i]->naziv), 'image_url'=>$obj[$i]->slika, 'subtitle' => htmlentities($obj[$i]->naziv) . ", cijena: " . $obj[$i]->cijena, 'buttons' => array(array('type' => 'postback', 'payload' => $obj[$i]->link, 'title' => 'Naruči proizvod'))));
+	}
+
+	$answer = [
+		'type'=>'template',
+		'payload'=>[
+			'template_type'=>'generic',
+			'elements'=> $button
+		]
+	];
+
+	$response = [
+		'recipient' => [ 'id' => $senderId ],
+		'message' => [ 'attachment' => $answer ]
+	];
 }
-
-//var_dump($nlpText);
-
-$translatedOutput = translateInput($nlpText['tekst'], 'hr');
-
-if($translatedOutput['status'] == "OK"){
-    $translatedOutputText = $translatedOutput['translate'];
-}else{
-    $answer = "Doslo je do pogreske!";
-    exit();
-}
-
-$trans = urediIzlaz($translatedOutputText);
-$nlpText['tekst'] = $trans;
-$translated = $nlpText;
-//echo "<br/>Kupac pretražuje: " . strtolower_cro($translated);
-
-include "./traziRobu.php";
-
-$button = array();
-
-for($i=0;$i<10 && $i < count($obj);$i++){
-	array_push($button, array('title'=>htmlentities($obj[$i]->naziv), 'image_url'=>$obj[$i]->slika, 'subtitle' => htmlentities($obj[$i]->naziv) . ", cijena: " . $obj[$i]->cijena, 'buttons' => array(array('type' => 'web_url', 'url' => "links.hr" . $obj[$i]->link, 'title' => 'Naruči proizvod'))));
-}
-
-$answer = [
-	'type'=>'template',
-	'payload'=>[
-		'template_type'=>'generic',
-		'elements'=> $button
-	]
-];
-
-$response = [
-	'recipient' => [ 'id' => $senderId ],
-	'message' => [ 'attachment' => $answer ]
-];
 
 $ch = curl_init("https://graph.facebook.com/v2.6/me/messages?access_token=$accessToken");
 curl_setopt($ch, CURLOPT_POST, 1);
