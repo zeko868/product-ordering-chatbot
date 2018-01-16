@@ -193,7 +193,7 @@ function urediIzlaz($inputText){
 //$inputText = "Želim grafičku karticu nvidia geforce mx 440 cijene manje od 3000 kuna.";
 //$inputText = "Želim grafičku karticu nvidia geforce mx 440 cijene između 1000 i 3000 kn.";
 //$inputText = "Želim grafičku karticu nvidia geforce mx 440 cijene veće od 1000 i manje od 3000 kuna.";
-$inputText = "Želio bih naručiti računalni procesor AMD Ryzen";
+/*$inputText = "Želio bih naručiti računalni procesor AMD Ryzen";
 
 $input = prilagodiZahtjev(strtoupper($inputText));
 
@@ -244,7 +244,7 @@ $nlpText['tekst'] = $trans;
 $translated = $nlpText;
 
 include "./traziRobu.php";
-var_dump($obj);
+var_dump($obj);*/
 //echo "<br/>Kupac pretražuje: " . strtolower_cro($translated);
 
 /*include "./traziRobu.php";
