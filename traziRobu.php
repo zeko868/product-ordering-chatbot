@@ -58,8 +58,7 @@ $url1 = $stranica . $trazilica . urlencode($pojamZaPretragu)
         . $proizvodi . $proizvodac
         . $dodatak
         . $cijenaOd . $cMin
-        . $cijenaDo . $cMax
-        . $asc;
+        . $cijenaDo . $cMax;
 
 $lines1 = file($url1);
 
