@@ -80,7 +80,7 @@ include "./traziRobu.php";
 
 $button = array();
 $allButtons = array();
-for($i=0;$i<count($obj);$i++){
+/*for($i=0;$i<count($obj);$i++){
 	array_push($button, array('title'=>$obj[$i]->naziv, 'image_url'=>$obj[$i]->slika, 'subtitle' => $obj[$i]->naziv . ", cijena: " . $obj[$i]->cijena, 'buttons' => array(array('type' => 'web_url', 'url' => "links.hr" . $obj[$i]->link, 'title' => 'Naruči proizvod'))));
     if(sizeof($button) == 3){
         $answer = [
@@ -130,7 +130,7 @@ if(sizeof($button) != 0){
 		$result = curl_exec($ch);
 	}
 	curl_close($ch);
-}
+}*/
 
 
 exit();
