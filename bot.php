@@ -79,7 +79,7 @@ if (!empty($input['entry'][0]['messaging'])) {
 				curl_close($ch);
 				if ($result['status'] == 'OK') {
 					if (count($result['results']) === 1) {
-						foreach ($results['results'][0]['address_components'] as $comp) {
+						foreach ($result['results'][0]['address_components'] as $comp) {
 							if (in_array('street_number', $comp['types'])) {
 								$streetNum = $comp['short_name'];
 							}
