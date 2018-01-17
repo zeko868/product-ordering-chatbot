@@ -2,8 +2,6 @@
 ob_start();
 header('Content-Type: text/html; charset=utf-8');
 
-const API_KEY = 'AIzaSyByjQCWlKAH_uKFlnN0fCUYduP8sXnjQLo';
-
 function strtolower_cro($string)
 {
     $low=array("Č" => "č","ć" => "ć", "Đ" => "đ", "Š" => "š", "Ž" => "ž");
