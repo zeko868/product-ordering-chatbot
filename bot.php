@@ -159,6 +159,7 @@ if (!empty($input['entry'][0]['messaging'])) {
 				$linkProizovada = $commandParts[0];
 				$action = $commandParts[1];
 				$delivery = ($action === 'dostava');
+				$closestStore = $action;
 				$desiredProducts = [ $linkProizovada => 1 ];
 				require 'naruciRobu.php';
 			 }

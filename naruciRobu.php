@@ -6,7 +6,7 @@ header('Content-Type=> text/html; charset=utf-8');
 $firstName = $userInfo['first_name'];
 $lastName = $userInfo['last_name'];
 $email = $userInfo['email'];
-$address = $userInfo['route'] . ' ' . $userInfo['street_number'];
+$address = "$userInfo[route] $userInfo[street_number]";
 $postCode = $userInfo['postal_code'];  // optional if $city is specified
 //$city = 'Marija Bistrica';      // optional if $postCode is specified
 $phoneNum = $userInfo['phone'];
@@ -18,16 +18,9 @@ $desiredProducts = [
 $delivery = true;
 */
 
-if (empty($firstName) || empty($lastName) || empty($email) || empty($address) || (empty($postCode) && empty($city)) || empty($phoneNum) || empty($desiredProducts) || min(array_values($desiredProducts)) < 1 || !isset($delivery)) {
+if (empty($firstName) || empty($lastName) || empty($email) || empty($address) || (empty($postCode) && empty($city)) || empty($phoneNum) || empty($desiredProducts) || min(array_values($desiredProducts)) < 1 || !isset($delivery) || (!$delivery && empty($closestStore))) {
     echo 'Nisu uneseni svi podaci potrebni za izvršenje narudžbe!';
     return;
-}
-
-if ($delivery) {
-    $closestStore = 'dostava';
-}
-else {
-    $closestStore = 'Varaždin'; // this should be fetched via script 'pronadjiNajblizeSkladiste'
 }
 
 if (isset($postCode)) {
