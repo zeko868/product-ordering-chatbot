@@ -177,7 +177,7 @@ if(strpos($command,'/hr/') === 0){
 	require './provjeraDostupnosti.php';
 	$response = [
 		'recipient' => [ 'id' => $senderId ],
-		'message' => [ 'text' => $answer ]
+		'message' => [ ($jestInteraktivan ? 'attachment' : 'text') => $answer ]
 	];
 }else{
 	$input = prilagodiZahtjev(strtoupper($command));

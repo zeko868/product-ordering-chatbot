@@ -39,6 +39,7 @@ for ($index = 0; $index < count($lines); $index++) {
 if (!$nedostupno) {
     $dostupnosti = $obj;
     require 'pronadjiNajblizeSkladiste.php';
+    $jestInteraktivan = true;
     $buttons = array();
     switch ($najblizeIshodiste) {
         case null:
@@ -62,6 +63,7 @@ if (!$nedostupno) {
     ];
 }else{
     $answer = 'Ispričavamo se, traženi artikl trenutno nije dostupan!';
+    $jestInteraktivan = false;
 }
 
 function parsiranjeSkladista($polje) {
