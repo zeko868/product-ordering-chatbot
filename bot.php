@@ -43,6 +43,7 @@ if (!empty($input['entry'][0]['messaging'])) {
         if (!empty($message['message'])) {
 			$command = $message['message']['text'];
 
+			$introGuidelines = '';
 			if (!array_key_exists($senderId, $adresar)) {
 				$ch = curl_init();
 				curl_setopt_array($ch, array(
@@ -60,7 +61,7 @@ if (!empty($input['entry'][0]['messaging'])) {
 				$adresar[$senderId]['first_name'] = $ime;
 				$adresar[$senderId]['last_name'] = $prezime;
 				file_put_contents('adresar.json', json_encode($adresar));
-				echo "Poštovanje  $ime $prezime,\n";
+				$introGuidelines = "Poštovanje  $ime $prezime,\n";
 				$upravoDeklariran = true;
 			}
 			if (!array_key_exists('address', $adresar[$senderId])) {
@@ -92,59 +93,59 @@ if (!empty($input['entry'][0]['messaging'])) {
 						if (isset($streetNum) && isset($route) && isset($postalCode)) {
 							$adresar[$senderId]['address'] = ['street_number' => $streetNum, 'route' => $route, 'postal_code' => $postalCode];
 							file_put_contents('adresar.json', json_encode($adresar));
-							echo "Uspješno ste registrirali adresu uz Vaš korisnički račun!\nNavedite Vašu e-mail adresu na koju ćete biti u mogućnosti kontaktirani";
+							$introGuidelines .= "Uspješno ste registrirali adresu uz Vaš korisnički račun!\nNavedite Vašu e-mail adresu na koju ćete biti u mogućnosti kontaktirani";
 						}
 						else {
 							if (isset($upravoDeklariran)) {
-								echo 'Za korištenje aplikacije, potrebno je proći kroz 3 koraka konfiguracije. Za početak, navedite Vašu adresu na koju će biti dopremljena roba.';
+								$introGuidelines .= 'Za korištenje aplikacije, potrebno je proći kroz 3 koraka konfiguracije. Za početak, navedite Vašu adresu na koju će biti dopremljena roba.';
 							}
 							else {
-								echo 'Molimo Vas da navedete sve komponente adrese koje su nam od značaja poput naziva ulice i kućnog broja te naziva poštanskog mjesta ili njegovog pripadajućeg broja';
+								$introGuidelines = 'Molimo Vas da navedete sve komponente adrese koje su nam od značaja poput naziva ulice i kućnog broja te naziva poštanskog mjesta ili njegovog pripadajućeg broja';
 							}
 						}
 					}
 					else {
 						if (isset($upravoDeklariran)) {
-							echo 'Za korištenje aplikacije, potrebno je proći kroz 3 koraka konfiguracije. Za početak, navedite Vašu adresu na koju će biti dopremljena roba.';
+							$introGuidelines .= 'Za korištenje aplikacije, potrebno je proći kroz 3 koraka konfiguracije. Za početak, navedite Vašu adresu na koju će biti dopremljena roba.';
 						}
 					else {
-							echo 'Molimo Vas da precizirate adresu! Naime, ne može se pouzdano otkriti o kojem je točno mjestu riječ';
+							$introGuidelines = 'Molimo Vas da precizirate adresu! Naime, ne može se pouzdano otkriti o kojem je točno mjestu riječ';
 						}
 					}
 				}
 				else {
 					if (isset($upravoDeklariran)) {
-						echo 'Za korištenje aplikacije, potrebno je proći kroz 3 koraka konfiguracije. Za početak, navedite Vašu adresu na koju će biti dopremljena roba.';
+						$introGuidelines .= 'Za korištenje aplikacije, potrebno je proći kroz 3 koraka konfiguracije. Za početak, navedite Vašu adresu na koju će biti dopremljena roba.';
 					}
 					else {
-						echo 'Molimo Vas da precizirate adresu! Naime, nije pronađeno nijedno mjesto koje odgovara na navedeni opis';
+						$introGuidelines = 'Molimo Vas da precizirate adresu! Naime, nije pronađeno nijedno mjesto koje odgovara na navedeni opis';
 					}
 				}
-				exit();
+				replyBackWithSimpleText($introGuidelines);
 			}
 			else {
 				if (!array_key_exists('email', $adresar[$senderId])) {
 					if (preg_match('/^.*@.*\..*$/', $command)) {
 						$adresar[$senderId]['email'] = $command;
 						file_put_contents('adresar.json', json_encode($adresar));
-						echo "Uspješno ste registrirali e-mail adresu uz Vaš korisnički račun!\nNavedite još Vaš kontaktni broj telefona";
+						$introGuidelines = "Uspješno ste registrirali e-mail adresu uz Vaš korisnički račun!\nNavedite još Vaš kontaktni broj telefona";
 					}
 					else {
-						echo 'E-mail adresa koju ste naveli nije važećeg formata! Molimo, napišite Vašu ispravnu e-mail adresu';
+						$introGuidelines = 'E-mail adresa koju ste naveli nije važećeg formata! Molimo, napišite Vašu ispravnu e-mail adresu';
 					}
-					exit();
+					replyBackWithSimpleText($introGuidelines);
 				}
 				else {
 					if (!array_key_exists('phone', $adresar[$senderId])) {
 						if (preg_match('/^\+?\d+(\s+\d+)+$/', $command)) {
 							$adresar[$senderId]['phone'] = $command;
 							file_put_contents('adresar.json', json_encode($adresar));
-							echo "Uspješno ste registrirali telefonski broj uz Vaš korisnički račun!\nSada možete započeti s pretragom i naručivanjem artikala.";
+							$introGuidelines = "Uspješno ste registrirali telefonski broj uz Vaš korisnički račun!\nSada možete započeti s pretragom i naručivanjem artikala.";
 						}
 						else {
-							echo 'Tekst koji ste unijeli ne predstavlja važeći telefonski broj! Molimo, napišite Vaš ispravni telefonski broj';
+							$introGuidelines = 'Tekst koji ste unijeli ne predstavlja važeći telefonski broj! Molimo, napišite Vaš ispravni telefonski broj';
 						}
-						exit();
+						replyBackWithSimpleText($introGuidelines);
 					}
 				}
 			}
@@ -176,8 +177,7 @@ if(strpos($command,'/hr/') === 0){
 	if($translatedInput['status'] == "OK"){
 		$nlpText = NLPtext($translatedInput['translate']);
 	}else{
-		$answer = "Unesena je narudzba na krivom jeziku!";
-		exit();
+		replyBackWithSimpleText('Unesena je narudžba na krivom jeziku!');
 	}
 
 	//var_dump($nlpText);
@@ -187,8 +187,7 @@ if(strpos($command,'/hr/') === 0){
 	if($translatedOutput['status'] == "OK"){
 		$translatedOutputText = $translatedOutput['translate'];
 	}else{
-		$answer = "Doslo je do pogreske!";
-		exit();
+		replyBackWithSimpleText('Došlo je do pogreške!');
 	}
 
 	$trans = urediIzlaz($translatedOutputText);
@@ -218,7 +217,6 @@ if(strpos($command,'/hr/') === 0){
 			'message' => [ 'attachment' => $answer ]
 		];
 	}else{
-		$answer = "Ne postoji proizvod koji zadovoljava unesenim zahtjevima.";
 		$response = [
 			'recipient' => [ 'id' => $senderId ],
 			'message' => [ 'text' => $answer ]
@@ -233,6 +231,23 @@ curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($response));
 curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
 if($command != ""){
 	$result = curl_exec($ch);
-	var_dump($result);
 }
 curl_close($ch);
+
+function replyBackWithSimpleText($text) {
+	global $command;
+	global $senderId;
+	$response = [
+		'recipient' => [ 'id' => $senderId ],
+		'message' => [ 'text' => $text ]
+	];
+	$ch = curl_init('https://graph.facebook.com/v2.6/me/messages?access_token=' . ACCESS_TOKEN);
+	curl_setopt($ch, CURLOPT_POST, 1);
+	curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($response));
+	curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+	if($command != ""){
+		$result = curl_exec($ch);
+	}
+	curl_close($ch);
+	exit();
+}
