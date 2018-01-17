@@ -1,4 +1,5 @@
 <?php
+const API_KEY = 'AIzaSyByjQCWlKAH_uKFlnN0fCUYduP8sXnjQLo';
 include "./interpretirajZahtjev.php";
 function get_regex_fullname_with_deviation($str) {
 	global $substitutes;
@@ -38,7 +39,71 @@ if (!empty($input['entry'][0]['messaging'])) {
 
         // When bot receive message from user
         if (!empty($message['message'])) {
-             $command = $message['message']['text'];           
+			$command = $message['message']['text'];
+
+			$adrese = json_decode(file_get_contents('adrese.json'));
+			if (!isset($adrese[$senderId])) {
+				$jestPrvaPoruka = !array_key_exists($senderId, $adrese);
+				if ($jestPrvaPoruka) {
+					$ch = curl_init();
+					curl_setopt_array($ch, array(
+						CURLOPT_URL => "https://graph.facebook.com/v2.6/me/messages?access_token=$accessToken",
+						CURLOPT_RETURNTRANSFER => true,
+						CURLOPT_CUSTOMREQUEST => 'GET',
+						CURLOPT_HTTPHEADER => array(
+							'content-type: application/json'
+						)
+					));
+					$result = json_decode(curl_exec($ch));
+					curl_close($ch);
+					echo "Poštovanje $result[first_name] $result[last_name],\n";
+				}
+				$ustanovljenaAdresa = false;
+				$command = urlencode($command);
+				$ch = curl_init();
+				curl_setopt_array($ch, array(
+					CURLOPT_URL => "https://maps.googleapis.com/maps/api/geocode/json?address=$command&key=" . API_KEY,
+					CURLOPT_RETURNTRANSFER => true,
+					CURLOPT_CUSTOMREQUEST => 'GET',
+					CURLOPT_HTTPHEADER => array(
+						'content-type: application/json'
+					)
+				));
+				$result = json_decode(curl_exec($ch));
+				curl_close($ch);
+				if ($result['status'] == 'OK') {
+					if (count($result['results']) === 1) {
+						foreach ($results['results'][0]['address_components'] as $comp) {
+							if (in_array('street_number', $comp['types'])) {
+								$streetNum = $comp['short_name'];
+							}
+							else if (in_array('route', $comp['types'])) {
+								$route = $comp['long_name'];
+							}
+							else if (in_array('postal_code', $comp['types'])) {
+								$postalCode = $comp['short_name'];
+							}
+						}
+						if (isset($streetNum) && isset($route) && isset($postalCode)) {
+							$adrese[$senderId] = ['street_number' => $streetNum, 'route' => $route, 'postal_code' => $postalCode];
+							file_put_contents('adrese.json', json_encode($adrese));
+							echo 'Uspješno ste registrirani te možete koristiti usluge pretraživanja i naručivanja ove aplikacije';
+							$ustanovljenaAdresa = true;
+						}
+						else {
+							echo 'Molimo Vas da navedete sve komponente adrese koje su nam od značaja poput naziva ulice i kućnog broja te naziva poštanskog mjesta ili njegovog pripadajućeg broja';
+						}
+					}
+					else {
+						echo 'Molimo Vas da precizirate adresu! Naime, ne može se pouzdano otkriti o kojem je točno mjestu riječ';
+					}
+				}
+				if ($jestPrvaPoruka || !$ustanovljenaAdresa) {
+					$adrese[$senderId] = null;
+					file_put_contents('adrese.json', json_encode($adrese));
+				}
+				exit();
+			}
         }
          // When bot receive button click from user
          else if (!empty($message['postback'])) {
@@ -52,12 +117,11 @@ if (!empty($input['entry'][0]['messaging'])) {
 if(strpos($command,'/hr/') === 0){
 	
 	$linkProizovada = $command;
-	include "./provjeraDostupnosti.php";
+	require './provjeraDostupnosti.php';
 	$response = [
 		'recipient' => [ 'id' => $senderId ],
 		'message' => [ 'text' => $answer ]
 	];
-
 }else{
 	$input = prilagodiZahtjev(strtoupper($command));
 
@@ -116,13 +180,4 @@ if(strpos($command,'/hr/') === 0){
 	}
 	
 }
-$ch = curl_init("https://graph.facebook.com/v2.6/me/messages?access_token=$accessToken");
-curl_setopt($ch, CURLOPT_POST, 1);
-curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($response));
-curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-if($command != ""){
-	$result = curl_exec($ch);
-	var_dump($result);
-}
-curl_close($ch);
 exit();
