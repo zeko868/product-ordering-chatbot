@@ -155,16 +155,21 @@ if (!empty($input['entry'][0]['messaging'])) {
          else if (!empty($message['postback'])) {
 			 $command = $message['postback']['payload'];
 			 
+			 $commandParts = explode(' ', $command);
 			 if(strpos($command,'/hr/') === 0){
-				$commandParts = explode(' ', $command);
-				$linkProizovada = $commandParts[0];
-				$action = $commandParts[1];
-				$delivery = ($action === 'dostava');
-				$closestStore = $action;
-				$desiredProducts = [ $linkProizovada => 1 ];
-				$userInfo = $adresar[$senderId];
-				require 'naruciRobu.php';
-				replyBackWithSimpleText($answer);
+				if (count($commandParts) === 1) {	// pretpostavimo na putanja do stranice s artiklom nema razmaka
+					break;
+				}
+				else {	// sadrži i dodatni parametar koji označava način otpremanja robe
+					$linkProizovada = $commandParts[0];
+					$action = $commandParts[1];
+					$delivery = ($action === 'dostava');
+					$closestStore = $action;
+					$desiredProducts = [ $linkProizovada => 1 ];
+					$userInfo = $adresar[$senderId];
+					require 'naruciRobu.php';
+					replyBackWithSimpleText($answer);
+				}
 			 }
 		}
 		
