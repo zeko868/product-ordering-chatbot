@@ -49,7 +49,6 @@ if (!empty($input['entry'][0]['messaging'])) {
 
 /* "server is down" message */
 
-
 if(strpos($command,'/hr/') === 0){
 	
 	$linkProizovada = $command;
@@ -89,7 +88,8 @@ if(strpos($command,'/hr/') === 0){
 
 	include "./traziRobu.php";
 
-	if($obj != null){
+
+	if($obj[0] != null){
 		$button = array();
 		for($i=0;$i<10 && $i < count($obj);$i++){
 			array_push($button, array('title'=>htmlentities($obj[$i]->naziv), 'image_url'=>$obj[$i]->slika, 'subtitle' => htmlentities($obj[$i]->naziv) . ", cijena: " . $obj[$i]->cijena, 'buttons' => array(array('type' => 'postback', 'payload' => $obj[$i]->link, 'title' => 'Naruči proizvod'))));
