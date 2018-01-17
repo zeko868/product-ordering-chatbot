@@ -46,7 +46,7 @@ if (!empty($input['entry'][0]['messaging'])) {
 			if (!array_key_exists($senderId, $adresar)) {
 				$ch = curl_init();
 				curl_setopt_array($ch, array(
-					CURLOPT_URL => 'https://graph.facebook.com/v2.6/me/messages?access_token=' . ACCESS_TOKEN,
+					CURLOPT_URL => 'https://graph.facebook.com/v2.8/' . $senderId . '?fields=first_name,last_name&app_secret=' . APP_SECRET . '&access_token=' . ACCESS_TOKEN,
 					CURLOPT_RETURNTRANSFER => true,
 					CURLOPT_CUSTOMREQUEST => 'GET',
 					CURLOPT_HTTPHEADER => array(
