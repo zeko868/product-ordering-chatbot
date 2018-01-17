@@ -3,8 +3,10 @@
 ob_start();
 header('Content-Type=> text/html; charset=utf-8');
 //hardcoded za sad
-$odrediste = 'Marija Bistrica';
+//$odrediste = 'Marija Bistrica';
+$odrediste = $userInfo['address']['postal_code'] . ' ' . $userInfo['address']['route'] . ' ' . $userInfo['address']['street_number'];
 //hardcoded za sad
+/*
 $dostupnosti = [
     ['naziv' => 'Dubrovnik', 'dostupnost' => 'OnRequest'],
     ['naziv' => 'Koprivnica', 'dostupnost' => 'OnRequest'],
@@ -25,8 +27,7 @@ $dostupnosti = [
     ['naziv' => 'Zagreb Dubrava', 'dostupnost' => 'Available'],
     ['naziv' => 'Zagreb Trešnjevka', 'dostupnost' => 'Available']
 ];
-
-const API_KEY = 'AIzaSyByjQCWlKAH_uKFlnN0fCUYduP8sXnjQLo';
+*/
 
 function dajDostupnaSkladista() {
     global $dostupnosti;
@@ -75,10 +76,12 @@ if ($json['status'] === 'OK') {
     }
     else {
         echo 'Pojavio se neuspjeh kod pronalaska obližnje trgovine Vašoj lokaciji';
+        exit();
     }
 }
 else {
     echo 'Pojavio se neuspjeh kod pronalaska obližnje trgovine Vašoj lokaciji';
+    exit();
 }
 
 ob_flush();

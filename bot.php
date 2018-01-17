@@ -1,5 +1,9 @@
 <?php
+
 const API_KEY = 'AIzaSyByjQCWlKAH_uKFlnN0fCUYduP8sXnjQLo';
+const APP_ID = '156070991586244';
+const APP_SECRET = '242b83d9eefedcf3e996e8c505e43366';
+const ACCESS_TOKEN = 'EAACN8hwDY8QBAEcLkz9b9FZB2QXVgr92ZBduX8cEU1rfZBR7kOtzurRUtiWkZCan496HmhLyiWLnk86RAKsfMSiYKxZBdnIC6KftcZBy7EODHgPBERWpjFZCgqvPYWGUQyutGc76VccANwiCvrPxa9BCO7f3jnbTs2jXjZCzXk06OgZDZD';
 include "./interpretirajZahtjev.php";
 function get_regex_fullname_with_deviation($str) {
 	global $substitutes;
@@ -24,9 +28,6 @@ function localized_strtolower($str) {
 	return strtolower($str);
 }
 
-// parameters
-$accessToken = 'EAACN8hwDY8QBAEcLkz9b9FZB2QXVgr92ZBduX8cEU1rfZBR7kOtzurRUtiWkZCan496HmhLyiWLnk86RAKsfMSiYKxZBdnIC6KftcZBy7EODHgPBERWpjFZCgqvPYWGUQyutGc76VccANwiCvrPxa9BCO7f3jnbTs2jXjZCzXk06OgZDZD';
-
 // handle bot's anwser
 $input = json_decode(file_get_contents("php://input"), true, 512, JSON_BIGINT_AS_STRING);
 $senderId = $input['entry'][0]['messaging'][0]['sender']['id'];
@@ -35,30 +36,34 @@ $command = "";
 
 if (!empty($input['entry'][0]['messaging'])) { 
 
-	foreach ($input['entry'][0]['messaging'] as $message) { 
+	foreach ($input['entry'][0]['messaging'] as $message) {
 
+		$adresar = json_decode(file_get_contents('adresar.json'));
         // When bot receive message from user
         if (!empty($message['message'])) {
 			$command = $message['message']['text'];
 
-			$adrese = json_decode(file_get_contents('adrese.json'));
-			if (!isset($adrese[$senderId])) {
-				$jestPrvaPoruka = !array_key_exists($senderId, $adrese);
-				if ($jestPrvaPoruka) {
-					$ch = curl_init();
-					curl_setopt_array($ch, array(
-						CURLOPT_URL => "https://graph.facebook.com/v2.6/me/messages?access_token=$accessToken",
-						CURLOPT_RETURNTRANSFER => true,
-						CURLOPT_CUSTOMREQUEST => 'GET',
-						CURLOPT_HTTPHEADER => array(
-							'content-type: application/json'
-						)
-					));
-					$result = json_decode(curl_exec($ch));
-					curl_close($ch);
-					echo "Poštovanje $result[first_name] $result[last_name],\n";
-				}
-				$ustanovljenaAdresa = false;
+			if (!array_key_exists($senderId, $adresar)) {
+				$ch = curl_init();
+				curl_setopt_array($ch, array(
+					CURLOPT_URL => "https://graph.facebook.com/v2.6/me/messages?access_token=$accessToken",
+					CURLOPT_RETURNTRANSFER => true,
+					CURLOPT_CUSTOMREQUEST => 'GET',
+					CURLOPT_HTTPHEADER => array(
+						'content-type: application/json'
+					)
+				));
+				$result = json_decode(curl_exec($ch));
+				curl_close($ch);
+				$ime = $result['first_name'];
+				$prezime = $result['last_name'];
+				$adresar[$senderId]['first_name'] = $ime;
+				$adresar[$senderId]['last_name'] = $prezime;
+				file_put_contents('adresar.json', json_encode($adresar));
+				echo "Poštovanje  $ime $prezime,\n";
+				$upravoDeklariran = true;
+			}
+			if (!array_key_exists('address', $adresar[$senderId])) {
 				$command = urlencode($command);
 				$ch = curl_init();
 				curl_setopt_array($ch, array(
@@ -85,30 +90,71 @@ if (!empty($input['entry'][0]['messaging'])) {
 							}
 						}
 						if (isset($streetNum) && isset($route) && isset($postalCode)) {
-							$adrese[$senderId] = ['street_number' => $streetNum, 'route' => $route, 'postal_code' => $postalCode];
-							file_put_contents('adrese.json', json_encode($adrese));
-							echo 'Uspješno ste registrirani te možete koristiti usluge pretraživanja i naručivanja ove aplikacije';
-							$ustanovljenaAdresa = true;
+							$adresar[$senderId]['address'] = ['street_number' => $streetNum, 'route' => $route, 'postal_code' => $postalCode];
+							file_put_contents('adresar.json', json_encode($adresar));
+							echo "Uspješno ste registrirali adresu uz Vaš korisnički račun!\nNavedite Vašu e-mail adresu na koju ćete biti u mogućnosti kontaktirani";
 						}
 						else {
-							echo 'Molimo Vas da navedete sve komponente adrese koje su nam od značaja poput naziva ulice i kućnog broja te naziva poštanskog mjesta ili njegovog pripadajućeg broja';
+							if (isset($upravoDeklariran)) {
+								echo 'Za korištenje aplikacije, potrebno je proći kroz 3 koraka konfiguracije. Za početak, navedite Vašu adresu na koju će biti dopremljena roba.';
+							}
+							else {
+								echo 'Molimo Vas da navedete sve komponente adrese koje su nam od značaja poput naziva ulice i kućnog broja te naziva poštanskog mjesta ili njegovog pripadajućeg broja';
+							}
 						}
 					}
 					else {
-						echo 'Molimo Vas da precizirate adresu! Naime, ne može se pouzdano otkriti o kojem je točno mjestu riječ';
+						if (isset($upravoDeklariran)) {
+							echo 'Za korištenje aplikacije, potrebno je proći kroz 3 koraka konfiguracije. Za početak, navedite Vašu adresu na koju će biti dopremljena roba.';
+						}
+					else {
+							echo 'Molimo Vas da precizirate adresu! Naime, ne može se pouzdano otkriti o kojem je točno mjestu riječ';
+						}
 					}
 				}
-				if ($jestPrvaPoruka || !$ustanovljenaAdresa) {
-					$adrese[$senderId] = null;
-					file_put_contents('adrese.json', json_encode($adrese));
+				else {
+					if (isset($upravoDeklariran)) {
+						echo 'Za korištenje aplikacije, potrebno je proći kroz 3 koraka konfiguracije. Za početak, navedite Vašu adresu na koju će biti dopremljena roba.';
+					}
+					else {
+						echo 'Molimo Vas da precizirate adresu! Naime, nije pronađeno nijedno mjesto koje odgovara na navedeni opis';
+					}
 				}
 				exit();
+			}
+			else {
+				if (!array_key_exists('email', $adresar[$senderId])) {
+					if (preg_match('/^.*@.*\..*$/', $command)) {
+						$adresar[$senderId]['email'] = $command;
+						file_put_contents('adresar.json', json_encode($adresar));
+						echo "Uspješno ste registrirali e-mail adresu uz Vaš korisnički račun!\nNavedite još Vaš kontaktni broj telefona";
+					}
+					else {
+						echo 'E-mail adresa koju ste naveli nije važećeg formata! Molimo, napišite Vašu ispravnu e-mail adresu';
+					}
+					exit();
+				}
+				else {
+					if (!array_key_exists('phone', $adresar[$senderId])) {
+						if (preg_match('/^\+?\d+(\s+\d+)+$/', $command)) {
+							$adresar[$senderId]['phone'] = $command;
+							file_put_contents('adresar.json', json_encode($adresar));
+							echo "Uspješno ste registrirali telefonski broj uz Vaš korisnički račun!\nSada možete započeti s pretragom i naručivanjem artikala.";
+						}
+						else {
+							echo 'Tekst koji ste unijeli ne predstavlja važeći telefonski broj! Molimo, napišite Vaš ispravni telefonski broj';
+						}
+						exit();
+					}
+				}
 			}
         }
          // When bot receive button click from user
          else if (!empty($message['postback'])) {
              $command = $message['postback']['payload'];
-        }
+		}
+		
+		$userInfo = $adresar[$senderId];
     }
 }/*	 	$command = 'konzultacije Petar Šestak -'; $senderId = '1532028376807777';	//for debugging purposes */
 
