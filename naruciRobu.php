@@ -19,7 +19,7 @@ $delivery = true;
 */
 
 if (empty($firstName) || empty($lastName) || empty($email) || empty($address) || (empty($postCode) && empty($city)) || empty($phoneNum) || empty($desiredProducts) || min(array_values($desiredProducts)) < 1 || !isset($delivery) || (!$delivery && empty($closestStore))) {
-    echo 'Nisu uneseni svi podaci potrebni za izvršenje narudžbe!';
+    $answer = 'Nisu uneseni svi podaci potrebni za izvršenje narudžbe!';
     return;
 }
 
@@ -60,19 +60,18 @@ switch (count($json)) {
         for ($i=0; $i<$argNum; $i++) {
             $args[$i] = escapeshellarg($args[$i]);
         }
-        $output = shell_exec('java -jar ~/orderer/dist/orderer.jar ' . implode(' ', $args));
-        echo $output;
+        $answer = shell_exec('java -jar ~/orderer/dist/orderer.jar ' . implode(' ', $args));
         break;
     case 0:
         if (isset($postCode)) {
-            echo "Nije pronađeno nijedno mjesto s poštanskim brojem $postCode";
+            $answer = "Nije pronađeno nijedno mjesto s poštanskim brojem $postCode na stranicama dobavljača";
         }
         else {
-            echo "Za mjesto '$city' se ne može pronaći pripadajući poštanski broj!";
+            $answer = "Za mjesto '$city' se ne može pronaći pripadajući poštanski broj kako bi se kreirala narudžba!";
         }
         break;
     default:
-        echo "Za navedeni naziv mjesta '$city' je nejasno koji mu je točno poštanski broj. Molimo, navedite puni naziv mjesta ili navedite poštanski broj";
+        $answer = "Za navedeni naziv mjesta '$city' je nejasno koji mu je točno poštanski broj. Molimo, navedite puni naziv mjesta ili navedite poštanski broj";
 }
 
 ob_flush();

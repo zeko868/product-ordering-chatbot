@@ -149,6 +149,7 @@ if (!empty($input['entry'][0]['messaging'])) {
 					}
 				}
 			}
+			$userInfo = $adresar[$senderId];
         }
          // When bot receive button click from user
          else if (!empty($message['postback'])) {
@@ -161,11 +162,12 @@ if (!empty($input['entry'][0]['messaging'])) {
 				$delivery = ($action === 'dostava');
 				$closestStore = $action;
 				$desiredProducts = [ $linkProizovada => 1 ];
+				$userInfo = $adresar[$senderId];
 				require 'naruciRobu.php';
+				replyBackWithSimpleText($answer);
 			 }
 		}
 		
-		$userInfo = $adresar[$senderId];
     }
 }/*	 	$command = 'konzultacije Petar Šestak -'; $senderId = '1532028376807777';	//for debugging purposes */
 
