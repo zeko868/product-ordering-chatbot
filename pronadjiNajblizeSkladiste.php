@@ -72,16 +72,13 @@ if ($json['status'] === 'OK') {
     }
     if ($najbliziPutIndeks !== -1) {
         $najblizeIshodiste = $json['origin_addresses'][$najbliziPutIndeks];
-        echo "Najbliža trgovina se nalazu u mjestu $najblizeIshodiste";
     }
     else {
-        echo 'Pojavio se neuspjeh kod pronalaska obližnje trgovine Vašoj lokaciji';
-        exit();
+        $najblizeIshodiste = false;
     }
 }
 else {
-    echo 'Pojavio se neuspjeh kod pronalaska obližnje trgovine Vašoj lokaciji';
-    exit();
+    $najblizeIshodiste = null;
 }
 
 ob_flush();

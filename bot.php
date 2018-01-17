@@ -152,7 +152,16 @@ if (!empty($input['entry'][0]['messaging'])) {
         }
          // When bot receive button click from user
          else if (!empty($message['postback'])) {
-             $command = $message['postback']['payload'];
+			 $command = $message['postback']['payload'];
+			 
+			 if(strpos($command,'/hr/') === 0){
+				$commandParts = explode(' ', $command);
+				$linkProizovada = $commandParts[0];
+				$action = $commandParts[1];
+				$delivery = ($action === 'dostava');
+				$desiredProducts = [ $linkProizovada => 1 ];
+				require 'naruciRobu.php';
+			 }
 		}
 		
 		$userInfo = $adresar[$senderId];

@@ -3,18 +3,20 @@
 ob_start();
 header('Content-Type=> text/html; charset=utf-8');
 
-$firstName = 'Štef';
-$lastName = 'Štefiščak';
-$email = 'zeko868@hotmail.com';
-$address = 'Stubička ulica 11';
-$postCode = 49246;  // optional if $city is specified
+$firstName = $userInfo['first_name'];
+$lastName = $userInfo['last_name'];
+$email = $userInfo['email'];
+$address = $userInfo['route'] . ' ' . $userInfo['street_number'];
+$postCode = $userInfo['postal_code'];  // optional if $city is specified
 //$city = 'Marija Bistrica';      // optional if $postCode is specified
-$phoneNum = '0912345678';
+$phoneNum = $userInfo['phone'];
+/*  // hardkodirano za testiranje
 $desiredProducts = [
     'https://www.links.hr/hr/tipkovnica-mis-tt-esports-commander-gaming-gear-combo-us-layout-crna-usb-101600137' => 2,    // key represents url where the product is located and value represents its quantity
     'https://www.links.hr/hr/mp3-player-trekstor-i-beat-jump-bt-8-gb-1-8-tft-bt-pedometar-microsd-crni-350600072' => 1
 ];
 $delivery = true;
+*/
 
 if (empty($firstName) || empty($lastName) || empty($email) || empty($address) || (empty($postCode) && empty($city)) || empty($phoneNum) || empty($desiredProducts) || min(array_values($desiredProducts)) < 1 || !isset($delivery)) {
     echo 'Nisu uneseni svi podaci potrebni za izvršenje narudžbe!';

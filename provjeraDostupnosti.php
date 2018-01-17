@@ -37,12 +37,31 @@ for ($index = 0; $index < count($lines); $index++) {
 }
 
 if (!$nedostupno) {
-    echo json_encode($obj, JSON_UNESCAPED_UNICODE);
-    //slijedecu liniju slobodno makni kad ces implementirati sve ostalo
-    $answer = "Proizvod je dostupan";
-    //tu bi se trebao nastaviti proces narucivanja
+    $dostupnosti = $obj;
+    require 'pronadjiNajblizeSkladiste.php';
+    $buttons = array();
+    switch ($najblizeIshodiste) {
+        case null:
+            $replyContent = 'Pojavio se neuspjeh kod pokušaja pronalaska obližnje poslovnice u kojoj je dostupan traženi artikl. Želite li ga naručiti dostavom?';
+            break;
+        case false:
+            $replyContent = 'Traženi artikl je dostupan u centralnom skladištu te ga je moguće samo dostaviti. Želite li ga naručiti dostavom?';
+            break;
+        default:
+            $replyContent = "$najblizeIshodiste Vam je najbliže mjesto s našom poslovnicom u kojoj je dostupan traženi artikl.";
+            array_push($buttons, array('type'=>'postback', 'title'=>'Pokupit ću sam', 'payload' => "$linkProizovada $najblizeIshodiste"));
+    }
+    array_push($buttons, array('type'=>'postback', 'title'=>'Želim dostavu', 'payload' => "$linkProizovada dostava"));
+    $answer = [
+        'type'=>'template',
+        'payload'=>[
+            'template_type'=>'button',
+            'text'=>$replyContent,
+            'buttons'=> $buttons
+        ]
+    ];
 }else{
-    $answer = "Ispričavamo se, proizvod trenutno nije dostupan!";
+    $answer = 'Ispričavamo se, traženi artikl trenutno nije dostupan!';
 }
 
 function parsiranjeSkladista($polje) {
