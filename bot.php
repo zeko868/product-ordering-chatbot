@@ -38,7 +38,7 @@ if (!empty($input['entry'][0]['messaging'])) {
 
 	foreach ($input['entry'][0]['messaging'] as $message) {
 
-		$adresar = json_decode(file_get_contents('adresar.json'));
+		$adresar = json_decode(file_get_contents('adresar.json'), true);
         // When bot receive message from user
         if (!empty($message['message'])) {
 			$command = $message['message']['text'];
@@ -53,7 +53,7 @@ if (!empty($input['entry'][0]['messaging'])) {
 						'content-type: application/json'
 					)
 				));
-				$result = json_decode(curl_exec($ch));
+				$result = json_decode(curl_exec($ch), true);
 				curl_close($ch);
 				$ime = $result['first_name'];
 				$prezime = $result['last_name'];
@@ -74,7 +74,7 @@ if (!empty($input['entry'][0]['messaging'])) {
 						'content-type: application/json'
 					)
 				));
-				$result = json_decode(curl_exec($ch));
+				$result = json_decode(curl_exec($ch), true);
 				curl_close($ch);
 				if ($result['status'] == 'OK') {
 					if (count($result['results']) === 1) {
