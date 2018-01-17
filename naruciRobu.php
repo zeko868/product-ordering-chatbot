@@ -6,8 +6,8 @@ header('Content-Type=> text/html; charset=utf-8');
 $firstName = $userInfo['first_name'];
 $lastName = $userInfo['last_name'];
 $email = $userInfo['email'];
-$address = "$userInfo[route] $userInfo[street_number]";
-$postCode = $userInfo['postal_code'];  // optional if $city is specified
+$address = $userInfo['address']['route'] . ' ' . $userInfo['address']['street_number'];
+$postCode = $userInfo['address']['postal_code'];  // optional if $city is specified
 //$city = 'Marija Bistrica';      // optional if $postCode is specified
 $phoneNum = $userInfo['phone'];
 /*  // hardkodirano za testiranje

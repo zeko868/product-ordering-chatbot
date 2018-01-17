@@ -157,6 +157,7 @@ if (!empty($input['entry'][0]['messaging'])) {
 			 
 			 $commandParts = explode(' ', $command);
 			 if(strpos($command,'/hr/') === 0){
+				$userInfo = $adresar[$senderId];
 				if (count($commandParts) === 1) {	// pretpostavimo na putanja do stranice s artiklom nema razmaka
 					break;
 				}
@@ -166,7 +167,6 @@ if (!empty($input['entry'][0]['messaging'])) {
 					$delivery = ($action === 'dostava');
 					$closestStore = $action;
 					$desiredProducts = [ $linkProizovada => 1 ];
-					$userInfo = $adresar[$senderId];
 					require 'naruciRobu.php';
 					replyBackWithSimpleText($answer);
 				}
@@ -179,7 +179,6 @@ if (!empty($input['entry'][0]['messaging'])) {
 /* "server is down" message */
 
 if(strpos($command,'/hr/') === 0){
-	
 	$linkProizovada = $command;
 	require './provjeraDostupnosti.php';
 	$response = [
