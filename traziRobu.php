@@ -55,8 +55,8 @@ $proizvodac = nadjiProizvodaca($translated["ostalo"]["ostaliFilteri"], $pro); //
 //url za pretragu
 
 $url1 = $stranica . $trazilica . urlencode($pojamZaPretragu)
-        . $proizvodi . $proizvodac
         . $dodatak
+        . $proizvodi . $proizvodac        
         . $cijenaOd . $cMin
         . $cijenaDo . $cMax;
 
@@ -139,7 +139,7 @@ function parsirajSliku($linija){
 function nadjiProizvodaca($naziv, $pro) {
     for ($i = 0; $i < count($naziv); $i++) {
         foreach ($pro as $object) {
-            if ($object->proizvodac === $naziv[$i]) {
+            if (strtoupper($object->proizvodac) === $naziv[$i]) {
                 return $object->id;
             }
         }
