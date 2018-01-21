@@ -155,6 +155,13 @@ if (!empty($input['entry'][0]['messaging'])) {
 		if(strpos($command, '/hr/') === 0){
 			$userInfo = $adresar[$senderId];
 			if (count($commandParts) === 1) {	// pretpostavimo na putanja do stranice s artiklom nema razmaka
+				$linkProizovada = $command;
+				require './provjeraDostupnosti.php';
+				$response = [
+					'recipient' => [ 'id' => $senderId ],
+					'message' => [ ($jestInteraktivan ? 'attachment' : 'text') => $answer ]
+				];
+				replyBackSpecificObject($response);
 			}
 			else {	// sadrži i dodatni parametar koji označava način otpremanja robe
 				$linkProizovada = $commandParts[0];
@@ -167,81 +174,74 @@ if (!empty($input['entry'][0]['messaging'])) {
 			}
 		}
 	}
-}/*	 	$command = 'konzultacije Petar Šestak -'; $senderId = '1532028376807777';	//for debugging purposes */
+}
 
-/* "server is down" message */
+$input = prilagodiZahtjev(strtoupper($command));
 
-if(strpos($command,'/hr/') === 0){
-	$linkProizovada = $command;
-	require './provjeraDostupnosti.php';
+$translatedInput = translateInput($input, 'en');
+
+if($translatedInput['status'] == "OK"){
+	$nlpText = NLPtext($translatedInput['translate']);
+}else{
+	replyBackWithSimpleText('Unesena je narudžba na krivom jeziku!');
+}
+
+//var_dump($nlpText);
+
+$translatedOutput = translateInput($nlpText['tekst'], 'hr');
+
+if($translatedOutput['status'] == "OK"){
+	$translatedOutputText = $translatedOutput['translate'];
+}else{
+	replyBackWithSimpleText('Došlo je do pogreške!');
+}
+
+$trans = urediIzlaz($translatedOutputText);
+$nlpText['tekst'] = $trans;
+$translated = $nlpText;
+//echo "<br/>Kupac pretražuje: " . strtolower_cro($translated);
+
+include "./traziRobu.php";
+
+
+if($obj[0] != null){
+	$button = array();
+	for($i=0;$i<10 && $i < count($obj);$i++){
+		array_push($button, array('title'=>htmlentities($obj[$i]->naziv), 'image_url'=>$obj[$i]->slika, 'subtitle' => htmlentities($obj[$i]->naziv) . ", cijena: " . $obj[$i]->cijena, 'buttons' => array(array('type' => 'postback', 'payload' => $obj[$i]->link, 'title' => 'Naruči proizvod'))));
+	}
+
+	$answer = [
+		'type'=>'template',
+		'payload'=>[
+			'template_type'=>'generic',
+			'elements'=> $button
+		]
+	];
+
 	$response = [
 		'recipient' => [ 'id' => $senderId ],
-		'message' => [ ($jestInteraktivan ? 'attachment' : 'text') => $answer ]
+		'message' => [ 'attachment' => $answer ]
 	];
 }else{
-	$input = prilagodiZahtjev(strtoupper($command));
-
-	$translatedInput = translateInput($input, 'en');
-
-	if($translatedInput['status'] == "OK"){
-		$nlpText = NLPtext($translatedInput['translate']);
-	}else{
-		replyBackWithSimpleText('Unesena je narudžba na krivom jeziku!');
-	}
-
-	//var_dump($nlpText);
-
-	$translatedOutput = translateInput($nlpText['tekst'], 'hr');
-
-	if($translatedOutput['status'] == "OK"){
-		$translatedOutputText = $translatedOutput['translate'];
-	}else{
-		replyBackWithSimpleText('Došlo je do pogreške!');
-	}
-
-	$trans = urediIzlaz($translatedOutputText);
-	$nlpText['tekst'] = $trans;
-	$translated = $nlpText;
-	//echo "<br/>Kupac pretražuje: " . strtolower_cro($translated);
-
-	include "./traziRobu.php";
-
-
-	if($obj[0] != null){
-		$button = array();
-		for($i=0;$i<10 && $i < count($obj);$i++){
-			array_push($button, array('title'=>htmlentities($obj[$i]->naziv), 'image_url'=>$obj[$i]->slika, 'subtitle' => htmlentities($obj[$i]->naziv) . ", cijena: " . $obj[$i]->cijena, 'buttons' => array(array('type' => 'postback', 'payload' => $obj[$i]->link, 'title' => 'Naruči proizvod'))));
-		}
-
-		$answer = [
-			'type'=>'template',
-			'payload'=>[
-				'template_type'=>'generic',
-				'elements'=> $button
-			]
-		];
-
-		$response = [
-			'recipient' => [ 'id' => $senderId ],
-			'message' => [ 'attachment' => $answer ]
-		];
-	}else{
-		$response = [
-			'recipient' => [ 'id' => $senderId ],
-			'message' => [ 'text' => $answer ]
-		];
-	}
-	
+	$response = [
+		'recipient' => [ 'id' => $senderId ],
+		'message' => [ 'text' => $answer ]
+	];
 }
+replyBackSpecificObject($response);
 
-$ch = curl_init('https://graph.facebook.com/v2.6/me/messages?access_token=' . ACCESS_TOKEN);
-curl_setopt($ch, CURLOPT_POST, 1);
-curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($response));
-curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-if($command != ""){
-	$result = curl_exec($ch);
+function replyBackSpecificObject($repsonse) {
+	global $command;
+	$ch = curl_init('https://graph.facebook.com/v2.6/me/messages?access_token=' . ACCESS_TOKEN);
+	curl_setopt($ch, CURLOPT_POST, 1);
+	curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($response));
+	curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+	if($command != ""){
+		$result = curl_exec($ch);
+	}
+	curl_close($ch);
+	exit();
 }
-curl_close($ch);
 
 function replyBackWithSimpleText($text) {
 	global $command;
