@@ -155,9 +155,7 @@ if (!empty($input['entry'][0]['messaging'])) {
 }
 
 $input = prilagodiZahtjev(mb_strtoupper($command));
-replyBackWithSimpleText("start");
 $translatedInput = translateInput($input, 'en');
-replyBackWithSimpleText("end");
 if($translatedInput['status'] == 'OK'){
 	$nlpText = NLPtext($translatedInput['translate']);
 }else{
@@ -178,9 +176,10 @@ $translated = $nlpText;
 
 require "./traziRobu.php";
 
-if($obj[0] != null){
+if(!empty($obj)){
 	$buttons = array();
-	for($i=0;$i<10 && $i < count($obj);$i++){
+	$itemsNum = min(10, count($obj));
+	for($i=0; $i<$itemsNum; $i++){
 		array_push($buttons, array('title'=>htmlentities($obj[$i]->naziv), 'image_url'=>$obj[$i]->slika, 'subtitle' => htmlentities($obj[$i]->naziv) . ", cijena: " . $obj[$i]->cijena, 'buttons' => array(array('type' => 'postback', 'payload' => $obj[$i]->link, 'title' => 'Naruči proizvod'))));
 	}
 
@@ -196,15 +195,13 @@ if($obj[0] != null){
 		'recipient' => [ 'id' => $senderId ],
 		'message' => [ 'attachment' => $answer ]
 	];
+	replyBackSpecificObject($response);
 }else{
-	$response = [
-		'recipient' => [ 'id' => $senderId ],
-		'message' => [ 'text' => $answer ]
-	];
+	replyBackWithSimpleText('Nisu nađeni proizvodi koji odgovaraju zadanim kriterijima');
 }
-replyBackSpecificObject($response);
 
-function replyBackSpecificObject($repsonse) {
+
+function replyBackSpecificObject($response) {
 	global $command;
 	$ch = curl_init('https://graph.facebook.com/v2.6/me/messages?access_token=' . ACCESS_TOKEN);
 	curl_setopt($ch, CURLOPT_POST, 1);
