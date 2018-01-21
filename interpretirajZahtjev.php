@@ -1,16 +1,8 @@
 <?php
-ob_start();
-header('Content-Type: text/html; charset=utf-8');
-
-function strtolower_cro($string)
-{
-    $low=array("Č" => "č","ć" => "ć", "Đ" => "đ", "Š" => "š", "Ž" => "ž");
-    return strtolower(strtr($string,$low));
-}
 
 function translateInput($inputText, $target){
     
-    $inputText = strtolower_cro($inputText);
+    $inputText = mb_strtolower($inputText);
     $curl = curl_init();
     if(strpos($inputText, "kn")){
         $inputText = str_replace("kn", "KN", $inputText);
@@ -29,7 +21,7 @@ function translateInput($inputText, $target){
     CURLOPT_HTTPHEADER => array(
         "cache-control: no-cache",
         "content-type: application/json"
-    ),
+        ),
     ));
 
     $response = curl_exec($curl);
@@ -63,7 +55,7 @@ function NLPtext($translatedText){
     CURLOPT_HTTPHEADER => array(
         "cache-control: no-cache",
         "content-type: application/json"
-    ),
+        ),
     ));
 
     $response = curl_exec($curl);
@@ -117,7 +109,7 @@ function NLPtext($translatedText){
     CURLOPT_HTTPHEADER => array(
         "cache-control: no-cache",
         "content-type: application/json"
-    ),
+        ),
     ));
     
     $response = curl_exec($curl);
@@ -174,7 +166,7 @@ function prilagodiZahtjev($inputText){
 }
 
 function urediIzlaz($inputText){
-    $inputText = strtolower_cro($inputText);
+    $inputText = mb_strtolower($inputText);
     if(strpos($inputText, "računalni")){
         $input = substr($inputText, 0, strpos($inputText, "računalni")) . substr($inputText, strpos($inputText, "računalni") + 11, strlen($inputText));
         return $input;
@@ -182,98 +174,4 @@ function urediIzlaz($inputText){
     return $inputText;
 }
 
-//$inputText = "Želim Lenovo laptop.";
-//$inputText = "Želim grafičku karticu od AMDa.";
-//$inputText = "Molim Vas ponudu za Intel procesor.";
-//$inputText = "hoću kupiti intelov procesor.";
-//$inputText = "hoću kupiti intel i3 procesor cijene manje od 1500 kuna.";
-//$inputText = "Želim grafičku karticu nvidia geforce mx 440 cijene veće od 2000 kuna.";
-//$inputText = "Želim grafičku karticu nvidia geforce mx 440 cijene manje od 3000 kuna.";
-//$inputText = "Želim grafičku karticu nvidia geforce mx 440 cijene između 1000 i 3000 kn.";
-//$inputText = "Želim grafičku karticu nvidia geforce mx 440 cijene veće od 1000 i manje od 3000 kuna.";
-/*$inputText = "Želio bih naručiti računalni procesor AMD Ryzen";
-
-$input = prilagodiZahtjev(strtoupper($inputText));
-
-$translatedInput = translateInput($input, 'en');
-
-if($translatedInput['status'] == "OK"){
-    $nlpText = NLPtext($translatedInput['translate']);
-}else{
-    echo "Unesena je narudzba na krivom jeziku!";
-    exit();
-}
-
-
-$translatedOutput = translateInput($nlpText['tekst'], 'hr');
-
-if($translatedOutput['status'] == "OK"){
-    $translatedOutputText = $translatedOutput['translate'];
-}else{
-    echo "Doslo je do pogreske!";
-    exit();
-}
-
-$translated = urediIzlaz($translatedOutputText);
-
-$input = prilagodiZahtjev(strtoupper($inputText));
-
-$translatedInput = translateInput($input, 'en');
-
-if($translatedInput['status'] == "OK"){
-    $nlpText = NLPtext($translatedInput['translate']);
-}else{
-    echo "Unesena je narudzba na krivom jeziku!";
-    exit();
-}
-
-
-$translatedOutput = translateInput($nlpText['tekst'], 'hr');
-
-if($translatedOutput['status'] == "OK"){
-    $translatedOutputText = $translatedOutput['translate'];
-}else{
-    echo "Doslo je do pogreske!";
-    exit();
-}
-
-$trans = urediIzlaz($translatedOutputText);
-$nlpText['tekst'] = $trans;
-$translated = $nlpText;
-
-include "./traziRobu.php";
-var_dump($obj);*/
-//echo "<br/>Kupac pretražuje: " . strtolower_cro($translated);
-
-/*include "./traziRobu.php";
-
-$button = array();
-
-for($i=0;$i<10 && $i < count($obj);$i++){
-	array_push($button, array('title'=>htmlentities($obj[$i]->naziv), 'image_url'=>$obj[$i]->slika, 'subtitle' => htmlentities($obj[$i]->naziv) . ", cijena: " . $obj[$i]->cijena, 'buttons' => array(array('type' => 'web_url', 'url' => "links.hr" . $obj[$i]->link, 'title' => 'Naruči proizvod'))));
-}
-
-$answer = [
-	'type'=>'template',
-	'payload'=>[
-		'template_type'=>'generic',
-		'elements'=> $button
-	]
-];
-
-$response = [
-	'recipient' => [ 'id' => "1155662414560805" ],
-	'message' => [ 'attachment' => $answer ]
-];
-
-//$ch = curl_init("https://graph.facebook.com/v2.6/me/messages?access_token=$accessToken");
-//curl_setopt($ch, CURLOPT_POST, 1);
-//curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($response));
-//curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-//if(!empty($input)){
-//	$result = curl_exec($ch);
-//}
-//curl_close($ch);
-echo json_encode($response);
-
-exit();*/
+?>

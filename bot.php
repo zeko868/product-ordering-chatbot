@@ -4,29 +4,7 @@ const API_KEY = 'AIzaSyByjQCWlKAH_uKFlnN0fCUYduP8sXnjQLo';
 const APP_ID = '156070991586244';
 const APP_SECRET = '242b83d9eefedcf3e996e8c505e43366';
 const ACCESS_TOKEN = 'EAACN8hwDY8QBAEcLkz9b9FZB2QXVgr92ZBduX8cEU1rfZBR7kOtzurRUtiWkZCan496HmhLyiWLnk86RAKsfMSiYKxZBdnIC6KftcZBy7EODHgPBERWpjFZCgqvPYWGUQyutGc76VccANwiCvrPxa9BCO7f3jnbTs2jXjZCzXk06OgZDZD';
-include "./interpretirajZahtjev.php";
-function get_regex_fullname_with_deviation($str) {
-	global $substitutes;
-	$str = localized_strtolower($str);
-	$str = preg_replace('/(?:ij|(?!adeou)j|i)([aeiou])/', '(ij|i|j)$1', $str);	// furjan=furijan=furian ; mia=mija ; damjan=damian=damijan
-	$str = preg_replace('/(\w)\1+/', '$1$1?', $str);	// schatten=schaten
-	foreach ($substitutes as $spec => $alt) {
-		$str = str_replace($spec, '(' . implode('|', $alt) . "|$spec)", $str);
-	}
-	$str = '(?=.*\b' . implode('\b)(?=.*\b', explode(' ', $str)) . '\b)(?!.*[^(' . implode(')|(', explode(' ', $str)) . ')| ])';	//  po navedenom bi naziv 'Martina Tomičić Furjan' dao sljedeći izraz (?=.*\bmartina\b)(?=.*\bfurjan\b)(?=.*\btomičić\b)(?!.*[^(martina)|(furjan)|(tomičić)| ])  - navedeno prihvaća 'Martina Tomičić Furjan', 'Martina Tomičić-Furjan', 'tomičić Furjan martina', 'tomičić martina furjan', ...
-	return '/^' . $str . '.*$/u';
-}
-
-function localized_strtolower($str) {
-	if ($str === false) {
-		return null;
-	}
-	global $croatianLowercase;
-	foreach ($croatianLowercase as $upper => $lower) {
-		$str = str_replace($upper, $lower, $str);
-	}
-	return strtolower($str);
-}
+require "./interpretirajZahtjev.php";
 
 // handle bot's anwser
 $input = json_decode(file_get_contents("php://input"), true, 512, JSON_BIGINT_AS_STRING);
@@ -133,7 +111,7 @@ if (!empty($input['entry'][0]['messaging'])) {
 			}
 			else {
 				if (!array_key_exists('phone', $adresar[$senderId])) {
-					if (preg_match('/^\+?\d+(\s+\d+)*$/', $command)) {
+					if (preg_match('/^\+?\d+((\s|\/|\-)+\d+)*$/', $command)) {
 						$adresar[$senderId]['phone'] = $command;
 						file_put_contents('adresar.json', json_encode($adresar));
 						$introGuidelines = "Uspješno ste registrirali telefonski broj uz Vaš korisnički račun!\nSada možete započeti s pretragom i naručivanjem artikala.";
@@ -176,17 +154,15 @@ if (!empty($input['entry'][0]['messaging'])) {
 	}
 }
 
-$input = prilagodiZahtjev(strtoupper($command));
-
+$input = prilagodiZahtjev(mb_strtoupper($command));
+replyBackWithSimpleText("start");
 $translatedInput = translateInput($input, 'en');
-
-if($translatedInput['status'] == "OK"){
+replyBackWithSimpleText("end");
+if($translatedInput['status'] == 'OK'){
 	$nlpText = NLPtext($translatedInput['translate']);
 }else{
 	replyBackWithSimpleText('Unesena je narudžba na krivom jeziku!');
 }
-
-//var_dump($nlpText);
 
 $translatedOutput = translateInput($nlpText['tekst'], 'hr');
 
@@ -199,22 +175,20 @@ if($translatedOutput['status'] == "OK"){
 $trans = urediIzlaz($translatedOutputText);
 $nlpText['tekst'] = $trans;
 $translated = $nlpText;
-//echo "<br/>Kupac pretražuje: " . strtolower_cro($translated);
 
-include "./traziRobu.php";
-
+require "./traziRobu.php";
 
 if($obj[0] != null){
-	$button = array();
+	$buttons = array();
 	for($i=0;$i<10 && $i < count($obj);$i++){
-		array_push($button, array('title'=>htmlentities($obj[$i]->naziv), 'image_url'=>$obj[$i]->slika, 'subtitle' => htmlentities($obj[$i]->naziv) . ", cijena: " . $obj[$i]->cijena, 'buttons' => array(array('type' => 'postback', 'payload' => $obj[$i]->link, 'title' => 'Naruči proizvod'))));
+		array_push($buttons, array('title'=>htmlentities($obj[$i]->naziv), 'image_url'=>$obj[$i]->slika, 'subtitle' => htmlentities($obj[$i]->naziv) . ", cijena: " . $obj[$i]->cijena, 'buttons' => array(array('type' => 'postback', 'payload' => $obj[$i]->link, 'title' => 'Naruči proizvod'))));
 	}
 
 	$answer = [
 		'type'=>'template',
 		'payload'=>[
 			'template_type'=>'generic',
-			'elements'=> $button
+			'elements'=> $buttons
 		]
 	];
 
