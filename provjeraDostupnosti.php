@@ -18,21 +18,19 @@ $lines = file($stranica . $linkProizovada);
 
 for ($index = 0; $index < count($lines); $index++) {
     $polje = array();
-    if (strpos($lines[$index], "class=\"label\">Dostupnost")) {
-        $vrijednost = preg_match("/\>(.*?)\</", $lines[$index + 1], $match);
-        if ($match[1] === "Nedostupno") {
-            echo json_encode("Nedostupno");
+    if (strpos($lines[$index], 'class="label">Dostupnost')) {
+        $vrijednost = preg_match('/\>(.*?)\</', $lines[$index + 1], $match);
+        if ($match[1] === 'Nedostupno') {
             $nedostupno = TRUE;
             break;
         }
     }
-    if (strpos($lines[$index], "class=\"warehouseInventory\"")) {
+    if (strpos($lines[$index], 'class="warehouseInventory"')) {
         for ($i = $index; $i < $index + 111; $i++) {
             $polje[] = $lines[$i];
         }
-        $obj[] = parsiranjeSkladista($polje);
+        $obj = parsiranjeSkladista($polje);
         break;
-        //unset($polje);
     }
 }
 
@@ -67,12 +65,12 @@ if (!$nedostupno) {
 }
 
 function parsiranjeSkladista($polje) {
-    $naziv = "";
-    $dostupnost = "";
+    $naziv = '';
+    $dostupnost = '';
     $n = FALSE;
     $d = FALSE;
     for ($i = 0; $i < count($polje); $i++) {
-        if (strpos($polje[$i], "class=\"warehouse\"")) {
+        if (strpos($polje[$i], 'class="warehouse"')) {
             $naziv = parsirajIme($polje[$i]);
             if ($naziv) {
                 $n = TRUE;
@@ -81,10 +79,10 @@ function parsiranjeSkladista($polje) {
                 $n = FALSE;
             }
         }
-        else if ($n && strpos($polje[$i], "class=\"circle active\"")) {
+        else if ($n && strpos($polje[$i], 'class="circle active"')) {
             $dostupnost = parsirajDostupnost($polje[$i]);
             $d = TRUE;
-            $obj[] = (object) ["naziv" => $naziv, "dostupnost" => $dostupnost];
+            $obj[] = (object) ['naziv' => $naziv, 'dostupnost' => $dostupnost];
             $n = FALSE;
             $d = FALSE;
         }
@@ -102,7 +100,7 @@ function parsirajIme($linija) {
 }
 
 function parsirajDostupnost($linija) {
-    preg_match("/td class=\"warehouse(.*?)\"/", $linija, $match);
+    preg_match('/td class="warehouse(.*?)"/', $linija, $match);
     return $match[1];
 }
 
