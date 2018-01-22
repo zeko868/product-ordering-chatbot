@@ -41,7 +41,7 @@ function dajDostupnaSkladista() {
 $curl = curl_init();
 
 curl_setopt_array($curl, array(
-CURLOPT_URL => 'https://maps.googleapis.com/maps/api/distancematrix/json?key=' . API_KEY . '&origins=' . urlencode(implode('|', dajDostupnaSkladista())) . '&destinations=' . urlencode($odrediste),
+CURLOPT_URL => 'https://maps.googleapis.com/maps/api/distancematrix/json?key=' . API_KEY . '&origins=' . implode(urlencode('|'), dajDostupnaSkladista()) . '&destinations=' . urlencode($odrediste),
 CURLOPT_RETURNTRANSFER => true,
 CURLOPT_CUSTOMREQUEST => "GET",
 CURLOPT_HTTPHEADER => array(
