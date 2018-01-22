@@ -4,8 +4,7 @@ $firstName = $userInfo['first_name'];
 $lastName = $userInfo['last_name'];
 $email = $userInfo['email'];
 $address = $userInfo['address']['route'] . ' ' . $userInfo['address']['street_number'];
-$postCode = $userInfo['address']['postal_code'];  // optional if $city is specified
-//$city = 'Marija Bistrica';      // optional if $postCode is specified
+$postCode = $userInfo['address']['postal_code'];
 $phoneNum = $userInfo['phone'];
 /*  // hardkodirano za testiranje
 $desiredProducts = [
@@ -15,21 +14,15 @@ $desiredProducts = [
 $delivery = true;
 */
 
-if (empty($firstName) || empty($lastName) || empty($email) || empty($address) || (empty($postCode) && empty($city)) || empty($phoneNum) || empty($desiredProducts) || min(array_values($desiredProducts)) < 1 || !isset($delivery) || (!$delivery && empty($closestStore))) {
+if (empty($firstName) || empty($lastName) || empty($email) || empty($address) || empty($postCode) || empty($phoneNum) || empty($desiredProducts) || min(array_values($desiredProducts)) < 1 || !isset($delivery) || (!$delivery && empty($closestStore))) {
     $answer = 'Nisu uneseni svi podaci potrebni za izvršenje narudžbe!';
     return;
 }
 
-if (isset($postCode)) {
-    $url = "https://www.links.hr/Customer/SearchCityPostCode?term=$postCode";
-}
-else {
-    $url = "https://www.links.hr/Customer/SearchCity?term=$city";
-}
 $curl = curl_init();
 
 curl_setopt_array($curl, array(
-    CURLOPT_URL => $url,
+    CURLOPT_URL => "https://www.links.hr/Customer/SearchCityPostCode?term=$postCode",
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_CUSTOMREQUEST => 'GET',
     CURLOPT_HTTPHEADER => array(
@@ -41,34 +34,25 @@ $response = curl_exec($curl);
 $json = json_decode($response, true);
 curl_close($curl);
 
-switch (count($json)) {
-    case 1:
-        $infos = $json[0]['info'];
-        $countryId = $infos['countryId'];
-        $postCode = $infos['postCode'];
-        $city = $infos['city'];
-        
-        $args = [$firstName, $lastName, $email, $address, $postCode, $city, $countryId, $phoneNum, $closestStore];
-        foreach ($desiredProducts as $productUrl => $quantity) {
-            $args[] = $productUrl;
-            $args[] = $quantity;
-        }
-        $argNum = count($args);
-        for ($i=0; $i<$argNum; $i++) {
-            $args[$i] = escapeshellarg($args[$i]);
-        }
-        $answer = shell_exec('java -jar ~/orderer/dist/orderer.jar ' . implode(' ', $args));
-        break;
-    case 0:
-        if (isset($postCode)) {
-            $answer = "Nije pronađeno nijedno mjesto s poštanskim brojem $postCode na stranicama dobavljača";
-        }
-        else {
-            $answer = "Za mjesto '$city' se ne može pronaći pripadajući poštanski broj kako bi se kreirala narudžba!";
-        }
-        break;
-    default:
-        $answer = "Za navedeni naziv mjesta '$city' je nejasno koji mu je točno poštanski broj. Molimo, navedite puni naziv mjesta ili navedite poštanski broj";
+if (empty($json)) {
+    $answer = "Nije pronađeno nijedno mjesto s poštanskim brojem $postCode na stranicama dobavljača";
+}
+else {
+    $infos = $json[0]['info'];
+    $countryId = $infos['countryId'];
+    $postCode = $infos['postCode'];
+    $city = $infos['city'];
+    
+    $args = [$firstName, $lastName, $email, $address, $postCode, $city, $countryId, $phoneNum, $closestStore];
+    foreach ($desiredProducts as $productUrl => $quantity) {
+        $args[] = $productUrl;
+        $args[] = $quantity;
+    }
+    $argNum = count($args);
+    for ($i=0; $i<$argNum; $i++) {
+        $args[$i] = escapeshellarg($args[$i]);
+    }
+    $answer = shell_exec('java -jar ~/orderer/dist/orderer.jar ' . implode(' ', $args));
 }
 
 ?>
