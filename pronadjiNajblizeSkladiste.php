@@ -14,11 +14,6 @@ $dostupnosti = [
     ['naziv' => 'Slavonski Brod', 'dostupnost' => 'OnRequest'],
     ['naziv' => 'Split', 'dostupnost' => 'OnRequest'],
     ['naziv' => 'Šibenik', 'dostupnost' => 'OnRequest'],
-    ['naziv' => 'Varaždin', 'dostupnost' => 'OnRequest'],
-    ['naziv' => 'Vinkovci', 'dostupnost' => 'OnRequest'],
-    ['naziv' => 'Zadar', 'dostupnost' => 'Available'],
-    ['naziv' => 'Zagreb Dubrava', 'dostupnost' => 'OnRequest'],
-    ['naziv' => 'Zagreb Trešnjevka', 'dostupnost' => 'OnRequest'],
     ['naziv' => 'Varaždin', 'dostupnost' => 'Available'],
     ['naziv' => 'Vinkovci', 'dostupnost' => 'OnRequest'],
     ['naziv' => 'Zadar', 'dostupnost' => 'OnRequest'],
@@ -32,16 +27,16 @@ function dajDostupnaSkladista() {
     $skladista = [];
     foreach ($dostupnosti as $redak) {
         if ($redak->dostupnost === 'Available') {
-            $skladista[] = urlencode($redak->naziv . ', Hrvatska');
+            $skladista[] = $redak->naziv . ', Hrvatska';
         }
     }
     return $skladista;
 }
 
+$dostupnaSkladista = dajDostupnaSkladista();
 $curl = curl_init();
-
 curl_setopt_array($curl, array(
-CURLOPT_URL => 'https://maps.googleapis.com/maps/api/distancematrix/json?key=' . API_KEY . '&origins=' . implode(urlencode('|'), dajDostupnaSkladista()) . '&destinations=' . urlencode($odrediste),
+CURLOPT_URL => 'https://maps.googleapis.com/maps/api/distancematrix/json?key=' . API_KEY . '&origins=' . urlencode(implode('|', $dostupnaSkladista)) . '&destinations=' . urlencode($odrediste),
 CURLOPT_RETURNTRANSFER => true,
 CURLOPT_CUSTOMREQUEST => "GET",
 CURLOPT_HTTPHEADER => array(
@@ -69,7 +64,8 @@ if ($json['status'] === 'OK') {
         $i++;
     }
     if ($najbliziPutIndeks !== -1) {
-        $najblizeIshodiste = $json['origin_addresses'][$najbliziPutIndeks];
+        //$najblizeIshodiste = $json['origin_addresses'][$najbliziPutIndeks];   // daje dugačak i formalan naziv uz proizvoljni kućni broj
+        $najblizeIshodiste = substr($dostupnaSkladista[$najbliziPutIndeks], 0, strpos($dostupnaSkladista[$najbliziPutIndeks], ','));    // daje naziv lokacije onakav kakav se nalazi na samoj web-stranici (ignorira se naziv države koji je dodan iznad u ovoj skripti)
     }
     else {
         $najblizeIshodiste = false;
