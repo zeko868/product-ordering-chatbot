@@ -1,8 +1,5 @@
 <?php
 
-ob_start();
-header('Content-Type=> text/html; charset=utf-8');
-
 $firstName = $userInfo['first_name'];
 $lastName = $userInfo['last_name'];
 $email = $userInfo['email'];
@@ -32,12 +29,12 @@ else {
 $curl = curl_init();
 
 curl_setopt_array($curl, array(
-CURLOPT_URL => $url,
-CURLOPT_RETURNTRANSFER => true,
-CURLOPT_CUSTOMREQUEST => 'GET',
-CURLOPT_HTTPHEADER => array(
-    'content-type: application/json'
-)
+    CURLOPT_URL => $url,
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_CUSTOMREQUEST => 'GET',
+    CURLOPT_HTTPHEADER => array(
+        'content-type: application/json'
+    )
 ));
 
 $response = curl_exec($curl);
@@ -73,7 +70,5 @@ switch (count($json)) {
     default:
         $answer = "Za navedeni naziv mjesta '$city' je nejasno koji mu je točno poštanski broj. Molimo, navedite puni naziv mjesta ili navedite poštanski broj";
 }
-
-ob_flush();
 
 ?>
