@@ -35,7 +35,7 @@ if (!empty($input['entry'][0]['messaging'])) {
 			$adresar[$senderId]['first_name'] = $ime = $result['first_name'];
 			$adresar[$senderId]['last_name'] = $prezime = $result['last_name'];
 			file_put_contents('adresar.json', json_encode($adresar));
-			$introGuidelines = "Poštovanje  $ime $prezime,\n";
+			$introGuidelines = "Poštovanje $ime $prezime,\n";
 			$upravoDeklariran = true;
 		}
 		if (!array_key_exists('address', $adresar[$senderId])) {
