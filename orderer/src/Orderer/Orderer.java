@@ -176,7 +176,7 @@ public class Orderer {
 
             //driver.findElementByClassName("confirm-order-next-step-button").click();  // final step
             
-            System.out.println(String.format("Narudžba je uspješno zaprimljena. Iznos od %s ćete platiti pouzećem", totalCost));
+            System.out.println(totalCost);
             
             driver.close();
         } else {
