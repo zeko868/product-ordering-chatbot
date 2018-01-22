@@ -32,7 +32,7 @@ function dajDostupnaSkladista() {
     $skladista = [];
     foreach ($dostupnosti as $redak) {
         if ($redak->dostupnost === 'Available') {
-            $skladista[] = urlencode($redak->naziv);
+            $skladista[] = urlencode($redak->naziv . ', Hrvatska');
         }
     }
     return $skladista;
