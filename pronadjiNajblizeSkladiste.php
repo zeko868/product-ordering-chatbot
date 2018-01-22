@@ -1,7 +1,5 @@
 <?php
 
-ob_start();
-header('Content-Type=> text/html; charset=utf-8');
 //hardcoded za sad
 //$odrediste = 'Marija Bistrica';
 $odrediste = $userInfo['address']['postal_code'] . ' ' . $userInfo['address']['route'] . ' ' . $userInfo['address']['street_number'];
@@ -33,8 +31,8 @@ function dajDostupnaSkladista() {
     global $dostupnosti;
     $skladista = [];
     foreach ($dostupnosti as $redak) {
-        if ($redak['dostupnost'] === 'Available') {
-            $skladista[] = urlencode($redak['naziv']);
+        if ($redak->dostupnost === 'Available') {
+            $skladista[] = urlencode($redak->naziv);
         }
     }
     return $skladista;
@@ -48,7 +46,7 @@ CURLOPT_RETURNTRANSFER => true,
 CURLOPT_CUSTOMREQUEST => "GET",
 CURLOPT_HTTPHEADER => array(
     "content-type: application/json"
-)
+    )
 ));
 
 $response = curl_exec($curl);
@@ -81,6 +79,5 @@ else {
     $najblizeIshodiste = null;
 }
 
-ob_flush();
 ?>
 

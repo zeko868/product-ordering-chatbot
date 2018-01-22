@@ -1,7 +1,7 @@
 <?php
 
-ob_start();
-header('Content-Type: text/html; charset=utf-8');
+ini_set('allow_url_fopen', 1);
+
 //hardcoded za sad
 //$linkProizovada = "/hr/graficka-kartica-used-pci-e-gainward-geforce-gtx-970-phoenix-4gb-ddr5-dvi-hdmi-mdp-8100001048";
 //nedostupno
@@ -106,6 +106,5 @@ function parsirajDostupnost($linija) {
     return $match[1];
 }
 
-ob_flush();
 ?>
 
