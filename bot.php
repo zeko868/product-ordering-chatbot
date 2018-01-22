@@ -146,7 +146,7 @@ if (!empty($input['entry'][0]['messaging'])) {
 				$action = $commandParts[1];
 				$delivery = ($action === 'dostava');
 				$closestStore = $action;
-				$desiredProducts = [ $linkProizovada => 1 ];
+				$desiredProducts = [ 'https://www.links.hr' . $linkProizovada => 1 ];
 				require 'naruciRobu.php';
 				replyBackWithSimpleText($answer);
 			}
