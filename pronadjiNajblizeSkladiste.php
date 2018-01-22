@@ -62,7 +62,7 @@ if ($json['status'] === 'OK') {
         if ($put['status'] === 'OK') {
             $trajanje = $put['duration']['value'];
             if ($trajanje < $najbliziPutTrajanje) {
-                $najbliziPut = $trajanje;
+                $najbliziPutTrajanje = $trajanje;
                 $najbliziPutIndeks = $i;
             }
         }
