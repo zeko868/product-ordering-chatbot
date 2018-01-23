@@ -71,7 +71,7 @@ if (!empty($input['entry'][0]['messaging'])) {
 					}
 					else {
 						if (isset($korisnikUpravoDeklariran)) {
-							$introGuidelines .= 'Za korištenje aplikacije, potrebno je proći kroz 3 koraka konfiguracije. Za početak, navedite Vašu adresu na koju će biti dopremljena roba.';
+							$introGuidelines .= 'Za korištenje aplikacije potrebno je proći kroz 3 koraka konfiguracije. Za početak, navedite Vašu adresu na koju će biti dopremljena roba.';
 						}
 						else {
 							$introGuidelines = 'Molimo Vas da navedete sve komponente adrese koje su nam od značaja poput naziva ulice i kućnog broja te naziva poštanskog mjesta ili njegovog pripadajućeg broja';
@@ -80,7 +80,7 @@ if (!empty($input['entry'][0]['messaging'])) {
 				}
 				else {
 					if (isset($korisnikUpravoDeklariran)) {
-						$introGuidelines .= 'Za korištenje aplikacije, potrebno je proći kroz 3 koraka konfiguracije. Za početak, navedite Vašu adresu na koju će biti dopremljena roba.';
+						$introGuidelines .= 'Za korištenje aplikacije potrebno je proći kroz 3 koraka konfiguracije. Za početak, navedite Vašu adresu na koju će biti dopremljena roba.';
 					}
 				else {
 						$introGuidelines = 'Molimo Vas da precizirate adresu! Naime, ne može se pouzdano otkriti o kojem je točno mjestu riječ';
@@ -89,7 +89,7 @@ if (!empty($input['entry'][0]['messaging'])) {
 			}
 			else {
 				if (isset($korisnikUpravoDeklariran)) {
-					$introGuidelines .= 'Za korištenje aplikacije, potrebno je proći kroz 3 koraka konfiguracije. Za početak, navedite Vašu adresu na koju će biti dopremljena roba.';
+					$introGuidelines .= 'Za korištenje aplikacije potrebno je proći kroz 3 koraka konfiguracije. Za početak, navedite Vašu adresu na koju će biti dopremljena roba.';
 				}
 				else {
 					$introGuidelines = 'Molimo Vas da precizirate adresu! Naime, nije pronađeno nijedno mjesto koje odgovara na navedeni opis';
@@ -128,17 +128,17 @@ if (!empty($input['entry'][0]['messaging'])) {
 	// When bot receives button click from user
 	else if (!empty($message['postback'])) {
 		$command = $message['postback']['payload'];
-		if (!array_key_exists('phone', $adresar[$senderId])) {	// if this attribute is not defined, then user still hasn't finished registration process
+		$userInfo = $adresar[$senderId];
+		if (!array_key_exists('phone', $userInfo)) {	// if this attribute is not defined, then user still hasn't finished registration process
 			if (!isset($introGuidelines)) {
 				$introGuidelines = '';
 			}
-			$introGuidelines .= 'Za korištenje aplikacije, potrebno je proći kroz 3 koraka konfiguracije. Za početak, navedite Vašu adresu na koju će biti dopremljena roba.';
+			$introGuidelines .= 'Za korištenje aplikacije potrebno je proći kroz 3 koraka konfiguracije. Za početak, navedite Vašu adresu na koju će biti dopremljena roba.';
 			replyBackWithSimpleText($introGuidelines);
 		}
 		else {
 			$commandParts = explode(' ', $command);
 			if(strpos($command, '/hr/') === 0){
-				$userInfo = $adresar[$senderId];
 				if (count($commandParts) === 1) {	// pretpostavimo na putanja do stranice s artiklom nema razmaka
 					$linkProizovada = $command;
 					require './provjeraDostupnosti.php';
