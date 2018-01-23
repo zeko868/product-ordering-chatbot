@@ -172,7 +172,7 @@ if (!empty($input['entry'][0]['messaging'])) {
 				];
 
 				
-				replyBackWithSimpleText($cijena);
+				replyBackWithSimpleText($ans['payload']['recipient_name']);
 				
 				//replyBackWithSimpleText($answer);
 			}
