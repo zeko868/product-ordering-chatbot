@@ -148,32 +148,7 @@ if (!empty($input['entry'][0]['messaging'])) {
 				$closestStore = $action;
 				$desiredProducts = [ 'https://www.links.hr' . $linkProizovada => 1 ];
 				require 'naruciRobu.php';
-				//$c = explode(" ",$answer);
-				//$cijena = $c[0];
-				//$adresar[$senderId]['address'] = ['street_number' => $streetNum, 'route' => $route, 'postal_code' => $postalCode];
-				/*$ans = [
-					'type'=>'template',
-					'payload'=>[
-						'template_type'=>'receipt',
-						'recipient_name'=>$adresar[$senderId]['first_name']. " " .$adresar[$senderId]['last_name'],
-						'order_number'=>'123456',
-						'currency'=>'HRK',
-						'payment_method'=>'Preuzeće',
-						'address'=>['street_1'=>$adresar[$senderId]['address']['route'] .", ".$adresar[$senderId]['address']['street_number'],'city'=>"Bestovje",'postal_code'=>$adresar[$senderId]['address']['postal_code'],'state'=>'Hrvatska','country'=>"CRO"],
-						'summary'=>['subtotal'=>0,'shipping_cost'=>0,'total_tax'=>0,'total_cost'=>floatval($cijena)],
-						'elements'=> [['title'=>'Proizvod','subtitle'=>'proizvod','quantity'=>1,'price'=>floatval($cijena),'currency'=>'HRK','image_url'=>'https://www.links.hr' . $linkProizovada]]
-					]
-				];
-
-				$response = [
-					'recipient' => [ 'id' => $senderId ],
-					'message' => [ 'attachment' => $ans ]
-				];*/
-				//replyBackWithSimpleText(json_encode($response));
-				replyBackWithSimpleText($command);
-				/*if(floatval($cijena) > 0){
-					replyBackSpecificObject($response);
-				}*/
+				replyBackWithSimpleText($answer);
 			}
 		}
 	}
