@@ -170,6 +170,8 @@ if (!empty($input['entry'][0]['messaging'])) {
 					'recipient' => [ 'id' => $senderId ],
 					'message' => [ 'attachment' => $ans ]
 				];
+
+				json_encode($response);
 				
 				replyBackWithSimpleText($answer);
 			}
