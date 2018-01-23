@@ -151,7 +151,7 @@ if (!empty($input['entry'][0]['messaging'])) {
 				$c = explode(" ",$answer);
 				$cijena = $c[0];
 				//$adresar[$senderId]['address'] = ['street_number' => $streetNum, 'route' => $route, 'postal_code' => $postalCode];
-				$ans = [
+				/*$ans = [
 					'type'=>'template',
 					'payload'=>[
 						'template_type'=>'receipt',
@@ -168,7 +168,7 @@ if (!empty($input['entry'][0]['messaging'])) {
 				$response = [
 					'recipient' => [ 'id' => $senderId ],
 					'message' => [ 'attachment' => $ans ]
-				];
+				];*/
 				//replyBackWithSimpleText(json_encode($response));
 				replyBackWithSimpleText($command);
 				/*if(floatval($cijena) > 0){
