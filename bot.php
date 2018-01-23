@@ -148,6 +148,10 @@ if (!empty($input['entry'][0]['messaging'])) {
 				$closestStore = $action;
 				$desiredProducts = [ 'https://www.links.hr' . $linkProizovada => 1 ];
 				require 'naruciRobu.php';
+
+				$c = explode(" ",$answer);
+				$cijena = $c[0];
+
 				replyBackWithSimpleText($answer);
 			}
 		}
