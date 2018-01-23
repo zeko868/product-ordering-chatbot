@@ -171,7 +171,12 @@ if (!empty($input['entry'][0]['messaging'])) {
 					'message' => [ 'attachment' => $ans ]
 				];
 
-				replyBackSpecificObject($response);
+				if($cijena === 0){
+					replyBackSpecificObject(null);
+				}else{
+					replyBackSpecificObject($response);
+				}
+				
 				
 				//replyBackWithSimpleText($answer);
 			}
