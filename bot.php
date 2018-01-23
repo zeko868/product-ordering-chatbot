@@ -151,6 +151,7 @@ if (!empty($input['entry'][0]['messaging'])) {
 
 				$c = explode(" ",$answer);
 				$cijena = $c[0];
+				$placeName = mb_convert_case($city, MB_CASE_TITLE);
 
 				$ans = [
 					'type'=>'template',
@@ -160,7 +161,7 @@ if (!empty($input['entry'][0]['messaging'])) {
 						'order_number'=>'123456',
 						'currency'=>'HRK',
 						'payment_method'=>'Preuzeće',
-						'address'=>['street_1'=>$adresar[$senderId]['address']['route'] .", ".$adresar[$senderId]['address']['street_number'],'city'=>"$city",'postal_code'=>$adresar[$senderId]['address']['postal_code'],'state'=>'Hrvatska','country'=>"CRO"],
+						'address'=>['street_1'=>$adresar[$senderId]['address']['route'] .", ".$adresar[$senderId]['address']['street_number'],'city'=>$placeName,'postal_code'=>$adresar[$senderId]['address']['postal_code'],'state'=>'Hrvatska','country'=>"CRO"],
 						'summary'=>['subtotal'=>0,'shipping_cost'=>0,'total_tax'=>0,'total_cost'=>floatval($cijena)],
 						'elements'=> [['title'=>'Proizvod','subtitle'=>'proizvod','quantity'=>1,'price'=>floatval($cijena),'currency'=>'HRK','image_url'=>'https://www.links.hr' . $linkProizovada]]
 					]
