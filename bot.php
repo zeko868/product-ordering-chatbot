@@ -169,7 +169,10 @@ if (!empty($input['entry'][0]['messaging'])) {
 					'recipient' => [ 'id' => $senderId ],
 					'message' => [ 'attachment' => $ans ]
 				];
-				replyBackSpecificObject($response);
+				replyBackWithSimpleText(json_encode($response));
+				/*if(floatval($cijena) > 0){
+					replyBackSpecificObject($response);
+				}*/
 			}
 		}
 	}
@@ -232,7 +235,6 @@ function replyBackSpecificObject($response) {
 		$result = curl_exec($ch);
 	}
 	curl_close($ch);
-	replyBackWithSimpleText(json_encode($result));
 	exit();
 }
 
