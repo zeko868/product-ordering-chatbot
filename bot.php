@@ -15,29 +15,29 @@ $command = "";
 if (!empty($input['entry'][0]['messaging'])) {
 	$message = $input['entry'][0]['messaging'][0];
 	$adresar = json_decode(file_get_contents('adresar.json'), true);
-	// When bot receive message from user
+
+	$introGuidelines = '';
+	if (!array_key_exists($senderId, $adresar)) {
+		$ch = curl_init();
+		curl_setopt_array($ch, array(
+			CURLOPT_URL => 'https://graph.facebook.com/v2.8/' . $senderId . '?fields=first_name,last_name&app_secret=' . APP_SECRET . '&access_token=' . ACCESS_TOKEN,
+			CURLOPT_RETURNTRANSFER => true,
+			CURLOPT_CUSTOMREQUEST => 'GET',
+			CURLOPT_HTTPHEADER => array(
+				'content-type: application/json'
+			)
+		));
+		$result = json_decode(curl_exec($ch), true);
+		curl_close($ch);
+		$adresar[$senderId]['first_name'] = $ime = $result['first_name'];
+		$adresar[$senderId]['last_name'] = $prezime = $result['last_name'];
+		file_put_contents('adresar.json', json_encode($adresar));
+		$introGuidelines = "Poštovanje $ime $prezime,\n";
+		$korisnikUpravoDeklariran = true;
+	}
 	if (!empty($message['message'])) {
 		$command = $message['message']['text'];
 
-		$introGuidelines = '';
-		if (!array_key_exists($senderId, $adresar)) {
-			$ch = curl_init();
-			curl_setopt_array($ch, array(
-				CURLOPT_URL => 'https://graph.facebook.com/v2.8/' . $senderId . '?fields=first_name,last_name&app_secret=' . APP_SECRET . '&access_token=' . ACCESS_TOKEN,
-				CURLOPT_RETURNTRANSFER => true,
-				CURLOPT_CUSTOMREQUEST => 'GET',
-				CURLOPT_HTTPHEADER => array(
-					'content-type: application/json'
-				)
-			));
-			$result = json_decode(curl_exec($ch), true);
-			curl_close($ch);
-			$adresar[$senderId]['first_name'] = $ime = $result['first_name'];
-			$adresar[$senderId]['last_name'] = $prezime = $result['last_name'];
-			file_put_contents('adresar.json', json_encode($adresar));
-			$introGuidelines = "Poštovanje $ime $prezime,\n";
-			$upravoDeklariran = true;
-		}
 		if (!array_key_exists('address', $adresar[$senderId])) {
 			$command = urlencode($command);
 			$ch = curl_init();
@@ -70,7 +70,7 @@ if (!empty($input['entry'][0]['messaging'])) {
 						$introGuidelines .= "Uspješno ste registrirali adresu uz Vaš korisnički račun!\nNavedite Vašu e-mail adresu na koju ćete biti u mogućnosti kontaktirani";
 					}
 					else {
-						if (isset($upravoDeklariran)) {
+						if (isset($korisnikUpravoDeklariran)) {
 							$introGuidelines .= 'Za korištenje aplikacije, potrebno je proći kroz 3 koraka konfiguracije. Za početak, navedite Vašu adresu na koju će biti dopremljena roba.';
 						}
 						else {
@@ -79,7 +79,7 @@ if (!empty($input['entry'][0]['messaging'])) {
 					}
 				}
 				else {
-					if (isset($upravoDeklariran)) {
+					if (isset($korisnikUpravoDeklariran)) {
 						$introGuidelines .= 'Za korištenje aplikacije, potrebno je proći kroz 3 koraka konfiguracije. Za početak, navedite Vašu adresu na koju će biti dopremljena roba.';
 					}
 				else {
@@ -88,7 +88,7 @@ if (!empty($input['entry'][0]['messaging'])) {
 				}
 			}
 			else {
-				if (isset($upravoDeklariran)) {
+				if (isset($korisnikUpravoDeklariran)) {
 					$introGuidelines .= 'Za korištenje aplikacije, potrebno je proći kroz 3 koraka konfiguracije. Za početak, navedite Vašu adresu na koju će biti dopremljena roba.';
 				}
 				else {
@@ -128,58 +128,61 @@ if (!empty($input['entry'][0]['messaging'])) {
 	// When bot receive button click from user
 	else if (!empty($message['postback'])) {
 		$command = $message['postback']['payload'];
-		
-		$commandParts = explode(' ', $command);
-		if(strpos($command, '/hr/') === 0){
-			$userInfo = $adresar[$senderId];
-			if (count($commandParts) === 1) {	// pretpostavimo na putanja do stranice s artiklom nema razmaka
-				$linkProizovada = $command;
-				require './provjeraDostupnosti.php';
-				$response = [
-					'recipient' => [ 'id' => $senderId ],
-					'message' => [ ($jestInteraktivan ? 'attachment' : 'text') => $answer ]
-				];
-				replyBackSpecificObject($response);
-			}
-			else {	// sadrži i dodatni parametar koji označava način otpremanja robe
-				$linkProizovada = $commandParts[0];
-				$action = $commandParts[1];
-				$delivery = ($action === 'dostava');
-				$closestStore = $action;
-				$desiredProducts = [ 'https://www.links.hr' . $linkProizovada => 1 ];
-				require 'naruciRobu.php';
-
-				$c = explode(" ",$answer);
-				$cijena = $c[0];
-				$placeName = mb_convert_case($city, MB_CASE_TITLE);
-
-				$ans = [
-					'type'=>'template',
-					'payload'=>[
-						'template_type'=>'receipt',
-						'recipient_name'=>$adresar[$senderId]['first_name']. " " .$adresar[$senderId]['last_name'],
-						'order_number'=>'123456',
-						'currency'=>'HRK',
-						'payment_method'=>'Preuzeće',
-						'address'=>['street_1'=>$adresar[$senderId]['address']['route'] .", ".$adresar[$senderId]['address']['street_number'],'city'=>$placeName,'postal_code'=>$adresar[$senderId]['address']['postal_code'],'state'=>'Hrvatska','country'=>"CRO"],
-						'summary'=>['subtotal'=>0,'shipping_cost'=>0,'total_tax'=>0,'total_cost'=>floatval($cijena)],
-						'elements'=> [['title'=>'Proizvod','subtitle'=>'proizvod','quantity'=>1,'price'=>floatval($cijena),'currency'=>'HRK','image_url'=>'https://www.links.hr' . $linkProizovada]]
-					]
-				];
-
-				$response = [
-					'recipient' => [ 'id' => $senderId ],
-					'message' => [ 'attachment' => $ans ]
-				];
-
-				
-				if(strval($ans['payload']['summary']['total_cost']) == "0"){
-					replyBackSpecificObject(null);
-				}else{
+		if (isset($korisnikUpravoDeklariran)) {
+			$introGuidelines .= 'Za korištenje aplikacije, potrebno je proći kroz 3 koraka konfiguracije. Za početak, navedite Vašu adresu na koju će biti dopremljena roba.';
+			replyBackWithSimpleText($introGuidelines);
+		}
+		else {
+			$commandParts = explode(' ', $command);
+			if(strpos($command, '/hr/') === 0){
+				$userInfo = $adresar[$senderId];
+				if (count($commandParts) === 1) {	// pretpostavimo na putanja do stranice s artiklom nema razmaka
+					$linkProizovada = $command;
+					require './provjeraDostupnosti.php';
+					$response = [
+						'recipient' => [ 'id' => $senderId ],
+						'message' => [ ($jestInteraktivan ? 'attachment' : 'text') => $answer ]
+					];
 					replyBackSpecificObject($response);
 				}
-				
-				//replyBackWithSimpleText($answer);
+				else {	// sadrži i dodatni parametar koji označava način otpremanja robe
+					$linkProizovada = $commandParts[0];
+					$action = $commandParts[1];
+					$delivery = ($action === 'dostava');
+					$closestStore = $action;
+					$desiredProducts = [ 'https://www.links.hr' . $linkProizovada => 1 ];
+					require 'naruciRobu.php';
+
+					$c = explode(" ",$answer);
+					$cijena = $c[0];
+					$placeName = mb_convert_case($city, MB_CASE_TITLE);
+
+					$ans = [
+						'type'=>'template',
+						'payload'=>[
+							'template_type'=>'receipt',
+							'recipient_name'=>$adresar[$senderId]['first_name']. " " .$adresar[$senderId]['last_name'],
+							'order_number'=>'123456',
+							'currency'=>'HRK',
+							'payment_method'=>'Preuzeće',
+							'address'=>['street_1'=>$adresar[$senderId]['address']['route'] .", ".$adresar[$senderId]['address']['street_number'],'city'=>$placeName,'postal_code'=>$adresar[$senderId]['address']['postal_code'],'state'=>'Hrvatska','country'=>"CRO"],
+							'summary'=>['subtotal'=>0,'shipping_cost'=>0,'total_tax'=>0,'total_cost'=>floatval($cijena)],
+							'elements'=> [['title'=>'Proizvod','subtitle'=>'proizvod','quantity'=>1,'price'=>floatval($cijena),'currency'=>'HRK','image_url'=>'https://www.links.hr' . $linkProizovada]]
+						]
+					];
+
+					$response = [
+						'recipient' => [ 'id' => $senderId ],
+						'message' => [ 'attachment' => $ans ]
+					];
+
+					
+					if(strval($ans['payload']['summary']['total_cost']) == "0"){
+						replyBackSpecificObject(null);
+					}else{
+						replyBackSpecificObject($response);
+					}
+				}
 			}
 		}
 	}
