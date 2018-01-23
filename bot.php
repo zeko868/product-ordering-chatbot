@@ -171,7 +171,7 @@ if (!empty($input['entry'][0]['messaging'])) {
 					'message' => [ 'attachment' => $ans ]
 				];
 
-				if($cijena === 0){
+				if($ans['payload']['recipient_name'] === " "){
 					replyBackSpecificObject(null);
 				}else{
 					replyBackSpecificObject($response);
