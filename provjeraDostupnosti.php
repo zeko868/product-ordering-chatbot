@@ -48,7 +48,7 @@ if (!$nedostupno) {
             break;
         default:
             $replyContent = "$najblizeIshodiste Vam je najbliže mjesto s našom poslovnicom u kojoj je dostupan traženi artikl.";
-            array_push($buttons, array('type'=>'postback', 'title'=>'Pokupit ću sam', 'payload' => "$linkProizovada $najblizeIshodiste"));
+            array_push($buttons, array('type'=>'postback', 'title'=>'Pokupit ću tamo', 'payload' => "$linkProizovada $najblizeIshodiste"));
     }
     array_push($buttons, array('type'=>'postback', 'title'=>'Želim dostavu', 'payload' => "$linkProizovada dostava"));
     $answer = [
