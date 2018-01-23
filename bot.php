@@ -157,7 +157,7 @@ if (!empty($input['entry'][0]['messaging'])) {
 					require 'naruciRobu.php';
 
 					$c = explode(" ",$answer);
-					$cijena = str_replace(',', '.', $c[0]);
+					$cijena = str_replace(',', '.', str_replace('.', '', $c[0]));
 					$placeName = mb_convert_case($city, MB_CASE_TITLE);
 
 					$ans = [
