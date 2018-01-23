@@ -170,9 +170,7 @@ if (!empty($input['entry'][0]['messaging'])) {
 					'message' => [ 'attachment' => $ans ]
 				];
 				//replyBackWithSimpleText($answer);
-				if(floatval($cijena) > 0){
-					replyBackSpecificObject($response);
-				}
+				replyBackSpecificObject($response);
 			}
 		}
 	}
