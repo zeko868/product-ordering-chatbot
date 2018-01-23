@@ -172,7 +172,7 @@ if (!empty($input['entry'][0]['messaging'])) {
 				];
 
 				
-				replyBackWithSimpleText($ans['payload']['recipient_name']);
+				replyBackWithSimpleText(strval($ans['payload']['summary']['total_cost']));
 				
 				//replyBackWithSimpleText($answer);
 			}
