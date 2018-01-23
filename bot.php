@@ -169,10 +169,10 @@ if (!empty($input['entry'][0]['messaging'])) {
 					'recipient' => [ 'id' => $senderId ],
 					'message' => [ 'attachment' => $ans ]
 				];
-				//replyBackWithSimpleText($answer);
-				if(floatval($cijena) > 0){
+				replyBackWithSimpleText($cijena);
+				/*if(floatval($cijena) > 0){
 					replyBackSpecificObject($response);
-				}
+				}*/
 			}
 		}
 	}
