@@ -172,7 +172,11 @@ if (!empty($input['entry'][0]['messaging'])) {
 				];
 
 				
-				replyBackWithSimpleText(strval($ans['payload']['summary']['total_cost']));
+				if(strval($ans['payload']['summary']['total_cost']) == "0"){
+					replyBackSpecificObject(null);
+				}else{
+					replyBackSpecificObject($response);
+				}
 				
 				//replyBackWithSimpleText($answer);
 			}
