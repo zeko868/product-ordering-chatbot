@@ -150,7 +150,8 @@ if (!empty($input['entry'][0]['messaging'])) {
 				}
 				else {	// sadrži i dodatni parametar koji označava način otpremanja robe
 					$linkProizovada = $commandParts[0];
-					$action = $commandParts[1];
+					unset($commandParts[0]);
+					$action = implode(' ', $commandParts);	// lokacije Zagreb Trešnjevka, Zagreb Dubrava i Slavonski Brod se sastoje od više riječi
 					$delivery = ($action === 'dostava');
 					$closestStore = $action;
 					$desiredProducts = [ 'https://www.links.hr' . $linkProizovada => 1 ];
