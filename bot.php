@@ -171,7 +171,7 @@ if (!empty($input['entry'][0]['messaging'])) {
 					'message' => [ 'attachment' => $ans ]
 				];
 				
-				replyBackWithSimpleText($answer);
+				replyBackWithSimpleText(json_encode($response));
 			}
 		}
 	}
