@@ -125,10 +125,13 @@ if (!empty($input['entry'][0]['messaging'])) {
 		}
 		$userInfo = $adresar[$senderId];
 	}
-	// When bot receive button click from user
+	// When bot receives button click from user
 	else if (!empty($message['postback'])) {
 		$command = $message['postback']['payload'];
-		if (isset($korisnikUpravoDeklariran)) {
+		if (!array_key_exists('phone', $adresar[$senderId])) {	// if this attribute is not defined, then user still hasn't finished registration process
+			if (!isset($introGuidelines)) {
+				$introGuidelines = '';
+			}
 			$introGuidelines .= 'Za korištenje aplikacije, potrebno je proći kroz 3 koraka konfiguracije. Za početak, navedite Vašu adresu na koju će biti dopremljena roba.';
 			replyBackWithSimpleText($introGuidelines);
 		}
