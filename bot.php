@@ -169,7 +169,8 @@ if (!empty($input['entry'][0]['messaging'])) {
 					'recipient' => [ 'id' => $senderId ],
 					'message' => [ 'attachment' => $ans ]
 				];
-				replyBackWithSimpleText(json_encode($response));
+				//replyBackWithSimpleText(json_encode($response));
+				replyBackWithSimpleText($command);
 				/*if(floatval($cijena) > 0){
 					replyBackSpecificObject($response);
 				}*/
