@@ -165,6 +165,11 @@ if (!empty($input['entry'][0]['messaging'])) {
 						'elements'=> [['title'=>'Proizvod','subtitle'=>'proizvod','quantity'=>1,'price'=>floatval($cijena),'currency'=>'HRK','image_url'=>'https://www.links.hr' . $linkProizovada]]
 					]
 				];
+
+				$response = [
+					'recipient' => [ 'id' => $senderId ],
+					'message' => [ 'attachment' => $ans ]
+				];
 				
 				replyBackWithSimpleText($answer);
 			}
