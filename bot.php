@@ -164,9 +164,9 @@ if (!empty($input['entry'][0]['messaging'])) {
 						unset($ordererOutput[0]);
 						$numOfOutputRows = count($ordererOutput);
 						$orderedItems = [];
-						for ($i=0; $i<$numOfOutputRows; $i+=2) {
-							$productName = $ordererOutput[$i];
-							$productImageUrl = $ordererOutput[$i+1];
+						for ($i=1; $i<$numOfOutputRows; $i+=2) {
+							$productName = $ordererOutput[$i-1];
+							$productImageUrl = $ordererOutput[$i];
 							$orderedItems[] = ['title'=>substr($productName, 0, 80), 'subtitle'=>substr($productName, 0, 80),'quantity'=>1,'price'=>$price,'currency'=>'HRK','image_url'=>$productImageUrl];
 						}
 						$answer = [
@@ -177,7 +177,7 @@ if (!empty($input['entry'][0]['messaging'])) {
 								'order_number'=>'123456',
 								'currency'=>'HRK',
 								'payment_method'=>'Plaćanje pouzećem',
-								'address'=>['street_1'=>$address,'city'=>$placeName,'postal_code'=>$postCode,'state'=>'Hrvatska','country'=>"CRO"],
+								'address'=>['street_1'=>$address,'city'=>$placeName,'postal_code'=>$postCode,'state'=>'Hrvatska','country'=>'CRO'],
 								'summary'=>['subtotal'=>0,'shipping_cost'=>0,'total_tax'=>0,'total_cost'=>$price],
 								'elements'=> $orderedItems
 							]
