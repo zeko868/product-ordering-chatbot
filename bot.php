@@ -161,10 +161,9 @@ if (!empty($input['entry'][0]['messaging'])) {
 						$ordererOutput = explode("\n", $ordererOutput);
 						$price = floatval(str_replace(',', '.', str_replace('.', '', explode(" ", $ordererOutput[0])[0])));
 						$placeName = mb_convert_case($city, MB_CASE_TITLE);
-						unset($ordererOutput[0]);
 						$numOfOutputRows = count($ordererOutput);
 						$orderedItems = [];
-						for ($i=1; $i<$numOfOutputRows; $i+=2) {
+						for ($i=2; $i<$numOfOutputRows; $i+=2) {
 							$productName = $ordererOutput[$i-1];
 							$productImageUrl = $ordererOutput[$i];
 							$orderedItems[] = ['title'=>substr($productName, 0, 80), 'subtitle'=>substr($productName, 0, 80),'quantity'=>1,'price'=>$price,'currency'=>'HRK','image_url'=>$productImageUrl];
