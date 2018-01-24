@@ -227,7 +227,25 @@ if(!empty($obj)){
 	$buttons = array();
 	$itemsNum = min(10, count($obj));
 	for($i=0; $i<$itemsNum; $i++){
-		array_push($buttons, array('title'=>htmlentities($obj[$i]->naziv), 'image_url'=>$obj[$i]->slika, 'subtitle' => htmlentities($obj[$i]->naziv) . ", cijena: " . $obj[$i]->cijena, 'buttons' => array(array('type' => 'postback', 'payload' => $obj[$i]->link, 'title' => 'Naruči proizvod'))));
+		array_push($buttons, array(
+			'title' => htmlentities($obj[$i]->naziv),
+			'image_url' => $obj[$i]->slika,
+			'subtitle' => htmlentities($obj[$i]->naziv) . ", cijena: " . $obj[$i]->cijena,
+			'default_action' => [
+				'type' => 'web_url',
+				'url' => 'https://www.links.hr' . $obj[$i]->link,
+				'messenger_extensions' => true,
+				'webview_height_ratio'=> 'TALL'
+			],
+			'buttons' => array(
+				array(
+					'type' => 'postback',
+					'payload' => $obj[$i]->link,
+					'title' => 'Naruči proizvod'
+					)
+				)
+			)
+		);
 	}
 
 	$answer = [
