@@ -157,34 +157,43 @@ if (!empty($input['entry'][0]['messaging'])) {
 					$desiredProducts = [ 'https://www.links.hr' . $linkProizovada => 1 ];
 					require 'naruciRobu.php';
 
-					$c = explode(" ",$answer);
-					$cijena = str_replace(',', '.', str_replace('.', '', $c[0]));
-					$placeName = mb_convert_case($city, MB_CASE_TITLE);
-
-					$ans = [
-						'type'=>'template',
-						'payload'=>[
-							'template_type'=>'receipt',
-							'recipient_name'=>$adresar[$senderId]['first_name']. " " .$adresar[$senderId]['last_name'],
-							'order_number'=>'123456',
-							'currency'=>'HRK',
-							'payment_method'=>'Preuzeće',
-							'address'=>['street_1'=>$adresar[$senderId]['address']['route'] .", ".$adresar[$senderId]['address']['street_number'],'city'=>$placeName,'postal_code'=>$adresar[$senderId]['address']['postal_code'],'state'=>'Hrvatska','country'=>"CRO"],
-							'summary'=>['subtotal'=>0,'shipping_cost'=>0,'total_tax'=>0,'total_cost'=>floatval($cijena)],
-							'elements'=> [['title'=>'Proizvod','subtitle'=>'proizvod','quantity'=>1,'price'=>floatval($cijena),'currency'=>'HRK','image_url'=>'https://www.links.hr' . $linkProizovada]]
-						]
-					];
-
-					$response = [
-						'recipient' => [ 'id' => $senderId ],
-						'message' => [ 'attachment' => $ans ]
-					];
-
-					
-					if(strval($ans['payload']['summary']['total_cost']) == "0"){
-						replyBackSpecificObject(null);
-					}else{
-						replyBackSpecificObject($response);
+					if (!empty($ordererOutput)) {
+						$ordererOutput = explode(PHP_EOL, $ordererOutput);
+						$price = floatval(str_replace(',', '.', str_replace('.', '', explode(" ", $ordererOutput[0]))));
+						$placeName = mb_convert_case($city, MB_CASE_TITLE);
+						unset($ordererOutput[0]);
+						$numOfOutputRows = count($ordererOutput);
+						for ($i=0; $i<$numOfOutputRows; $i+=2) {
+							$productName = $ordererOutput[$i];
+							$productImageUrl = $ordererOutput[$i+1];
+							$answer = [
+								'type'=>'template',
+								'payload'=>[
+									'template_type'=>'receipt',
+									'recipient_name'=>"$firstName $lastName",
+									'order_number'=>'123456',
+									'currency'=>'HRK',
+									'payment_method'=>'Plaćanje pouzećem',
+									'address'=>['street_1'=>$address,'city'=>$placeName,'postal_code'=>$postCode,'state'=>'Hrvatska','country'=>"CRO"],
+									'summary'=>['subtotal'=>0,'shipping_cost'=>0,'total_tax'=>0,'total_cost'=>$price],
+									'elements'=> [['title'=>$productName,'subtitle'=>$productName,'quantity'=>1,'price'=>$price,'currency'=>'HRK','image_url'=>$productImageUrl]]
+								]
+							];
+	
+							$response = [
+								'recipient' => [ 'id' => $senderId ],
+								'message' => [ 'attachment' => $answer ]
+							];
+							
+							if($price === 0){
+								replyBackSpecificObject(null);
+							}else{
+								replyBackSpecificObject($response);
+							}
+						}
+					}
+					else {
+						replyBackWithSimpleText($answer);
 					}
 				}
 			}

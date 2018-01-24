@@ -52,7 +52,7 @@ else {
     for ($i=0; $i<$argNum; $i++) {
         $args[$i] = escapeshellarg($args[$i]);
     }
-    $answer = shell_exec('java -jar ~/orderer/dist/orderer.jar ' . implode(' ', $args));
+    $ordererOutput = shell_exec('java -jar ~/orderer/dist/orderer.jar ' . implode(' ', $args));
 }
 
 ?>

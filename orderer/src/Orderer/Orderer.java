@@ -6,6 +6,7 @@
 package Orderer;
 
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -44,6 +45,7 @@ public class Orderer {
             //System.setProperty("phantomjs.binary.path", Paths.get(System.getProperty("user.dir"), "phantomjs.exe").toString());
             driver = new PhantomJSDriver();
             
+            List<String> productsInfo = new ArrayList<String>();
             for (int i=9; i<args.length; i+=2) {
                 String productUrl = args[i];
                 int quantity = Integer.parseInt(args[i+1]);
@@ -57,6 +59,11 @@ public class Orderer {
                     Logger.getLogger(Orderer.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 driver.findElement(By.className("add-to-cart-button")).click();
+                WebElement imageBox = driver.findElement(By.cssSelector("img[id^=main-product-img-]"));
+                String productName = imageBox.getAttribute("title");
+                String productImageUrl = imageBox.getAttribute("src");
+                productsInfo.add(productName);
+                productsInfo.add(productImageUrl);
             }
 
             try {
@@ -177,6 +184,9 @@ public class Orderer {
             //driver.findElementByClassName("confirm-order-next-step-button").click();  // final step
             
             System.out.println(totalCost);
+            for (String pi : productsInfo) {
+                System.out.println(pi);
+            }
             
             driver.close();
         } else {
