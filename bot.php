@@ -4,13 +4,13 @@ const API_KEY = 'AIzaSyByjQCWlKAH_uKFlnN0fCUYduP8sXnjQLo';
 const APP_ID = '156070991586244';
 const APP_SECRET = '242b83d9eefedcf3e996e8c505e43366';
 const ACCESS_TOKEN = 'EAACN8hwDY8QBAEcLkz9b9FZB2QXVgr92ZBduX8cEU1rfZBR7kOtzurRUtiWkZCan496HmhLyiWLnk86RAKsfMSiYKxZBdnIC6KftcZBy7EODHgPBERWpjFZCgqvPYWGUQyutGc76VccANwiCvrPxa9BCO7f3jnbTs2jXjZCzXk06OgZDZD';
-require "./interpretirajZahtjev.php";
+require './interpretirajZahtjev.php';
 
 // handle bot's anwser
 $input = json_decode(file_get_contents("php://input"), true, 512, JSON_BIGINT_AS_STRING);
 $senderId = $input['entry'][0]['messaging'][0]['sender']['id'];
 $response = null;
-$command = "";
+$command = '';
 
 if (!empty($input['entry'][0]['messaging'])) {
 	$message = $input['entry'][0]['messaging'][0];

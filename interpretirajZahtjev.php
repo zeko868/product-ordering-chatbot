@@ -98,17 +98,27 @@ function NLPtext($translatedText){
     $ostalo = array();
 
     curl_setopt_array($curl, array(
-    CURLOPT_URL => "https://language.googleapis.com/v1/documents:analyzeSyntax?key=" . API_KEY,
+    CURLOPT_URL => 'https://language.googleapis.com/v1/documents:analyzeSyntax?key=' . API_KEY,
     CURLOPT_RETURNTRANSFER => true,
-    CURLOPT_ENCODING => "",
+    CURLOPT_ENCODING => '',
     CURLOPT_MAXREDIRS => 10,
     CURLOPT_TIMEOUT => 30,
     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-    CURLOPT_CUSTOMREQUEST => "POST",
-    CURLOPT_POSTFIELDS => "{\r\n  \"document\":{\r\n    \"type\":\"plain_text\",\r\n    \"language\": \"en\",\r\n    \"content\":\"$translatedText\"\r\n  },\r\n  \"encodingType\":\"UTF8\"\r\n}",
+    CURLOPT_CUSTOMREQUEST => 'POST',
+    CURLOPT_POSTFIELDS => json_encode(
+        [
+            'document' => [
+                'type' => 'plain_text',
+                'language' => 'en',
+                'content' => $translatedText
+            ],
+            'encodingType' => 'UTF8'
+        ],
+        JSON_FORCE_OBJECT
+    ),
     CURLOPT_HTTPHEADER => array(
-        "cache-control: no-cache",
-        "content-type: application/json"
+        'cache-control: no-cache',
+        'content-type: application/json'
         ),
     ));
     
