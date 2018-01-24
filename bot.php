@@ -159,7 +159,7 @@ if (!empty($input['entry'][0]['messaging'])) {
 
 					if (!empty($ordererOutput)) {
 						$ordererOutput = explode(PHP_EOL, $ordererOutput);
-						$price = floatval(str_replace(',', '.', str_replace('.', '', explode(" ", $ordererOutput[0]))));
+						$price = floatval(str_replace(',', '.', str_replace('.', '', explode(" ", $ordererOutput[0])[0])));
 						$placeName = mb_convert_case($city, MB_CASE_TITLE);
 						unset($ordererOutput[0]);
 						$numOfOutputRows = count($ordererOutput);
@@ -167,7 +167,7 @@ if (!empty($input['entry'][0]['messaging'])) {
 						for ($i=0; $i<$numOfOutputRows; $i+=2) {
 							$productName = $ordererOutput[$i];
 							$productImageUrl = $ordererOutput[$i+1];
-							$orderedItems[] = ['title'=>$productName,'subtitle'=>$productName,'quantity'=>1,'price'=>$price,'currency'=>'HRK','image_url'=>$productImageUrl];
+							$orderedItems[] = ['title'=>substr($productName, 0, 80), 'subtitle'=>substr($productName, 0, 80),'quantity'=>1,'price'=>$price,'currency'=>'HRK','image_url'=>$productImageUrl];
 						}
 						$answer = [
 							'type'=>'template',
