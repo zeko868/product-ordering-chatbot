@@ -158,7 +158,7 @@ if (!empty($input['entry'][0]['messaging'])) {
 					require 'naruciRobu.php';
 
 					if (!empty($ordererOutput)) {
-						$ordererOutput = explode(PHP_EOL, $ordererOutput);
+						$ordererOutput = explode("\n", $ordererOutput);
 						$price = floatval(str_replace(',', '.', str_replace('.', '', explode(" ", $ordererOutput[0])[0])));
 						$placeName = mb_convert_case($city, MB_CASE_TITLE);
 						unset($ordererOutput[0]);
