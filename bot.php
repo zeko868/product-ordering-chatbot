@@ -229,9 +229,9 @@ if(!empty($obj)){
 	$itemsNum = min(10, count($obj));
 	for($i=0; $i<$itemsNum; $i++){
 		array_push($buttons, array(
-			'title' => htmlentities($obj[$i]->naziv),
+			'title' => str_replace('"', "''", $obj[$i]->naziv),
 			'image_url' => $obj[$i]->slika,
-			'subtitle' => htmlentities($obj[$i]->naziv) . ", cijena: " . $obj[$i]->cijena,
+			'subtitle' => str_replace('"', "''", $obj[$i]->naziv . ", cijena: " . $obj[$i]->cijena),
 			'default_action' => [
 				'type' => 'web_url',
 				'url' => 'https://www.links.hr' . $obj[$i]->link,
