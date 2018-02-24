@@ -111,7 +111,7 @@ if (!empty($input['entry'][0]['messaging'])) {
 			}
 			else {
 				if (!array_key_exists('phone', $adresar[$senderId])) {
-					if (preg_match('/^\+?\d+((\s|\/|\-)+\d+)*$/', $command)) {
+					if (preg_match('/^(\+\s*)?\d+((\s|\/|\-)+\d+)*$/', $command)) {
 						$adresar[$senderId]['phone'] = $command;
 						file_put_contents('adresar.json', json_encode($adresar));
 						$introGuidelines = "Uspješno ste registrirali telefonski broj uz Vaš korisnički račun!\nSada možete započeti s pretragom i naručivanjem artikala.";
