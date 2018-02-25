@@ -142,9 +142,13 @@ if (!empty($input['entry'][0]['messaging'])) {
 				if (count($commandParts) === 1) {	// pretpostavimo na putanja do stranice s artiklom nema razmaka
 					$linkProizovada = $command;
 					require './provjeraDostupnosti.php';
+					$answer = [ 'text' => $replyContent ];
+					if (!empty($quickReplies)) {
+						$answer['quick_replies'] = $quickReplies;
+					}
 					$response = [
 						'recipient' => [ 'id' => $senderId ],
-						'message' => [ ($jestInteraktivan ? 'attachment' : 'text') => $answer ]
+						'message' => $answer
 					];
 					replyBackSpecificObject($response);
 				}

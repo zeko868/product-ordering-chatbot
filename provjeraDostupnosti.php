@@ -38,7 +38,7 @@ if (!$nedostupno) {
     $dostupnosti = $obj;
     require 'pronadjiNajblizeSkladiste.php';
     $jestInteraktivan = true;
-    $buttons = array();
+    $quickReplies = array();
     switch ($najblizeIshodiste) {
         case null:
             $replyContent = 'Pojavio se neuspjeh kod pokušaja pronalaska obližnje poslovnice u kojoj je dostupan traženi artikl. Želite li ga naručiti dostavom?';
@@ -48,19 +48,12 @@ if (!$nedostupno) {
             break;
         default:
             $replyContent = "$najblizeIshodiste Vam je najbliže mjesto s našom poslovnicom u kojoj je dostupan traženi artikl.";
-            array_push($buttons, array('type'=>'postback', 'title'=>'Pokupit ću tamo', 'payload' => "$linkProizovada $najblizeIshodiste"));
+            array_push($quickReplies, array('content_type'=>'text', 'title'=>'Pokupit ću tamo', 'payload' => "$linkProizovada $najblizeIshodiste"));
     }
-    array_push($buttons, array('type'=>'postback', 'title'=>'Želim dostavu', 'payload' => "$linkProizovada dostava"));
-    $answer = [
-        'type'=>'template',
-        'payload'=>[
-            'template_type'=>'button',
-            'text'=>$replyContent,
-            'buttons'=> $buttons
-        ]
-    ];
+    array_push($quickReplies, array('content_type'=>'text', 'title'=>'Želim dostavu', 'payload' => "$linkProizovada dostava"));
+    array_push($quickReplies, array('content_type'=>'text', 'title'=>'Odustajem od kupnje', 'payload' => ''));
 }else{
-    $answer = 'Ispričavamo se, traženi artikl trenutno nije dostupan!';
+    $replyContent = 'Ispričavamo se, traženi artikl trenutno nije dostupan!';
     $jestInteraktivan = false;
 }
 
