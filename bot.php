@@ -146,11 +146,7 @@ if (!empty($input['entry'][0]['messaging'])) {
 					if (!empty($quickReplies)) {
 						$answer['quick_replies'] = $quickReplies;
 					}
-					$response = [
-						'recipient' => [ 'id' => $senderId ],
-						'message' => $answer
-					];
-					replyBackSpecificObject($response);
+					replyBackSpecificObject($answer);
 				}
 				else {	// sadrži i dodatni parametar koji označava način otpremanja robe
 					$linkProizovada = $commandParts[0];
@@ -185,18 +181,9 @@ if (!empty($input['entry'][0]['messaging'])) {
 								'elements'=> $orderedItems
 							]
 						];
-
-						$response = [
-							'recipient' => [ 'id' => $senderId ],
-							'message' => [ 'attachment' => $answer ]
-						];
 						
-						if($price === 0){
-							replyBackSpecificObject(null);
-						}else{
-							replyBackSpecificObject($response);
-						}
-				}
+						replyBackSpecificObject([ 'attachment' => $answer ]);
+					}
 					else {
 						replyBackWithSimpleText($answer);
 					}
@@ -261,18 +248,20 @@ if(!empty($obj)){
 		]
 	];
 
-	$response = [
-		'recipient' => [ 'id' => $senderId ],
-		'message' => [ 'attachment' => $answer ]
-	];
-	replyBackSpecificObject($response);
+	replyBackSpecificObject([ 'attachment' => $answer ]);
 }else{
 	replyBackWithSimpleText('Nisu nađeni proizvodi koji odgovaraju zadanim kriterijima');
 }
 
 
-function replyBackSpecificObject($response) {
+function replyBackSpecificObject($answer) {
 	global $command;
+	global $senderId;
+	$response = [
+		'messaging_type' => 'RESPONSE',
+		'recipient' => [ 'id' => $senderId ],
+		'message' => $answer
+	];
 	$ch = curl_init('https://graph.facebook.com/v2.6/me/messages?access_token=' . ACCESS_TOKEN);
 	curl_setopt($ch, CURLOPT_POST, 1);
 	curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($response));
@@ -285,19 +274,5 @@ function replyBackSpecificObject($response) {
 }
 
 function replyBackWithSimpleText($text) {
-	global $command;
-	global $senderId;
-	$response = [
-		'recipient' => [ 'id' => $senderId ],
-		'message' => [ 'text' => $text ]
-	];
-	$ch = curl_init('https://graph.facebook.com/v2.6/me/messages?access_token=' . ACCESS_TOKEN);
-	curl_setopt($ch, CURLOPT_POST, 1);
-	curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($response));
-	curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-	if($command != ""){
-		$result = curl_exec($ch);
-	}
-	curl_close($ch);
-	exit();
+	replyBackSpecificObject([ 'text' => $text ]);
 }
