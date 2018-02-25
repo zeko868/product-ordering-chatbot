@@ -40,7 +40,7 @@ CURLOPT_URL => 'https://maps.googleapis.com/maps/api/distancematrix/json?key=' .
 CURLOPT_RETURNTRANSFER => true,
 CURLOPT_CUSTOMREQUEST => "GET",
 CURLOPT_HTTPHEADER => array(
-    "content-type: application/json"
+    'content-type: application/json'
     )
 ));
 

@@ -4,23 +4,29 @@ function translateInput($inputText, $target){
     
     $inputText = mb_strtolower($inputText);
     $curl = curl_init();
-    if(strpos($inputText, "kn")){
-        $inputText = str_replace("kn", "KN", $inputText);
+    if(strpos($inputText, 'kn') !== false){
+        $inputText = str_replace('kn', 'KN', $inputText);
     }
 
 
     curl_setopt_array($curl, array(
-    CURLOPT_URL => "https://translation.googleapis.com/language/translate/v2?key=" . API_KEY,
+    CURLOPT_URL => 'https://translation.googleapis.com/language/translate/v2?key=' . API_KEY,
     CURLOPT_RETURNTRANSFER => true,
-    CURLOPT_ENCODING => "",
+    CURLOPT_ENCODING => '',
     CURLOPT_MAXREDIRS => 10,
     CURLOPT_TIMEOUT => 30,
     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-    CURLOPT_CUSTOMREQUEST => "POST",
-    CURLOPT_POSTFIELDS => "{\r\n  \"q\": \"$inputText\",\r\n  \"target\": \"$target\"\r\n}",
+    CURLOPT_CUSTOMREQUEST => 'POST',
+    CURLOPT_POSTFIELDS => json_encode(
+        [
+            'q' => $inputText,
+            'target' => $target
+        ],
+        JSON_FORCE_OBJECT
+    ),
     CURLOPT_HTTPHEADER => array(
-        "cache-control: no-cache",
-        "content-type: application/json"
+        'cache-control: no-cache',
+        'content-type: application/json'
         ),
     ));
 
@@ -29,12 +35,12 @@ function translateInput($inputText, $target){
 
     curl_close($curl);
 
-    $data = $json["data"]["translations"][0];
-    if($data['detectedSourceLanguage'] == 'hr' || $target == 'hr'){
-        $returnValue['status'] = "OK";
-        $returnValue['translate'] = strtoupper($data["translatedText"]);
+    $data = $json['data']['translations'][0];
+    if($data['detectedSourceLanguage'] === 'hr' || $target === 'hr'){
+        $returnValue['status'] = 'OK';
+        $returnValue['translate'] = strtoupper($data['translatedText']);
     }else{
-        $returnValue['status'] = "ERROR";
+        $returnValue['status'] = 'ERROR';
     }
     
     return $returnValue;
@@ -44,17 +50,27 @@ function NLPtext($translatedText){
     $curl = curl_init();
 
     curl_setopt_array($curl, array(
-    CURLOPT_URL => "https://language.googleapis.com/v1beta2/documents:analyzeEntities?key=" . API_KEY,
+    CURLOPT_URL => 'https://language.googleapis.com/v1beta2/documents:analyzeEntities?key=' . API_KEY,
     CURLOPT_RETURNTRANSFER => true,
-    CURLOPT_ENCODING => "",
+    CURLOPT_ENCODING => '',
     CURLOPT_MAXREDIRS => 10,
     CURLOPT_TIMEOUT => 30,
     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-    CURLOPT_CUSTOMREQUEST => "POST",
-    CURLOPT_POSTFIELDS => "{\r\n  \"document\":{\r\n    \"type\":\"plain_text\",\r\n    \"language\": \"en\",\r\n    \"content\":\"$translatedText\"\r\n  },\r\n  \"encodingType\":\"UTF8\"\r\n}",
+    CURLOPT_CUSTOMREQUEST => 'POST',
+    CURLOPT_POSTFIELDS => json_encode(
+        [
+            'document' => [
+                'type' => 'plain_text',
+                'language' => 'en',
+                'content' => $translatedText
+            ],
+            'encodingType' => 'UTF8'
+        ],
+        JSON_FORCE_OBJECT
+    ),
     CURLOPT_HTTPHEADER => array(
-        "cache-control: no-cache",
-        "content-type: application/json"
+        'cache-control: no-cache',
+        'content-type: application/json'
         ),
     ));
 
@@ -62,17 +78,17 @@ function NLPtext($translatedText){
     curl_close($curl);
     
     $json = json_decode($response, true);
-    $data = $json["entities"];
+    $data = $json['entities'];
 
     foreach($data as $value){
         foreach($value as $key => $v){
-            if($key=="type"){
+            if($key === 'type'){
                 switch($v){
-                    case "ORGANIZATION":
-                        $nlp['proizvodac'] = $value["name"];;
+                    case 'ORGANIZATION':
+                        $nlp['proizvodac'] = $value['name'];
                         break;
-                    case "CONSUMER_GOOD":
-                        $nlp['proizvod'] = $value["name"];;
+                    case 'CONSUMER_GOOD':
+                        $nlp['proizvod'] = $value['name'];
                         break;
                 }
             }
@@ -80,16 +96,16 @@ function NLPtext($translatedText){
         }
     }
     
-    $string = "";
+    $string = '';
 
     if(isset($nlp['proizvodac']))
-        $string .= $nlp['proizvodac'] . " ";
+        $string .= $nlp['proizvodac'] . ' ';
     if(isset($nlp['proizvod']))
         $string .= $nlp['proizvod'];
     
 
     if(!isset($nlp['proizvodac']) && !isset($nlp['proizvod'])){
-        echo "Doslo je do pogreske!";
+        echo 'Doslo je do pogreske!';
         exit();
     }
 
@@ -130,22 +146,22 @@ function NLPtext($translatedText){
     $ost = array();
 
     for($i = 0; $i < sizeof($data); $i++){
-        if(!strpos($string, $data[$i]['text']['content']) && $data[$i]['partOfSpeech']['tag'] == "NOUN"){
+        if(strpos($string, $data[$i]['text']['content'])===false && $data[$i]['partOfSpeech']['tag'] === 'NOUN'){
             array_push($ost,translateInput($data[$i]['text']['content'],'hr')['translate']);
         }
         $ostalo['ostaliFilteri'] = $ost;
-        if($data[$i]['partOfSpeech']['tag'] == "NUM" && !strpos($string, $data[$i]['text']['content'])){
+        if($data[$i]['partOfSpeech']['tag'] == 'NUM' && strpos($string, $data[$i]['text']['content'])===false){
             for($j = $i; $j >= 0; $j--){
-                if(($data[$j]['partOfSpeech']['tag'] == "ADJ" || $data[$j]['partOfSpeech']['tag'] == "ADP") && ($data[$j]['text']['content'] == "OVER" || $data[$j]['text']['content'] == "MORE")){
+                if(($data[$j]['partOfSpeech']['tag'] === 'ADJ' || $data[$j]['partOfSpeech']['tag'] === 'ADP') && ($data[$j]['text']['content'] === 'OVER' || $data[$j]['text']['content'] === 'MORE')){
                     $ostalo['cijenaOd'] = intval($data[$i]['text']['content']);
                     break;
                 }
-                if($data[$j]['partOfSpeech']['tag'] == "ADJ" || $data[$j]['partOfSpeech']['tag'] == "ADP" && $data[$j]['text']['content'] == "LESS"){
+                if($data[$j]['partOfSpeech']['tag'] === 'ADJ' || $data[$j]['partOfSpeech']['tag'] === 'ADP' && $data[$j]['text']['content'] === 'LESS'){
                     $ostalo['cijenaDo'] = intval($data[$i]['text']['content']);
                     break;
                 }
             }
-        }else if($data[$i]['partOfSpeech']['tag'] == "ADP" && $data[$i]['text']['content'] == "BETWEEN"){
+        }else if($data[$i]['partOfSpeech']['tag'] === 'ADP' && $data[$i]['text']['content'] === 'BETWEEN'){
             $ostalo['cijenaOd'] = intval($data[$i+1]['text']['content']);
             $ostalo['cijenaDo'] = intval($data[$i+3]['text']['content']);
         }
@@ -158,7 +174,7 @@ function NLPtext($translatedText){
 }
 
 function prilagodiZahtjev($inputText){
-    $json_params = file_get_contents("./promjeneUZahtjevu.json");
+    $json_params = file_get_contents('./promjeneUZahtjevu.json');
 
     $json = json_decode($json_params, true);
 
@@ -167,8 +183,8 @@ function prilagodiZahtjev($inputText){
         $inputText = str_replace($val['original'], $val['promjena'], $inputText);
     }    
     
-    if(strpos($inputText, "PROCESOR") && !strpos($inputText, "RAČUNALNI")){
-        $input = substr($inputText, 0, strpos($inputText, "PROCESOR")) . "RAČUNALNI " . substr($inputText, strpos($inputText, "PROCESOR"), strlen($inputText));
+    if(($pozicijaProcesora = strpos($inputText, 'PROCESOR'))!==false && strpos($inputText, 'RAČUNALNI')===false){
+        $input = substr($inputText, 0, $pozicijaProcesora) . 'RAČUNALNI ' . substr($inputText, $pozicijaProcesora, strlen($inputText));
         return $input;
     }
     
@@ -177,8 +193,8 @@ function prilagodiZahtjev($inputText){
 
 function urediIzlaz($inputText){
     $inputText = mb_strtolower($inputText);
-    if(strpos($inputText, "računalni")){
-        $input = substr($inputText, 0, strpos($inputText, "računalni")) . substr($inputText, strpos($inputText, "računalni") + 11, strlen($inputText));
+    if(($pozicijaRacunalnog = strpos($inputText, 'računalni')) !== false){
+        $input = substr($inputText, 0, $pozicijaRacunalnog) . substr($inputText, $pozicijaRacunalnog + 11, strlen($inputText));
         return $input;
     }
     return $inputText;

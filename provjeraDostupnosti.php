@@ -8,7 +8,7 @@ ini_set('allow_url_fopen', 1);
 //$linkNedostupno = "/hr/graficka-kartica-used-pci-e-gainward-geforce-gtx-960-phantom-glh-2gb-ddr5-dualdvi-hdmi-dp-810000861";
 $nedostupno = FALSE;
 
-$stranica = "https://www.links.hr";
+$stranica = 'https://www.links.hr';
 
 $lines = file($stranica . $linkProizovada);
 

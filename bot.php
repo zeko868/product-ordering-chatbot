@@ -159,7 +159,7 @@ if (!empty($input['entry'][0]['messaging'])) {
 
 					if (!empty($ordererOutput)) {
 						$ordererOutput = explode("\n", $ordererOutput);
-						$price = floatval(str_replace(',', '.', str_replace('.', '', explode(" ", $ordererOutput[0])[0])));
+						$price = floatval(str_replace(',', '.', str_replace('.', '', explode(' ', $ordererOutput[0])[0])));
 						$placeName = mb_convert_case($city, MB_CASE_TITLE);
 						$numOfOutputRows = count($ordererOutput);
 						$orderedItems = [];
@@ -203,7 +203,7 @@ if($translatedInput['status'] == 'OK'){
 
 $translatedOutput = translateInput($nlpText['tekst'], 'hr');
 
-if($translatedOutput['status'] == "OK"){
+if($translatedOutput['status'] == 'OK'){
 	$translatedOutputText = $translatedOutput['translate'];
 }else{
 	replyBackWithSimpleText('Došlo je do pogreške!');
@@ -213,7 +213,7 @@ $trans = urediIzlaz($translatedOutputText);
 $nlpText['tekst'] = $trans;
 $translated = $nlpText;
 
-require "./traziRobu.php";
+require './traziRobu.php';
 
 if(!empty($obj)){
 	$buttons = array();
@@ -222,7 +222,7 @@ if(!empty($obj)){
 		array_push($buttons, array(
 			'title' => htmlspecialchars_decode($obj[$i]->naziv, ENT_QUOTES),
 			'image_url' => $obj[$i]->slika,
-			'subtitle' => htmlspecialchars_decode($obj[$i]->naziv . ", cijena: " . $obj[$i]->cijena, ENT_QUOTES),
+			'subtitle' => htmlspecialchars_decode($obj[$i]->naziv . ', cijena: ' . $obj[$i]->cijena, ENT_QUOTES),
 			'default_action' => [
 				'type' => 'web_url',
 				'url' => 'https://www.links.hr' . $obj[$i]->link . '#quickTabs',
