@@ -234,7 +234,7 @@ if(!empty($obj)){
 			'subtitle' => htmlspecialchars_decode($obj[$i]->naziv . ", cijena: " . $obj[$i]->cijena, ENT_QUOTES),
 			'default_action' => [
 				'type' => 'web_url',
-				'url' => 'https://www.links.hr' . $obj[$i]->link,
+				'url' => 'https://www.links.hr' . $obj[$i]->link . '#quickTabs',
 				'messenger_extensions' => true,
 				'webview_height_ratio'=> 'TALL'
 			],
