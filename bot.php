@@ -35,7 +35,59 @@ if (!empty($input['entry'][0]['messaging'])) {
 		$introGuidelines = "Poštovanje $ime $prezime,\n";
 		$korisnikUpravoDeklariran = true;
 	}
-	if (!empty($message['message'])) {
+	if (!empty($message['message']['quick_reply']['payload'])) {
+		$userInfo = $adresar[$senderId];
+		if (!array_key_exists('phone', $userInfo)) {	// if this attribute is not defined, then user still hasn't finished registration process
+			if (!isset($introGuidelines)) {
+				$introGuidelines = '';
+			}
+			$introGuidelines .= 'Za korištenje aplikacije potrebno je proći kroz 3 koraka konfiguracije. Za početak, navedite Vašu adresu na koju će biti dopremljena roba.';
+			replyBackWithSimpleText($introGuidelines);
+		}
+		else {
+			$command = $message['message']['quick_reply']['payload'];
+			$commandParts = explode(' ', $command);
+			$linkProizovada = $commandParts[0];
+			unset($commandParts[0]);
+			$action = implode(' ', $commandParts);	// lokacije Zagreb Trešnjevka, Zagreb Dubrava i Slavonski Brod se sastoje od više riječi
+			$delivery = ($action === 'dostava');
+			$closestStore = $action;
+			$desiredProducts = [ 'https://www.links.hr' . $linkProizovada => 1 ];
+			require 'naruciRobu.php';
+
+			if (!empty($ordererOutput)) {
+				$ordererOutput = explode("\n", $ordererOutput);
+				$price = floatval(str_replace(',', '.', str_replace('.', '', explode(' ', $ordererOutput[0])[0])));
+				$placeName = mb_convert_case($city, MB_CASE_TITLE);
+				$numOfOutputRows = count($ordererOutput);
+				$orderedItems = [];
+				for ($i=2; $i<$numOfOutputRows; $i+=2) {
+					$productName = $ordererOutput[$i-1];
+					$productImageUrl = $ordererOutput[$i];
+					$orderedItems[] = ['title'=>substr($productName, 0, 80), 'subtitle'=>substr($productName, 0, 80),'quantity'=>1,'price'=>$price,'currency'=>'HRK','image_url'=>$productImageUrl];
+				}
+				$answer = [
+					'type'=>'template',
+					'payload'=>[
+						'template_type'=>'receipt',
+						'recipient_name'=>"$firstName $lastName",
+						'order_number'=>'123456',
+						'currency'=>'HRK',
+						'payment_method'=>'Plaćanje pouzećem',
+						'address'=>['street_1'=>$address,'city'=>$placeName,'postal_code'=>$postCode,'state'=>'Hrvatska','country'=>'CRO'],
+						'summary'=>['subtotal'=>0,'shipping_cost'=>0,'total_tax'=>0,'total_cost'=>$price],
+						'elements'=> $orderedItems
+					]
+				];
+				
+				replyBackSpecificObject([ 'attachment' => $answer ]);
+			}
+			else {
+				replyBackWithSimpleText($answer);
+			}
+		}
+	}
+	else if (!empty($message['message']['text'])) {
 		$command = $message['message']['text'];
 
 		if (!array_key_exists('address', $adresar[$senderId])) {
@@ -127,7 +179,6 @@ if (!empty($input['entry'][0]['messaging'])) {
 	}
 	// When bot receives button click from user
 	else if (!empty($message['postback'])) {
-		$command = $message['postback']['payload'];
 		$userInfo = $adresar[$senderId];
 		if (!array_key_exists('phone', $userInfo)) {	// if this attribute is not defined, then user still hasn't finished registration process
 			if (!isset($introGuidelines)) {
@@ -137,57 +188,15 @@ if (!empty($input['entry'][0]['messaging'])) {
 			replyBackWithSimpleText($introGuidelines);
 		}
 		else {
-			$commandParts = explode(' ', $command);
+			$command = $message['postback']['payload'];
 			if(strpos($command, '/hr/') === 0){
-				if (count($commandParts) === 1) {	// pretpostavimo na putanja do stranice s artiklom nema razmaka
-					$linkProizovada = $command;
-					require './provjeraDostupnosti.php';
-					$answer = [ 'text' => $replyContent ];
-					if (!empty($quickReplies)) {
-						$answer['quick_replies'] = $quickReplies;
-					}
-					replyBackSpecificObject($answer);
+				$linkProizovada = $command;
+				require './provjeraDostupnosti.php';
+				$answer = [ 'text' => $replyContent ];
+				if (!empty($quickReplies)) {
+					$answer['quick_replies'] = $quickReplies;
 				}
-				else {	// sadrži i dodatni parametar koji označava način otpremanja robe
-					$linkProizovada = $commandParts[0];
-					unset($commandParts[0]);
-					$action = implode(' ', $commandParts);	// lokacije Zagreb Trešnjevka, Zagreb Dubrava i Slavonski Brod se sastoje od više riječi
-					$delivery = ($action === 'dostava');
-					$closestStore = $action;
-					$desiredProducts = [ 'https://www.links.hr' . $linkProizovada => 1 ];
-					require 'naruciRobu.php';
-
-					if (!empty($ordererOutput)) {
-						$ordererOutput = explode("\n", $ordererOutput);
-						$price = floatval(str_replace(',', '.', str_replace('.', '', explode(' ', $ordererOutput[0])[0])));
-						$placeName = mb_convert_case($city, MB_CASE_TITLE);
-						$numOfOutputRows = count($ordererOutput);
-						$orderedItems = [];
-						for ($i=2; $i<$numOfOutputRows; $i+=2) {
-							$productName = $ordererOutput[$i-1];
-							$productImageUrl = $ordererOutput[$i];
-							$orderedItems[] = ['title'=>substr($productName, 0, 80), 'subtitle'=>substr($productName, 0, 80),'quantity'=>1,'price'=>$price,'currency'=>'HRK','image_url'=>$productImageUrl];
-						}
-						$answer = [
-							'type'=>'template',
-							'payload'=>[
-								'template_type'=>'receipt',
-								'recipient_name'=>"$firstName $lastName",
-								'order_number'=>'123456',
-								'currency'=>'HRK',
-								'payment_method'=>'Plaćanje pouzećem',
-								'address'=>['street_1'=>$address,'city'=>$placeName,'postal_code'=>$postCode,'state'=>'Hrvatska','country'=>'CRO'],
-								'summary'=>['subtotal'=>0,'shipping_cost'=>0,'total_tax'=>0,'total_cost'=>$price],
-								'elements'=> $orderedItems
-							]
-						];
-						
-						replyBackSpecificObject([ 'attachment' => $answer ]);
-					}
-					else {
-						replyBackWithSimpleText($answer);
-					}
-				}
+				replyBackSpecificObject($answer);
 			}
 		}
 	}
@@ -255,7 +264,6 @@ if(!empty($obj)){
 
 
 function replyBackSpecificObject($answer) {
-	global $command;
 	global $senderId;
 	$response = [
 		'messaging_type' => 'RESPONSE',
@@ -266,9 +274,7 @@ function replyBackSpecificObject($answer) {
 	curl_setopt($ch, CURLOPT_POST, 1);
 	curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($response));
 	curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-	if($command != ""){
-		$result = curl_exec($ch);
-	}
+	$result = curl_exec($ch);
 	curl_close($ch);
 	exit();
 }
