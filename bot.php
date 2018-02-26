@@ -53,6 +53,7 @@ if (!empty($input['entry'][0]['messaging'])) {
 			$delivery = ($action === 'dostava');
 			$closestStore = $action;
 			$desiredProducts = [ 'https://www.links.hr' . $linkProizovada => 1 ];
+			changeTypingIndicator(true);
 			require 'naruciRobu.php';
 
 			if (!empty($ordererOutput)) {
@@ -80,9 +81,11 @@ if (!empty($input['entry'][0]['messaging'])) {
 					]
 				];
 				
+				changeTypingIndicator(false);
 				replyBackSpecificObject([ 'attachment' => $answer ]);
 			}
 			else {
+				changeTypingIndicator(false);
 				replyBackWithSimpleText($answer);
 			}
 		}
@@ -281,4 +284,19 @@ function replyBackSpecificObject($answer) {
 
 function replyBackWithSimpleText($text) {
 	replyBackSpecificObject([ 'text' => $text ]);
+}
+
+function changeTypingIndicator($turnOn) {
+	global $senderId;
+	$ch = curl_init('https://graph.facebook.com/v2.6/me/messages?access_token=' . ACCESS_TOKEN);
+	curl_setopt($ch, CURLOPT_POST, 1);
+	curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(
+		[
+			'recipient' => [ 'id' => $senderId ],
+			'sender_action' => $turnOn ? 'typing_on' : 'typing_off'
+		]
+	));
+	curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+	$result = curl_exec($ch);
+	curl_close($ch);
 }
