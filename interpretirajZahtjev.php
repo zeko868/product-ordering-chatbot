@@ -156,7 +156,7 @@ function NLPtext($translatedText){
                     $ostalo['cijenaOd'] = intval($data[$i]['text']['content']);
                     break;
                 }
-                if($data[$j]['partOfSpeech']['tag'] === 'ADJ' || $data[$j]['partOfSpeech']['tag'] === 'ADP' && $data[$j]['text']['content'] === 'LESS'){
+                if(($data[$j]['partOfSpeech']['tag'] === 'ADJ' || $data[$j]['partOfSpeech']['tag'] === 'ADP') && $data[$j]['text']['content'] === 'LESS'){
                     $ostalo['cijenaDo'] = intval($data[$i]['text']['content']);
                     break;
                 }
