@@ -45,7 +45,7 @@ public class Orderer {
             //System.setProperty("phantomjs.binary.path", Paths.get(System.getProperty("user.dir"), "phantomjs.exe").toString());
             driver = new PhantomJSDriver();
             
-            List<String> productsInfo = new ArrayList<String>();
+            List<String> productsInfo = new ArrayList<>();
             for (int i=9; i<args.length; i+=2) {
                 String productUrl = args[i];
                 int quantity = Integer.parseInt(args[i+1]);
@@ -188,7 +188,7 @@ public class Orderer {
                 System.out.println(pi);
             }
             
-            driver.close();
+            driver.quit();
         } else {
             System.out.println("Program je pokrenut s nevaljanim brojem parametara");
         }
