@@ -167,13 +167,17 @@ if (!empty($input['entry'][0]['messaging'])) {
 			}
 			else {
 				if (empty($userInfo['phone'])) {
-					if (preg_match('/^(\+\s*)?\d+((\s|\/|\-)+\d+)*$/', $command)) {
-						$phoneNum = preg_replace('(-|/|\s)', '', $command);
-						pg_query("UPDATE user_account SET phone='$phoneNum' WHERE id='$senderId';");
-						$introGuidelines = "Uspješno ste registrirali telefonski broj uz Vaš korisnički račun!\nSada možete započeti s pretragom i naručivanjem artikala.";
+					if (preg_match_all('/(?:\+\s*)?\d+(?:(?:\s|\/|\-)+\d+)*/', $command, $matches)) {
+						foreach ($matches[0] as $numWithSeparators) {
+							$number = preg_replace('(-|/|\s)', '', $numWithSeparators);
+							if (strlen($number) > 7) {
+								pg_query("UPDATE user_account SET phone='$number' WHERE id='$senderId';");
+								$introGuidelines = "Uspješno ste registrirali telefonski broj uz Vaš korisnički račun!\nSada možete započeti s pretragom i naručivanjem artikala.";
+							}
+						}
 					}
 					else {
-						$introGuidelines = 'Tekst koji ste unijeli ne predstavlja važeći telefonski broj! Molimo, napišite Vaš ispravni telefonski broj';
+						$introGuidelines = 'Niste naveli važeći telefonski broj! Molimo, napišite Vaš ispravni telefonski broj';
 					}
 					replyBackWithSimpleText($introGuidelines);
 				}
