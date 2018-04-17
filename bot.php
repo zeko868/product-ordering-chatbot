@@ -14,10 +14,10 @@ $command = '';
 
 if (!empty($input['entry'][0]['messaging'])) {
 	$message = $input['entry'][0]['messaging'][0];
-	$adresar = json_decode(file_get_contents('adresar.json'), true);
-
+	$conn = pg_connect(getenv("DATABASE_URL"));
+	$result = pg_query("INSERT INTO user_account VALUES ('$senderId');");	// this is performed whether the user id is already in database or not - all the other table attributes are nullable, so their values don't need to be explicitly set
 	$introGuidelines = '';
-	if (!array_key_exists($senderId, $adresar)) {
+	if (pg_affected_rows($result) === 1) {
 		$ch = curl_init();
 		curl_setopt_array($ch, array(
 			CURLOPT_URL => 'https://graph.facebook.com/v2.8/' . $senderId . '?fields=first_name,last_name&app_secret=' . APP_SECRET . '&access_token=' . ACCESS_TOKEN,
@@ -29,15 +29,17 @@ if (!empty($input['entry'][0]['messaging'])) {
 		));
 		$result = json_decode(curl_exec($ch), true);
 		curl_close($ch);
-		$adresar[$senderId]['first_name'] = $ime = $result['first_name'];
-		$adresar[$senderId]['last_name'] = $prezime = $result['last_name'];
-		file_put_contents('adresar.json', json_encode($adresar));
+		$ime = $result['first_name'];
+		$prezime = $result['last_name'];
+		pg_query("UPDATE user_account SET first_name='$ime', last_name='$prezime' WHERE id='$senderId';");
 		$introGuidelines = "Poštovanje $ime $prezime,\n";
 		$korisnikUpravoDeklariran = true;
 	}
+	$result = pg_query("SELECT * FROM user_account u LEFT JOIN address a ON u.address=a.id WHERE u.id='$senderId' LIMIT 1;");
+	$userInfo = pg_fetch_array($result, null, PGSQL_ASSOC);
+	pg_free_result($result);
 	if (!empty($message['message']['quick_reply']['payload'])) {
-		$userInfo = $adresar[$senderId];
-		if (!array_key_exists('phone', $userInfo)) {	// if this attribute is not defined, then user still hasn't finished registration process
+		if (empty($userInfo['phone'])) {	// if this attribute is not defined, then user still hasn't finished registration process
 			if (!isset($introGuidelines)) {
 				$introGuidelines = '';
 			}
@@ -93,7 +95,7 @@ if (!empty($input['entry'][0]['messaging'])) {
 	else if (!empty($message['message']['text'])) {
 		$command = $message['message']['text'];
 
-		if (!array_key_exists('address', $adresar[$senderId])) {
+		if (empty($userInfo['address'])) {
 			$command = urlencode($command);
 			$ch = curl_init();
 			curl_setopt_array($ch, array(
@@ -120,8 +122,7 @@ if (!empty($input['entry'][0]['messaging'])) {
 						}
 					}
 					if (isset($streetNum) && isset($route) && isset($postalCode)) {
-						$adresar[$senderId]['address'] = ['street_number' => $streetNum, 'route' => $route, 'postal_code' => $postalCode];
-						file_put_contents('adresar.json', json_encode($adresar));
+						pg_query("UPDATE user_account SET address=get_address_id('$streetNum', '$route', '$postalCode') WHERE id='$senderId';");
 						$introGuidelines .= "Uspješno ste registrirali adresu uz Vaš korisnički račun!\nNavedite Vašu e-mail adresu na koju ćete biti u mogućnosti kontaktirani";
 					}
 					else {
@@ -153,10 +154,10 @@ if (!empty($input['entry'][0]['messaging'])) {
 			replyBackWithSimpleText($introGuidelines);
 		}
 		else {
-			if (!array_key_exists('email', $adresar[$senderId])) {
+			if (empty($userInfo['email'])) {
 				if (preg_match('/^.*@.*\..*$/', $command)) {
-					$adresar[$senderId]['email'] = $command;
-					file_put_contents('adresar.json', json_encode($adresar));
+					$email = trim($command, '.');
+					pg_query_params("UPDATE user_account SET email=$1 WHERE id='$senderId';", array($email));	// protection against potential attacks like sql-injection
 					$introGuidelines = "Uspješno ste registrirali e-mail adresu uz Vaš korisnički račun!\nNavedite još Vaš kontaktni broj telefona";
 				}
 				else {
@@ -165,10 +166,10 @@ if (!empty($input['entry'][0]['messaging'])) {
 				replyBackWithSimpleText($introGuidelines);
 			}
 			else {
-				if (!array_key_exists('phone', $adresar[$senderId])) {
+				if (empty($userInfo['phone'])) {
 					if (preg_match('/^(\+\s*)?\d+((\s|\/|\-)+\d+)*$/', $command)) {
-						$adresar[$senderId]['phone'] = $command;
-						file_put_contents('adresar.json', json_encode($adresar));
+						$phoneNum = preg_replace('(-|/|\s)', '', $command);
+						pg_query("UPDATE user_account SET phone='$phoneNum' WHERE id='$senderId';");
 						$introGuidelines = "Uspješno ste registrirali telefonski broj uz Vaš korisnički račun!\nSada možete započeti s pretragom i naručivanjem artikala.";
 					}
 					else {
@@ -178,12 +179,10 @@ if (!empty($input['entry'][0]['messaging'])) {
 				}
 			}
 		}
-		$userInfo = $adresar[$senderId];
 	}
 	// When bot receives button click from user
 	else if (!empty($message['postback'])) {
-		$userInfo = $adresar[$senderId];
-		if (!array_key_exists('phone', $userInfo)) {	// if this attribute is not defined, then user still hasn't finished registration process
+		if (empty($userInfo['phone'])) {	// if this attribute is not defined, then user still hasn't finished registration process
 			if (!isset($introGuidelines)) {
 				$introGuidelines = '';
 			}
@@ -268,6 +267,7 @@ if(!empty($obj)){
 
 function replyBackSpecificObject($answer) {
 	global $senderId;
+	pg_close();
 	$response = [
 		'messaging_type' => 'RESPONSE',
 		'recipient' => [ 'id' => $senderId ],

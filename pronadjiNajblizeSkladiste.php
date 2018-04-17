@@ -2,7 +2,7 @@
 
 //hardcoded za sad
 //$odrediste = 'Marija Bistrica';
-$odrediste = $userInfo['address']['postal_code'] . ' ' . $userInfo['address']['route'] . ' ' . $userInfo['address']['street_number'];
+$odrediste = $userInfo['postal_code'] . ', ' . $userInfo['route'] . ', ' . $userInfo['street_number'];
 //hardcoded za sad
 /*
 $dostupnosti = [

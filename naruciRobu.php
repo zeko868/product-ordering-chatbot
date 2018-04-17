@@ -3,8 +3,8 @@
 $firstName = $userInfo['first_name'];
 $lastName = $userInfo['last_name'];
 $email = $userInfo['email'];
-$address = $userInfo['address']['route'] . ' ' . $userInfo['address']['street_number'];
-$postCode = $userInfo['address']['postal_code'];
+$address = $userInfo['route'] . ' ' . $userInfo['street_number'];
+$postCode = $userInfo['postal_code'];
 $phoneNum = $userInfo['phone'];
 /*  // hardkodirano za testiranje
 $desiredProducts = [
