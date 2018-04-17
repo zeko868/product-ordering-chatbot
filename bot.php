@@ -155,13 +155,13 @@ if (!empty($input['entry'][0]['messaging'])) {
 		}
 		else {
 			if (empty($userInfo['email'])) {
-				if (preg_match('/^.*@.*\..*$/', $command)) {
-					$email = trim($command, '.');
+				if (preg_match('/\S*@\S*\.\S*/', $command, $matches)) {
+					$email = trim($matches[0], ':.,-;?!');
 					pg_query_params("UPDATE user_account SET email=$1 WHERE id='$senderId';", array($email));	// protection against potential attacks like sql-injection
 					$introGuidelines = "Uspješno ste registrirali e-mail adresu uz Vaš korisnički račun!\nNavedite još Vaš kontaktni broj telefona";
 				}
 				else {
-					$introGuidelines = 'E-mail adresa koju ste naveli nije važećeg formata! Molimo, napišite Vašu ispravnu e-mail adresu';
+					$introGuidelines = 'Niste naveli e-mail adresu ili ona koju ste naveli nije važećeg formata! Molimo, napišite Vašu ispravnu e-mail adresu';
 				}
 				replyBackWithSimpleText($introGuidelines);
 			}
