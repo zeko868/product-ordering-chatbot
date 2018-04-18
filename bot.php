@@ -213,7 +213,7 @@ $json = json_decode($string, true);
 
 
 foreach($json as $k => $v){
-	if(strtolower($command) == strtolower($k))
+	if(strpos(strtolower($command),strtolower($k)))
 		replyBackWithSimpleText($v);
 }
 
