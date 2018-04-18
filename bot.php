@@ -208,8 +208,13 @@ if (!empty($input['entry'][0]['messaging'])) {
 	}
 }
 
-if($command == "Koliko je sati"){
-	replyBackWithSimpleText('Vrijeme je da se napravi nešto brutalno!');
+$string = file_get_contents("./intents.json");
+$json = json_decode($string, true);
+
+
+foreach($json as $k => $v){
+	if(strtolower($command) == strtolower($k))
+		replyBackWithSimpleText($v);
 }
 
 $input = prilagodiZahtjev(mb_strtoupper($command));

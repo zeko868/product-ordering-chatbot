@@ -1,13 +1,10 @@
 <?php
 
 
-$string = file_get_contents("./components.json");
+$string = file_get_contents("./intents.json");
 $json = json_decode($string, true);
 
 
-foreach($json as $p){
-	if(strpos($translatedText , strtolower($p))){
-		$nlp['proizvodac'] = $p;
-		break;
-	}
+foreach($json as $k => $v){
+	echo "$k : $v<br/>";
 }
