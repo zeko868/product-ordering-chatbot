@@ -48,7 +48,7 @@ function translateInput($inputText, $target){
 
 function NLPtext($translatedText){
 	
-	$string = file_get_contents("./producers.json");
+	/*$string = file_get_contents("./producers.json");
 	$json = json_decode($string, true);
 
 
@@ -58,7 +58,7 @@ function NLPtext($translatedText){
 			$nlp['proizvodac'] = $p;
 			break;
 		}
-	}
+	}*/
     $curl = curl_init();
 
     curl_setopt_array($curl, array(
@@ -96,9 +96,9 @@ function NLPtext($translatedText){
         foreach($value as $key => $v){
             if($key === 'type'){
                 switch($v){
-                    /*case 'ORGANIZATION':
+                    case 'ORGANIZATION':
                         $nlp['proizvodac'] = $value['name'];
-                        break;*/
+                        break;
                     case 'CONSUMER_GOOD':
                         $nlp['proizvod'] = $value['name'];
                         break;
