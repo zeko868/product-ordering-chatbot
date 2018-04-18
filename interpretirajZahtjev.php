@@ -98,7 +98,7 @@ function NLPtext($translatedText){
         }
     }
 	
-	if(!isset($nlp['proizvodac'])){
+	/*if(!isset($nlp['proizvodac'])){
 		$string = file_get_contents("./producers.json");
 		$json = json_decode($string, true);
 
@@ -109,6 +109,18 @@ function NLPtext($translatedText){
 				$nlp['proizvodac'] = $p;
 				break;
 			}
+		}
+	}*/
+	
+	$string = file_get_contents("./producers.json");
+	$json = json_decode($string, true);
+
+
+	foreach($json as $p){
+		
+		if(strpos($translatedText , strtolower($p))){
+			$nlp['proizvodac'] = $p;
+			break;
 		}
 	}
     
