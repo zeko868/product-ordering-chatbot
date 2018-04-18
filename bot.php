@@ -208,7 +208,9 @@ if (!empty($input['entry'][0]['messaging'])) {
 	}
 }
 
-replyBackWithSimpleText('Vrijeme je da se napravi nešto brutalno!');
+if($command == "Koliko je sati"){
+	replyBackWithSimpleText('Vrijeme je da se napravi nešto brutalno!');
+}
 
 $input = prilagodiZahtjev(mb_strtoupper($command));
 $translatedInput = translateInput($input, 'en');
