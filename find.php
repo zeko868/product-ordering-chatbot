@@ -6,7 +6,8 @@ $json = json_decode($string, true);
 
 
 foreach($json as $p){
-	if(strpos("naručio bih nvidia grafička kartica" , strtolower($p))){
-		echo $p;
+	if(strpos($translatedText , strtolower($p))){
+		$nlp['proizvodac'] = $p;
+		break;
 	}
 }
