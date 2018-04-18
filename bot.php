@@ -208,6 +208,10 @@ if (!empty($input['entry'][0]['messaging'])) {
 	}
 }
 
+if($command == "Koliko je sati"){
+	replyBackWithSimpleText('Vrijeme je da se napravi nešto brutalno!');
+}
+
 $input = prilagodiZahtjev(mb_strtoupper($command));
 $translatedInput = translateInput($input, 'en');
 if($translatedInput['status'] == 'OK'){
