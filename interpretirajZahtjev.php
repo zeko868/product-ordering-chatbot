@@ -48,17 +48,7 @@ function translateInput($inputText, $target){
 
 function NLPtext($translatedText){
 	
-	/*$string = file_get_contents("./producers.json");
-	$json = json_decode($string, true);
-
-
-	foreach($json as $p){
-		
-		if(strpos($translatedText , strtolower($p))){
-			$nlp['proizvodac'] = $p;
-			break;
-		}
-	}*/
+	
     $curl = curl_init();
 
     curl_setopt_array($curl, array(
@@ -107,6 +97,20 @@ function NLPtext($translatedText){
             
         }
     }
+	
+	if(!isset($nlp['proizvodac'])){
+		$string = file_get_contents("./producers.json");
+		$json = json_decode($string, true);
+
+
+		foreach($json as $p){
+			
+			if(strpos($translatedText , strtolower($p))){
+				$nlp['proizvodac'] = $p;
+				break;
+			}
+		}
+	}
     
     $string = '';
 
