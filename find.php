@@ -6,5 +6,6 @@ $json = json_decode($string, true);
 
 
 foreach($json as $k => $v){
-	echo "$k : $v<br/>";
+	if(strpos(strtolower("Koje je radno vrijeme Links trgovina?"),strtolower($k)))
+		echo $v;
 }
