@@ -20,7 +20,8 @@ function translateInput($inputText, $target){
     CURLOPT_POSTFIELDS => json_encode(
         [
             'q' => $inputText,
-            'target' => $target
+            'target' => $target,
+            'source' => 'hr'
         ],
         JSON_FORCE_OBJECT
     ),
