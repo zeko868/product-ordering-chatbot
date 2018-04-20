@@ -7,14 +7,14 @@ const ACCESS_TOKEN = 'EAACN8hwDY8QBAEcLkz9b9FZB2QXVgr92ZBduX8cEU1rfZBR7kOtzurRUt
 require './interpretirajZahtjev.php';
 
 // handle bot's anwser
-$input = json_decode(file_get_contents("php://input"), true, 512, JSON_BIGINT_AS_STRING);
+$input = json_decode(file_get_contents('php://input'), true, 512, JSON_BIGINT_AS_STRING);
 $senderId = $input['entry'][0]['messaging'][0]['sender']['id'];
 $response = null;
 $command = '';
 
 if (!empty($input['entry'][0]['messaging'])) {
 	$message = $input['entry'][0]['messaging'][0];
-	$conn = pg_connect(getenv("DATABASE_URL"));
+	$conn = pg_connect(getenv('DATABASE_URL'));
 	$result = pg_query("INSERT INTO user_account VALUES ('$senderId');");	// this is performed whether the user id is already in database or not - all the other table attributes are nullable, so their values don't need to be explicitly set
 	$introGuidelines = '';
 	if (pg_affected_rows($result) === 1) {
@@ -60,7 +60,7 @@ if (!empty($input['entry'][0]['messaging'])) {
 
 			if (!empty($ordererOutput)) {
 				$ordererOutput = explode("\n", $ordererOutput);
-				$price = floatval(str_replace(',', '.', str_replace('.', '', explode(' ', $ordererOutput[0])[0])));
+				$price = floatval(str_replace(array('.', ','), array('', '.'), explode(' ', $ordererOutput[0])[0]));
 				$placeName = mb_convert_case($city, MB_CASE_TITLE);
 				$numOfOutputRows = count($ordererOutput);
 				$orderedItems = [];
