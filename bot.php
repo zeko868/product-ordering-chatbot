@@ -213,8 +213,15 @@ $json = json_decode($string, true);
 
 
 foreach($json as $k => $v){
-	if(strpos(strtolower($command),strtolower($k)))
+	if(strpos(strtolower($command),strtolower($k))) {
+		if ($k === 'radno vrijeme') {
+			require 'radnoVrijeme.php';
+			if ($exactOpeningHours) {
+				$v = $exactOpeningHours;
+			}
+		}
 		replyBackWithSimpleText($v);
+	}
 }
 
 $input = prilagodiZahtjev(mb_strtoupper($command));

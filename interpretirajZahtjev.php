@@ -1,8 +1,9 @@
 <?php
 
-function translateInput($inputText, $source, $target){
-    
-    $inputText = mb_strtolower($inputText);
+function translateInput($inputText, $source, $target, $changeCase = true){
+    if ($changeCase) {
+        $inputText = mb_strtolower($inputText);
+    }
     $curl = curl_init();
     if(strpos($inputText, 'kn') !== false){
         $inputText = str_replace('kn', 'KN', $inputText);
@@ -39,7 +40,12 @@ function translateInput($inputText, $source, $target){
     $data = $json['data']['translations'][0];
     if($data){
         $returnValue['status'] = 'OK';
-        $returnValue['translate'] = strtoupper($data['translatedText']);
+        if ($changeCase) {
+            $returnValue['translate'] = mb_strtoupper($data['translatedText']);
+        }
+        else {
+            $returnValue['translate'] = $data['translatedText'];
+        }
     }else{
         $returnValue['status'] = 'ERROR';
     }
