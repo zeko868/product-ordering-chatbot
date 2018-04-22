@@ -218,14 +218,14 @@ foreach($json as $k => $v){
 }
 
 $input = prilagodiZahtjev(mb_strtoupper($command));
-$translatedInput = translateInput($input, 'en');
+$translatedInput = translateInput($input, 'hr', 'en');
 if($translatedInput['status'] == 'OK'){
 	$nlpText = NLPtext($translatedInput['translate']);
 }else{
 	replyBackWithSimpleText('Unesena je narudžba na krivom jeziku!');
 }
 
-$translatedOutput = translateInput($nlpText['tekst'], 'hr');
+$translatedOutput = translateInput($nlpText['tekst'], 'en', 'hr');
 
 if($translatedOutput['status'] == 'OK'){
 	$translatedOutputText = $translatedOutput['translate'];

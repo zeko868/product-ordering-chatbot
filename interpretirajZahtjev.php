@@ -1,6 +1,6 @@
 <?php
 
-function translateInput($inputText, $target){
+function translateInput($inputText, $source, $target){
     
     $inputText = mb_strtolower($inputText);
     $curl = curl_init();
@@ -21,7 +21,7 @@ function translateInput($inputText, $target){
         [
             'q' => $inputText,
             'target' => $target,
-            'source' => 'hr'
+            'source' => $source
         ],
         JSON_FORCE_OBJECT
     ),
@@ -37,7 +37,7 @@ function translateInput($inputText, $target){
     curl_close($curl);
 
     $data = $json['data']['translations'][0];
-    if($data['detectedSourceLanguage'] === 'hr' || $target === 'hr'){
+    if($data){
         $returnValue['status'] = 'OK';
         $returnValue['translate'] = strtoupper($data['translatedText']);
     }else{
