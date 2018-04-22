@@ -193,7 +193,7 @@ function NLPtext($translatedText){
 
     for($i = 0; $i < sizeof($data); $i++){
         if(strpos($string, $data[$i]['text']['content'])===false && $data[$i]['partOfSpeech']['tag'] === 'NOUN'){
-            array_push($ost,translateInput($data[$i]['text']['content'],'hr')['translate']);
+            array_push($ost,translateInput($data[$i]['text']['content'],'en','hr')['translate']);
         }
         $ostalo['ostaliFilteri'] = $ost;
         if($data[$i]['partOfSpeech']['tag'] == 'NUM' && strpos($string, $data[$i]['text']['content'])===false){
