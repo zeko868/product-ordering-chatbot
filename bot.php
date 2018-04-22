@@ -244,6 +244,9 @@ $trans = urediIzlaz($translatedOutputText);
 $nlpText['tekst'] = $trans;
 $translated = $nlpText;
 
+$datum = new DateTime();
+$datumString = $datum->format("Y-m-d H:i:s");
+
 replyBackWithSimpleText("INSERT INTO pregledavanja(id_facebook,string_pretrage,datum_pretrage) VALUES ('$senderId','". $translated['tekst']."','$datumString');");
 
 $conn = pg_connect('postgres://gsnnkdcbycpcyq:ba69093c4619187587610e80e188d4f812627530798ef14d3133bd3541b00290@ec2-54-228-235-185.eu-west-1.compute.amazonaws.com:5432/dedt0mj008catq');
@@ -257,8 +260,7 @@ if(!empty($obj)){
 	$buttons = array();
 	$itemsNum = min(10, count($obj));
 	for($i=0; $i<$itemsNum; $i++){
-		$datum = new DateTime();
-		$datumString = $datum->format("Y-m-d H:i:s");
+		
 		
 		array_push($buttons, array(
 			'title' => htmlspecialchars_decode($obj[$i]->naziv, ENT_QUOTES),
