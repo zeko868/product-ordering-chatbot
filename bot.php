@@ -6,18 +6,18 @@ const APP_SECRET = '242b83d9eefedcf3e996e8c505e43366';
 const ACCESS_TOKEN = 'EAACN8hwDY8QBAEcLkz9b9FZB2QXVgr92ZBduX8cEU1rfZBR7kOtzurRUtiWkZCan496HmhLyiWLnk86RAKsfMSiYKxZBdnIC6KftcZBy7EODHgPBERWpjFZCgqvPYWGUQyutGc76VccANwiCvrPxa9BCO7f3jnbTs2jXjZCzXk06OgZDZD';
 require './interpretirajZahtjev.php';
 
-// handle bot's anwser
+// handle user message
+//	$input = ['entry'=>[['messaging'=>[['sender'=>['id'=>'1532028376807777'], 'message'=>['text'=>'Zainteresiran sam za kupnju Logitechovog miša G203']]]]]];	// for debugging purposes
 $input = json_decode(file_get_contents('php://input'), true, 512, JSON_BIGINT_AS_STRING);
 $senderId = $input['entry'][0]['messaging'][0]['sender']['id'];
 $response = null;
 $command = '';
 
-if (!empty($input['entry'][0]['messaging'])) {
-	$message = $input['entry'][0]['messaging'][0];
-	$conn = pg_connect(getenv('DATABASE_URL'));
+if ($messageInfo = $input['entry'][0]['messaging'][0]) {
+	$conn = pg_connect('postgres://gsnnkdcbycpcyq:ba69093c4619187587610e80e188d4f812627530798ef14d3133bd3541b00290@ec2-54-228-235-185.eu-west-1.compute.amazonaws.com:5432/dedt0mj008catq');
 	$result = pg_query("INSERT INTO user_account VALUES ('$senderId');");	// this is performed whether the user id is already in database or not - all the other table attributes are nullable, so their values don't need to be explicitly set
 	$introGuidelines = '';
-	if (pg_affected_rows($result) === 1) {
+	if ($result && pg_affected_rows($result) === 1) {
 		$ch = curl_init();
 		curl_setopt_array($ch, array(
 			CURLOPT_URL => 'https://graph.facebook.com/v2.8/' . $senderId . '?fields=first_name,last_name&app_secret=' . APP_SECRET . '&access_token=' . ACCESS_TOKEN,
@@ -38,7 +38,7 @@ if (!empty($input['entry'][0]['messaging'])) {
 	$result = pg_query("SELECT * FROM user_account u LEFT JOIN address a ON u.address=a.id WHERE u.id='$senderId' LIMIT 1;");
 	$userInfo = pg_fetch_array($result, null, PGSQL_ASSOC);
 	pg_free_result($result);
-	if (!empty($message['message']['quick_reply']['payload'])) {
+	if (!empty($messageInfo['message']['quick_reply']['payload'])) {
 		if (empty($userInfo['phone'])) {	// if this attribute is not defined, then user still hasn't finished registration process
 			if (!isset($introGuidelines)) {
 				$introGuidelines = '';
@@ -47,7 +47,7 @@ if (!empty($input['entry'][0]['messaging'])) {
 			replyBackWithSimpleText($introGuidelines);
 		}
 		else {
-			$command = $message['message']['quick_reply']['payload'];
+			$command = $messageInfo['message']['quick_reply']['payload'];
 			$commandParts = explode(' ', $command);
 			$linkProizovada = $commandParts[0];
 			unset($commandParts[0]);
@@ -92,8 +92,8 @@ if (!empty($input['entry'][0]['messaging'])) {
 			}
 		}
 	}
-	else if (!empty($message['message']['text'])) {
-		$command = $message['message']['text'];
+	else if (!empty($messageInfo['message']['text'])) {
+		$command = $messageInfo['message']['text'];
 
 		if (empty($userInfo['address'])) {
 			$command = urlencode($command);
@@ -185,7 +185,7 @@ if (!empty($input['entry'][0]['messaging'])) {
 		}
 	}
 	// When bot receives button click from user
-	else if (!empty($message['postback'])) {
+	else if (!empty($messageInfo['postback'])) {
 		if (empty($userInfo['phone'])) {	// if this attribute is not defined, then user still hasn't finished registration process
 			if (!isset($introGuidelines)) {
 				$introGuidelines = '';
@@ -194,7 +194,7 @@ if (!empty($input['entry'][0]['messaging'])) {
 			replyBackWithSimpleText($introGuidelines);
 		}
 		else {
-			$command = $message['postback']['payload'];
+			$command = $messageInfo['postback']['payload'];
 			if(strpos($command, '/hr/') === 0){
 				$linkProizovada = $command;
 				require './provjeraDostupnosti.php';
