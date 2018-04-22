@@ -254,7 +254,7 @@ if(!empty($obj)){
 	for($i=0; $i<$itemsNum; $i++){
 		$datum = new DateTime();
 		$datumString = $datum->format("Y-m-d H:i:s");
-		$result = pg_query("INSERT INTO kosarica(id_facebook,datum_dodavanja,link_proizvoda) VALUES ('$senderId','$datumString','".$obj[$i]->link."');");
+		$result = pg_query("INSERT INTO kosarica(id_facebook,datum_dodavanja,link_proizvoda) VALUES ('$senderId','$datumString','https://www.links.hr". $obj[$i]->link."');");
 		array_push($buttons, array(
 			'title' => htmlspecialchars_decode($obj[$i]->naziv, ENT_QUOTES),
 			'image_url' => $obj[$i]->slika,
