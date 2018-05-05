@@ -7,15 +7,15 @@ $trazilica = '/hr/search?q=';
 
 //popunjavanje podacima koirsnika
 $dodatak = '&adv=true&adv=false'; //??? vjerojatno treba za search
-$pojamZaPretragu = $translated['tekst'];
+$pojamZaPretragu = $nlpText['tekst'];
 //$pojamZaPretragu = "grafička";
-if (isset($translated['ostalo']['cijenaOd'])) {
-    $cMin = $translated['ostalo']['cijenaOd'];
+if (isset($nlpText['ostalo']['cijenaOd'])) {
+    $cMin = $nlpText['ostalo']['cijenaOd'];
 } else {
     $cMin = '';
 }
-if (isset($translated['ostalo']['cijenaDo'])) {
-    $cMax = $translated['ostalo']['cijenaDo'];
+if (isset($nlpText['ostalo']['cijenaDo'])) {
+    $cMax = $nlpText['ostalo']['cijenaDo'];
 } else {
     $cMax = '';
 }
@@ -49,7 +49,7 @@ for ($i = 0; $i < count($lines); $i++) {
 
 //filteri -- proizvođač
 //$proizvodac = 0;
-$proizvodac = nadjiProizvodaca($translated['ostalo']['ostaliFilteri'], $pro); // 0 ako nije naveden
+$proizvodac = nadjiProizvodaca($nlpText['ostalo']['ostaliFilteri'], $pro); // 0 ako nije naveden
 
 //url za pretragu
 

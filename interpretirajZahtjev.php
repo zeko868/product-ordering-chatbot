@@ -90,53 +90,31 @@ function NLPtext($translatedText){
     $data = $json['entities'];
 
     foreach($data as $value){
-        foreach($value as $key => $v){
-            if($key === 'type'){
-                switch($v){
-                    case 'ORGANIZATION':
-                        $nlp['proizvodac'] = $value['name'];
-                        break;
-                    case 'CONSUMER_GOOD':
-                        $nlp['proizvod'] = $value['name'];
-                        break;
-                }
-            }
-            
+        switch($value['type']){
+            case 'ORGANIZATION':
+                $nlp['proizvodac'] = $value['name'];
+                break;
+            case 'CONSUMER_GOOD':
+                $nlp['proizvod'] = $value['name'];
+                break;
         }
     }
 	
-	/*if(!isset($nlp['proizvodac'])){
-		$string = file_get_contents("./producers.json");
-		$json = json_decode($string, true);
-
-
-		foreach($json as $p){
-			
-			if(strpos($translatedText , strtolower($p))){
-				$nlp['proizvodac'] = $p;
-				break;
-			}
-		}
-	}*/
-	
-	$string = file_get_contents("./producers.json");
-	$json = json_decode($string, true);
+	$json = json_decode( file_get_contents('./producers.json') , true);
 
 
 	foreach($json as $p){
-		
-		if(strpos($translatedText , strtolower($p))){
+		if(mb_stripos($translatedText , $p) !== false){
 			$nlp['proizvodac'] = $p;
 			break;
 		}
 	}
 	
-	$string = file_get_contents("./components.json");
-	$json = json_decode($string, true);
+	$json = json_decode( file_get_contents('./components.json') , true);
 
 
 	foreach($json as $p){
-		if(strpos($translatedText , strtolower($p))){
+		if(mb_stripos($translatedText , $p) !== false){
 			$nlp['proizvod'] = $p;
 			break;
 		}
