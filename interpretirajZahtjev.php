@@ -41,7 +41,7 @@ function translateInput($inputText, $source, $target, $changeCase = true){
     if($data){
         $returnValue['status'] = 'OK';
         if ($changeCase) {
-            $returnValue['translate'] = mb_strtoupper($data['translatedText']);
+            $returnValue['translate'] = mb_strtoupper(htmlspecialchars_decode($data['translatedText'], ENT_QUOTES));
         }
         else {
             $returnValue['translate'] = $data['translatedText'];
