@@ -5,10 +5,7 @@ function translateInput($inputText, $source, $target, $changeCase = true){
         $inputText = mb_strtolower($inputText);
     }
     $curl = curl_init();
-    if(strpos($inputText, 'kn') !== false){
-        $inputText = str_replace('kn', 'KN', $inputText);
-    }
-
+    $inputText = preg_replace('/(?:(\d)|\b)(kn|kuna|kune|hrk)\b/', '\1 hrvatskih kuna', $inputText);    // when translating from croatian language to english language, currency symbol is replaced with dollar sign - on the other hand, when translating from bosnian language to english, currency names/symbols are preserved (i have no idea why)
 
     curl_setopt_array($curl, array(
     CURLOPT_URL => 'https://translation.googleapis.com/language/translate/v2?key=' . API_KEY,
@@ -170,31 +167,241 @@ function NLPtext($translatedText){
     $ost = array();
 
     for($i = 0; $i < sizeof($data); $i++){
-        if(strpos($string, $data[$i]['text']['content'])===false && $data[$i]['partOfSpeech']['tag'] === 'NOUN'){
+        if(strpos($string, $data[$i]['text']['content'])===false && $data[$i]['partOfSpeech']['tag'] === 'NOUN' && !in_array($data[$i]['text']['content'], ['THOUSANDS', 'HUNDREDS', 'TENS'])){
             array_push($ost,translateInput($data[$i]['text']['content'],'en','hr')['translate']);
         }
-        $ostalo['ostaliFilteri'] = $ost;
-        if($data[$i]['partOfSpeech']['tag'] == 'NUM' && strpos($string, $data[$i]['text']['content'])===false){
-            for($j = $i; $j >= 0; $j--){
-                if(($data[$j]['partOfSpeech']['tag'] === 'ADJ' || $data[$j]['partOfSpeech']['tag'] === 'ADP') && ($data[$j]['text']['content'] === 'OVER' || $data[$j]['text']['content'] === 'MORE')){
-                    $ostalo['cijenaOd'] = intval($data[$i]['text']['content']);
-                    break;
+        if($data[$i]['partOfSpeech']['tag'] === 'ADP' && $data[$i]['text']['content'] === 'BETWEEN'){
+            $cijenaOd = '';
+            for ($j = $i; isset($data[$j]) && $data[$j]['partOfSpeech']['tag'] !== 'NUM'; $j++) {
+                true;   // dođi do prvog sljedećeg broja
+            }
+            $pocetakBroja = $j;
+            for (; isset($data[$j]) && $data[$j]['partOfSpeech']['tag'] === 'NUM'; $j++) {
+                $cijenaOd .= $data[$j]['text']['content'] . ' ';
+            }
+            $zavrsetakBroja = $j-1;
+            $ostalo['cijenaOd'] = dajNumerickuReprezentacijuBroja($cijenaOd);
+            $ostalo['valutaOd'] = dajSpomenutuValutu($data, $pocetakBroja, $zavrsetakBroja);
+            for (; isset($data[$j]) && $data[$j]['partOfSpeech']['tag'] !== 'NUM'; $j++) {
+                true;   // dođi do prvog sljedećeg broja
+            }
+            $pocetakBroja = $j;
+            $cijenaDo = '';
+            for (; isset($data[$j]) && $data[$j]['partOfSpeech']['tag'] === 'NUM'; $j++) {
+                $cijenaDo .= $data[$j]['text']['content'] . ' ';
+            }
+            $zavrsetakBroja = $j-1;
+            $ostalo['cijenaDo'] = dajNumerickuReprezentacijuBroja($cijenaDo);
+            $ostalo['valutaDo'] = dajSpomenutuValutu($data, $pocetakBroja, $zavrsetakBroja);
+            if ($ostalo['valutaOd'] !== null && $ostalo['valutaOd'] !== 'HRK') {
+                $tecaj = dohvatiTecaj($ostalo['valutaOd']);
+                $ostalo['cijenaOd'] = $tecaj * $ostalo['cijenaOd'];
+            }
+            if ($ostalo['valutaDo'] !== null && $ostalo['valutaDo'] !== 'HRK') {
+                if ($ostalo['valutaDo'] === $ostalo['valutaOd']) {  // avoid fetching exchange rate that was already fetched
+                    $ostalo['cijenaDo'] = $tecaj * $ostalo['cijenaDo'];
                 }
-                if(($data[$j]['partOfSpeech']['tag'] === 'ADJ' || $data[$j]['partOfSpeech']['tag'] === 'ADP') && $data[$j]['text']['content'] === 'LESS'){
-                    $ostalo['cijenaDo'] = intval($data[$i]['text']['content']);
+                else {
+                    $tecaj = dohvatiTecaj($ostalo['valutaDo']);
+                    $ostalo['cijenaDo'] = $tecaj * $ostalo['cijenaDo'];
+                    if ($ostalo['valutaOd'] === null) {
+                        $ostalo['cijenaOd'] = $tecaj * $ostalo['cijenaOd'];
+                    }
+                }
+            }
+        }
+        else if (strpos($string, $data[$i]['text']['content'])===false && !isset($ostalo['cijenaOd']) && !isset($ostalo['cijenaDo'])) {
+            $j = $i;
+            $cijena = '';
+            if ($data[$i]['partOfSpeech']['tag'] === 'NUM') {
+                for (; isset($data[$i]) && $data[$i]['partOfSpeech']['tag'] === 'NUM'; $i++) {  // preskakanje ponovne interpretacije ostalih brojeva (ako više riječi predstavlja jedan broj) u sljedećoj iteraciji vanjske petlje
+                    $cijena .= $data[$i]['text']['content'] . ' ';
+                }
+                $i--;
+            }
+            else if (in_array($data[$i]['text']['content'], ['THOUSANDS', 'HUNDREDS', 'TENS'])) {   // Google NLP riječi poput thousands, hundreds i tens u kontekstu "couple of/few/several hundreds" tretira kao imenice, a ne brojeve
+                $cijena = $data[$i]['lemma'];
+            }
+            else {  // ako trenutna riječ nema veze s brojevima
+                continue;
+            }
+            $pocetakBroja = $j;
+            $zavrsetakBroja = $i;
+
+            $iznos = dajNumerickuReprezentacijuBroja($cijena);
+
+            for (; $j >= 0; $j--){
+                if ($data[$j]['partOfSpeech']['tag'] === 'ADJ' || $data[$j]['partOfSpeech']['tag'] === 'ADP') {
+                    switch ($data[$j]['text']['content']) {
+                        case 'OVER':
+                        case 'MORE':
+                            $ostalo['cijenaOd'] = $iznos;
+                            break 2;
+                        case 'LESS':
+                            $ostalo['cijenaDo'] = $iznos;
+                            break 2;
+                        case 'AROUND':
+                        case 'ABOUT':
+                        case 'CCA.':
+                        case 'CIRCA':
+                        case 'APPROXIMATELY':
+                            $ostalo['cijenaOd'] = 0.7 * $iznos;
+                            $ostalo['cijenaDo'] = 1.3 * $iznos;
+                            break 2;
+                        case 'FEW':
+                        case 'SEVERAL':
+                            $ostalo['cijenaOd'] = 2 * $iznos;
+                            $ostalo['cijenaDo'] = 10 * $iznos;
+                            break 2;
+                        case 'TENS':    // obuhvaća slučajeve poput 'tens of thousands'
+                            $ostalo['cijenaOd'] = 10 * $iznos;
+                            $ostalo['cijenaDo'] = 100 * $iznos;
+                            break 2;
+                        case 'HUNDREDS':
+                            $ostalo['cijenaOd'] = 100 * $iznos;
+                            $ostalo['cijenaDo'] = 1000 * $iznos;
+                            break 2;
+                        case 'THOUSANDS':
+                            $ostalo['cijenaOd'] = 1000 * $iznos;
+                            $ostalo['cijenaDo'] = 10000 * $iznos;
+                            break 2;
+                    }
+                }
+                if ($data[$j]['text']['content'] === 'COUPLE') {
+                    $ostalo['cijenaOd'] = 2 * $iznos;
+                    $ostalo['cijenaDo'] = 6 * $iznos;
                     break;
                 }
             }
-        }else if($data[$i]['partOfSpeech']['tag'] === 'ADP' && $data[$i]['text']['content'] === 'BETWEEN'){
-            $ostalo['cijenaOd'] = intval($data[$i+1]['text']['content']);
-            $ostalo['cijenaDo'] = intval($data[$i+3]['text']['content']);
+            $ostalo['valuta'] = dajSpomenutuValutu($data, $pocetakBroja, $zavrsetakBroja);
+            if ($ostalo['valuta'] !== null && $ostalo['valuta'] !== 'HRK') {
+                $tecaj = dohvatiTecaj($ostalo['valuta']);
+                if (isset($ostalo['cijenaOd'])) {
+                    $ostalo['cijenaOd'] = $tecaj * $ostalo['cijenaOd'];
+                }
+                if (isset($ostalo['cijenaDo'])) {
+                    $ostalo['cijenaDo'] = $tecaj * $ostalo['cijenaDo'];
+                }
+            }
         }
     }
+    if (isset($ostalo['cijenaOd'])) {
+        $ostalo['cijenaOd'] = intval($ostalo['cijenaOd']);
+    }
+    if (isset($ostalo['cijenaDo'])) {
+        $ostalo['cijenaDo'] = intval($ostalo['cijenaDo']);
+    }
+    $ostalo['ostaliFilteri'] = $ost;
 
     curl_close($curl);
     $s['tekst'] = $string;
     $s['ostalo'] = $ostalo;
     return $s;
+}
+
+function dajNumerickuReprezentacijuBroja($brojRazlicitogFormata) {   // broj riječima ili miješano (brojevi i slova)
+    $brojRazlicitogFormata = str_replace(',', '', $brojRazlicitogFormata);
+    $brojRazlicitogFormata = mb_strtolower($brojRazlicitogFormata);
+    if (preg_match_all('/(\d+)(?:\.\d*)?/', $brojRazlicitogFormata, $matches, PREG_OFFSET_CAPTURE)) {
+        $nf = new NumberFormatter('en', NumberFormatter::SPELLOUT);
+        foreach (array_reverse($matches[1]) as $index => $m) {
+            $brojWord = $nf->format($m[0]);
+            $brojRazlicitogFormata = substr_replace($brojRazlicitogFormata, $brojWord, $m[1], strlen($matches[0][$index][0]));
+        }
+    }
+    require_once 'vendor/words-to-number.php';
+    return intval(wordsToNumber($brojRazlicitogFormata));
+}
+
+function dajSpomenutuValutu($rijeci, $pocetakBroja, $zavrsetakBroja) {
+    $moguceValutneOznake = [];
+    $postojiOfIzaBroja = false;
+    foreach (json_decode(file_get_contents('currencies.json'), true) as $currencyInfo) {
+        foreach ($currencyInfo['alternative_names'] as $altNameInfo) {
+            $currencySymbol = $altNameInfo['name'];
+            $brojRijeciSimbola = substr_count($currencySymbol, ' ') + 1;
+            foreach ($altNameInfo['location'] as $currencySymbolLocation) {
+                $pozicijaMoguceValutneOznake = $brojRijeciSimbola * ($currencySymbolLocation === 'prev' ? -1 : 1);
+                if (!isset($moguceValutneOznake[$pozicijaMoguceValutneOznake])) {
+                    if ($pozicijaMoguceValutneOznake > 0) {
+                        for ($i = $pozicijaMoguceValutneOznake; $i > 0; $i--) {
+                            if (isset($moguceValutneOznake[$i])) {
+                                break;
+                            }
+                        }
+                        if ($i === 0) {
+                            if (isset($rijeci[$zavrsetakBroja+1])) {
+                                if ($rijeci[$zavrsetakBroja+1]['text']['content'] === 'OF') {  // npr. thousands of dollars
+                                    $postojiOfIzaBroja = true;
+                                    if (isset($rijeci[$zavrsetakBroja+2])) {
+                                        $moguceValutneOznake[1] = mb_strtolower($rijeci[$zavrsetakBroja+2]['text']['content']);
+                                    }
+                                    else {
+                                        $moguceValutneOznake[1] = '';
+                                    }
+                                }
+                                else {
+                                    $moguceValutneOznake[1] = mb_strtolower($rijeci[$zavrsetakBroja+1]['text']['content']);
+                                }
+                            }
+                            else {
+                                $moguceValutneOznake[1] = '';
+                            }
+                            $i++;
+                        }
+                        $offset = $postojiOfIzaBroja ? 1 : 0;
+                        $pozicijaZadnjeRijeciZaProvjeriti = $zavrsetakBroja + $pozicijaMoguceValutneOznake + $offset;
+                        for ($j = $zavrsetakBroja+1+$i+$offset, $k=$i; $j <= $pozicijaZadnjeRijeciZaProvjeriti; $j++, $k++) {
+                            if (isset($rijeci[$j])) {
+                                $moguceValutneOznake[$k+1] = $moguceValutneOznake[$k] . ' ' . mb_strtolower($rijeci[$j]['text']['content']);
+                            }
+                            else {
+                                $moguceValutneOznake[$k+1] = '';
+                            }
+                        }
+                    }
+                    else {
+                        for ($i = $pozicijaMoguceValutneOznake; $i < 0; $i++) {
+                            if (isset($moguceValutneOznake[$i])) {
+                                break;
+                            }
+                        }
+                        if ($i === 0) {
+                            if (isset($rijeci[$pocetakBroja-1])) {
+                                $moguceValutneOznake[-1] = mb_strtolower($rijeci[$pocetakBroja-1]['text']['content']);
+                            }
+                            else {
+                                $moguceValutneOznake[-1] = '';
+                            }
+                            $i--;
+                        }
+                        $pozicijaZadnjeRijeciZaProvjeriti = $pocetakBroja + $pozicijaMoguceValutneOznake;
+                        for ($j = $pocetakBroja-1+$i, $k=$i; $j >= $pozicijaZadnjeRijeciZaProvjeriti; $j--, $k--) {
+                            if (isset($rijeci[$j])) {
+                                $moguceValutneOznake[$k-1] = mb_strtolower($rijeci[$j]['text']['content']) . ' ' . $moguceValutneOznake[$k];
+                            }
+                            else {
+                                $moguceValutneOznake[$k-1] = '';
+                            }
+                        }
+                    }
+                }
+                $mogucaValutnaOznaka = $moguceValutneOznake[$pozicijaMoguceValutneOznake];
+                if (!empty($mogucaValutnaOznaka)) {
+                    if ($currencySymbol === $mogucaValutnaOznaka) {
+                        return $currencyInfo['currency'];
+                    }
+                }
+            }
+        }
+    }
+    return null;
+}
+
+function dohvatiTecaj($valutaIz, $valutaPrema='HRK') {
+    $param = "${valutaIz}_$valutaPrema";
+    return json_decode(file_get_contents("https://free.currencyconverterapi.com/api/v5/convert?q=$param&compact=y"), true)[$param]['val'];
+
 }
 
 function prilagodiZahtjev($inputText){

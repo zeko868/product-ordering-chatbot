@@ -1,0 +1,204 @@
+[
+    {
+        "currency":"HRK",
+        "alternative_names":[
+            {
+                "name":"kuna",
+                "location":["next"]
+            },
+            {
+                "name":"kunas",
+                "location":["next"]
+            },
+            {
+                "name":"croatian kuna",
+                "location":["next"]
+            },
+            {
+                "name":"croatian kunas",
+                "location":["next"]
+            },
+            {
+                "name":"kn",
+                "location":["prev", "next"]
+            },
+            {
+                "name":"hrk",
+                "location":["prev", "next"]
+            }
+        ]
+    },
+    {
+        "currency":"EUR",
+        "alternative_names":[
+            {
+                "name":"euro",
+                "location":["next"]
+            },
+            {
+                "name":"euros",
+                "location":["next"]
+            },
+            {
+                "name":"€",
+                "location":["prev", "next"]
+            },
+            {
+                "name":"eur",
+                "location":["prev", "next"]
+            }
+        ]
+    },
+    {
+        "currency":"USD",
+        "alternative_names":[
+            {
+                "name":"dollar",
+                "location":["next"]
+            },
+            {
+                "name":"dollars",
+                "location":["next"]
+            },
+            {
+                "name":"bucks",
+                "location":["next"]
+            },
+            {
+                "name":"US dollar",
+                "location":["next"]
+            },
+            {
+                "name":"US dollars",
+                "location":["next"]
+            },
+            {
+                "name":"american dollar",
+                "location":["next"]
+            },
+            {
+                "name":"american dollars",
+                "location":["next"]
+            },
+            {
+                "name":"$",
+                "location":["prev", "next"]
+            },
+            {
+                "name":"usd",
+                "location":["prev", "next"]
+            }
+        ]
+    },
+    {
+        "currency":"RSD",
+        "alternative_names":[
+            {
+                "name":"dinar",
+                "location":["next"]
+            },
+            {
+                "name":"dinars",
+                "location":["next"]
+            },
+            {
+                "name":"serbian dinar",
+                "location":["next"]
+            },
+            {
+                "name":"serbian dinars",
+                "location":["next"]
+            },
+            {
+                "name":"rsd",
+                "location":["prev", "next"]
+            }
+        ]
+    },
+    {
+        "currency":"BAM",
+        "alternative_names":[
+            {
+                "name":"km",
+                "location":["next"]
+            },
+            {
+                "name":"mark",
+                "location":["next"]
+            },
+            {
+                "name":"marks",
+                "location":["next"]
+            },
+            {
+                "name":"bosnian mark",
+                "location":["next"]
+            },
+            {
+                "name":"bosnian marks",
+                "location":["next"]
+            },
+            {
+                "name":"convertible mark",
+                "location":["next"]
+            },
+            {
+                "name":"convertible marks",
+                "location":["next"]
+            },
+            {
+                "name":"bosnian convertible mark",
+                "location":["next"]
+            },
+            {
+                "name":"bosnian convertible marks",
+                "location":["next"]
+            },
+            {
+                "name":"bam",
+                "location":["prev", "next"]
+            }
+        ]
+    },
+    {
+        "currency":"GBP",
+        "alternative_names":[
+            {
+                "name":"pound",
+                "location":["next"]
+            },
+            {
+                "name":"pounds",
+                "location":["next"]
+            },
+            {
+                "name":"brittish pound",
+                "location":["next"]
+            },
+            {
+                "name":"brittish pounds",
+                "location":["next"]
+            },
+            {
+                "name":"english pound",
+                "location":["next"]
+            },
+            {
+                "name":"english pounds",
+                "location":["next"]
+            },
+            {
+                "name":"sterling",
+                "location":["next"]
+            },
+            {
+                "name":"sterlings",
+                "location":["next"]
+            },
+            {
+                "name":"£",
+                "location":["prev", "next"]
+            }
+        ]
+    }
+]
