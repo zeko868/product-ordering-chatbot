@@ -208,12 +208,8 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 	}
 }
 
-$string = file_get_contents("./intents.json");
-$json = json_decode($string, true);
-
-
-foreach($json as $k => $v){
-	if(strpos(strtolower($command),strtolower($k))) {
+foreach( json_decode(file_get_contents("./intents.json"),true) as $k => $v){
+	if (mb_stripos($command, $k) !== false) {
 		if ($k === 'radno vrijeme') {
 			require 'radnoVrijeme.php';
 			if ($exactOpeningHours) {
