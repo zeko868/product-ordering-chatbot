@@ -1,7 +1,9 @@
 <?php
 
 
+echo 'test';
 
+/*
 $url1 = "https://www.links.hr/hr/discounted-products?specFilters=1904";
 
 $lines1 = file($url1);
@@ -70,5 +72,5 @@ function parsirajSliku($linija){
     preg_match('/src="(.*?)"/', $linija, $match);
     $slika= $match[1];
     return $slika;
-}
+}*/
 ?>
