@@ -72,5 +72,5 @@ function parsirajSliku($linija){
     preg_match('/src="(.*?)"/', $linija, $match);
     $slika= $match[1];
     return $slika;
-}*/
+}
 ?>
