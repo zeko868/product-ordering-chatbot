@@ -120,6 +120,8 @@ function NLPtext($translatedText){
         exit();
     }
 
+	$proizvod_pretrage =$nlp['proizvod'];
+	
     $curl = curl_init();
     
     $ostalo = array();
