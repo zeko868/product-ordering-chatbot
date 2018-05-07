@@ -21,7 +21,7 @@ for ($index = 0; $index < count($lines1); $index++) {
     }
 }
 
-//var_dump($obj);
+var_dump($obj);
 
 function parsiranjeProizvoda($polje) {
     for ($i = 0; $i < count($polje); $i++) {
