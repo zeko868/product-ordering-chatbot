@@ -21,8 +21,15 @@ for ($index = 0; $index < count($lines1); $index++) {
     }
 }
 
+$today = new DateTime();
+
+$to = $today->format("Y-m-d")." 23:59:59";
+$week_before = $today->modify("-7 day");
+
+$from = $week_before->format("Y-m-d")." 00:00:00";
+
 $conn = pg_connect('postgres://gsnnkdcbycpcyq:ba69093c4619187587610e80e188d4f812627530798ef14d3133bd3541b00290@ec2-54-228-235-185.eu-west-1.compute.amazonaws.com:5432/dedt0mj008catq');
-$result = pg_query("select distinct id_facebook, string_pretrage from pregledavanja where datum_pretrage <= '2018-05-07 22:02:00' and string_pretrage != '';");
+$result = pg_query("select distinct id_facebook, string_pretrage from pregledavanja where datum_pretrage <= '$to' and datum_pretrage >= '$from' and string_pretrage != '';");
 
 $discountInfo = pg_fetch_array($result, null, PGSQL_ASSOC);
 pg_free_result($result);
