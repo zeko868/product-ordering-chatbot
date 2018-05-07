@@ -107,16 +107,6 @@ function NLPtext($translatedText){
 		}
 	}
 	
-	$json = json_decode( file_get_contents('./components.json') , true);
-
-
-	foreach($json as $p){
-		if(mb_stripos($translatedText , $p) !== false){
-			$nlp['proizvod'] = $p;
-			break;
-		}
-	}
-    
     $string = '';
 
     if(isset($nlp['proizvodac']))
