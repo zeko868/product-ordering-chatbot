@@ -1,9 +1,9 @@
 <?php
 
 
-echo 'test';
 
-/*
+
+
 $url1 = "https://www.links.hr/hr/discounted-products?specFilters=1904";
 
 $lines1 = file($url1);
@@ -21,7 +21,7 @@ for ($index = 0; $index < count($lines1); $index++) {
     }
 }
 
-
+var_dump($obj);
 
 function parsiranjeProizvoda($polje) {
     for ($i = 0; $i < count($polje); $i++) {
