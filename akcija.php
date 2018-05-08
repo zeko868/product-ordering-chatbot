@@ -40,7 +40,6 @@ while($discountInfo = pg_fetch_array($result, null, PGSQL_ASSOC)){
 		
 		
 		foreach($obj as $o){
-			echo $o->naziv . "<br/>";
 			if(strpos($p, $o->naziv ) !== false){
 				var_dump($pretrage);
 			}
