@@ -47,7 +47,7 @@ while($discountInfo = pg_fetch_array($result, null, PGSQL_ASSOC)){
 					'subtitle' => htmlspecialchars_decode($o->naziv . ', cijena: ' . $obj[$i]->cijena, ENT_QUOTES),
 					'default_action' => [
 						'type' => 'web_url',
-						'url' => 'https://www.links.hr/hr/tipkovnica-logitech-k375s-bluetooth-stalak-za-smartphone-tablet-unifying-receiver-bezicna-crna-101200320#quickTabs',
+						'url' => 'https://www.links.hr' . $o->link . '#quickTabs',
 						'messenger_extensions' => true,
 						'webview_height_ratio'=> 'TALL'
 					],
