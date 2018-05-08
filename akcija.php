@@ -31,9 +31,19 @@ $from = $week_before->format("Y-m-d")." 00:00:00";
 $conn = pg_connect('postgres://gsnnkdcbycpcyq:ba69093c4619187587610e80e188d4f812627530798ef14d3133bd3541b00290@ec2-54-228-235-185.eu-west-1.compute.amazonaws.com:5432/dedt0mj008catq');
 $result = pg_query("select distinct id_facebook, string_pretrage from pregledavanja where datum_pretrage <= '$to' and datum_pretrage >= '$from' and string_pretrage != '';");
 
-echo "select distinct id_facebook, string_pretrage from pregledavanja where datum_pretrage <= '$to' and datum_pretrage >= '$from' and string_pretrage != '';";
 
-while($discountInfo = pg_fetch_array($result, null, PGSQL_ASSOC)) var_dump($discountInfo);
+while($discountInfo = pg_fetch_array($result, null, PGSQL_ASSOC)){
+	$pretrage = explode(" ", $discountInfo["string_pretrage"]);
+	
+	foreach($pretrage as $p){
+		foreach($obj as $o){
+			if(strpos($p, $o['naziv'])){
+				var_dump($pretrage);
+			}
+		}
+		
+	}
+}
 pg_free_result($result);
 
 
