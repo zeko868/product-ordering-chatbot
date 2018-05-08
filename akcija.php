@@ -35,17 +35,17 @@ $result = pg_query("select distinct id_facebook, string_pretrage from pregledava
 while($discountInfo = pg_fetch_array($result, null, PGSQL_ASSOC)){
 	$pretrage = explode(" ", $discountInfo["string_pretrage"]);
 	
-	var_dump($pretrage);
 	
 	foreach($pretrage as $p){
 		
-		var_dump($p);
 		
-		/*foreach($obj as $o){
-			if(strpos($p, $o['naziv'])){
+		foreach($obj as $o){
+			
+			var_dump($o);
+			/*if(strpos($p, $o['naziv'])){
 				var_dump($pretrage);
-			}
-		}*/
+			}*/
+		}
 		
 	}
 }
