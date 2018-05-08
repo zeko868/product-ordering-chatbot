@@ -41,10 +41,9 @@ while($discountInfo = pg_fetch_array($result, null, PGSQL_ASSOC)){
 		
 		foreach($obj as $o){
 			
-			var_dump($o);
-			/*if(strpos($p, $o['naziv'])){
+			if(strpos($p, $o['naziv']) !== false){
 				var_dump($pretrage);
-			}*/
+			}
 		}
 		
 	}
