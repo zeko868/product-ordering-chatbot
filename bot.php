@@ -249,12 +249,21 @@ if(!empty($obj)){
 	$buttons = array();
 	$itemsNum = min(10, count($obj));
 	for($i=0; $i<$itemsNum; $i++){
-		
-		
+		$title = $obj[$i]->naziv;
+		$title = preg_replace('/,\s*cijena:.+?(,|$)/i', '\1', $title, 1);
+		$subtitle = 'Cijena: ' . $obj[$i]->cijena . " kn\n";
+		$titleLength = strlen($title);
+		if ($titleLength > 80) {
+			if ( ($titleLimit = strrpos($title, ',', 80-$titleLength))!==false || ($titleLimit = strrpos($title, ' ', 80-$titleLength))!==false ) {
+				$subtitle .= substr($title, $titleLimit+1);
+				$title = substr($title, 0, $titleLimit);
+			}
+		}
 		array_push($buttons, array(
-			'title' => htmlspecialchars_decode($obj[$i]->naziv, ENT_QUOTES),
+			'title' => htmlspecialchars_decode($title, ENT_QUOTES),
 			'image_url' => $obj[$i]->slika,
-			'subtitle' => htmlspecialchars_decode($obj[$i]->naziv . ', cijena: ' . $obj[$i]->cijena, ENT_QUOTES),
+			'subtitle' => 
+				htmlspecialchars_decode($subtitle, ENT_QUOTES),
 			'default_action' => [
 				'type' => 'web_url',
 				'url' => 'https://www.links.hr' . $obj[$i]->link . '#quickTabs',
