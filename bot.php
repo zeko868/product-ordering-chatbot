@@ -126,40 +126,40 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 				replyBackWithSimpleText($answer);
 			}*/
 			
-			
-			$myfile = fopen("$senderId.txt", "r") or die("Unable to open file!");
-			$fileContent = fread($myfile,filesize("$senderId.txt"));
-			fclose($myfile);
+			if($command !== "odustani"){
+				$myfile = fopen("$senderId.txt", "r") or die("Unable to open file!");
+				$fileContent = fread($myfile,filesize("$senderId.txt"));
+				fclose($myfile);
 
-			$fileContentArray = explode("\n", $fileContent);
+				$fileContentArray = explode("\n", $fileContent);
 
-			$desiredProducts = [];
+				$desiredProducts = [];
 
-			foreach($fileContentArray as $link){
-				if(!empty($link)){
-					$desiredProducts["https://www.links.hr$link"] = 1;
+				foreach($fileContentArray as $link){
+					if(!empty($link)){
+						$desiredProducts["https://www.links.hr$link"] = 1;
+					}
+					
 				}
 				
-			}
-			
-			$action = $command;	// lokacije Zagreb Trešnjevka, Zagreb Dubrava i Slavonski Brod se sastoje od više riječi
-			$delivery = ($action === 'dostava');
-			$closestStore = $action;
-			changeTypingIndicator(true);
-			require 'naruciRobu.php';
+				$action = $command;	// lokacije Zagreb Trešnjevka, Zagreb Dubrava i Slavonski Brod se sastoje od više riječi
+				$delivery = ($action === 'dostava');
+				$closestStore = $action;
+				changeTypingIndicator(true);
+				require 'naruciRobu.php';
 
-			if (!empty($ordererOutput)) {
-				addItemInBasket("$senderId.txt","links.hr\n");
-				$ordererOutput = explode("\n", $ordererOutput);
-				$price = floatval(str_replace(array('.', ','), array('', '.'), explode(' ', $ordererOutput[0])[0]));
-				$placeName = mb_convert_case($city, MB_CASE_TITLE);
-				$numOfOutputRows = count($ordererOutput);
-				$orderedItems = [];
-				for ($i=2; $i<$numOfOutputRows; $i+=2) {
-					$productName = $ordererOutput[$i-1];
-					$productImageUrl = $ordererOutput[$i];
-					extractTitleAndSubtitle($productName, $title, $subtitle);
-					$orderedItems[] = ['title'=>$title, 'subtitle'=>$subtitle,'quantity'=>1,'price'=>$price,'currency'=>'HRK','image_url'=>$productImageUrl];
+				if (!empty($ordererOutput)) {
+					addItemInBasket("$senderId.txt","links.hr\n");
+					$ordererOutput = explode("\n", $ordererOutput);
+					$price = floatval(str_replace(array('.', ','), array('', '.'), explode(' ', $ordererOutput[0])[0]));
+					$placeName = mb_convert_case($city, MB_CASE_TITLE);
+					$numOfOutputRows = count($ordererOutput);
+					$orderedItems = [];
+					for ($i=2; $i<$numOfOutputRows; $i+=2) {
+						$productName = $ordererOutput[$i-1];
+						$productImageUrl = $ordererOutput[$i];
+						extractTitleAndSubtitle($productName, $title, $subtitle);
+						$orderedItems[] = ['title'=>$title, 'subtitle'=>$subtitle,'quantity'=>1,'price'=>$price,'currency'=>'HRK','image_url'=>$productImageUrl];
 				}
 				$answer = [
 					'type'=>'template',
@@ -177,6 +177,11 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 				
 				changeTypingIndicator(false);
 				replyBackSpecificObject([ 'attachment' => $answer ]);
+				unlink("$senderId.txt");
+			}else{
+				unlink("$senderId.txt");
+			}
+			
 			}
 			else {
 				changeTypingIndicator(false);
@@ -224,8 +229,7 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 					}
 			}
 		}
-	}
-	else if (!empty($messageInfo['message']['text'])) {
+	}else if (!empty($messageInfo['message']['text'])) {
 		$command = $messageInfo['message']['text'];
 
 		if (!empty($userInfo['currently_edited_attribute'])) {
@@ -330,7 +334,7 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 			
 			array_push($quickReplies, array('content_type'=>'text', 'title'=>'Pokupit ću tamo', 'payload' => "Rijeka"));
 			array_push($quickReplies, array('content_type'=>'text', 'title'=>'Želim dostavu', 'payload' => "dostava"));
-			array_push($quickReplies, array('content_type'=>'text', 'title'=>'Odustajem od kupnje', 'payload' => ''));
+			array_push($quickReplies, array('content_type'=>'text', 'title'=>'Odustajem od kupnje', 'payload' => 'odustani'));
 			
 			$answer = [ 'text' => "Odaberite način preuzimanja narudžbe" ];
 			
