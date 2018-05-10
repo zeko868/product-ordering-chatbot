@@ -106,14 +106,22 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 					pg_query("UPDATE user_account SET currently_edited_attribute=NULL WHERE id='$senderId';");
 					replyBackWithSimpleText('Možete dalje nastaviti normalno koristiti pogodnosti chatbota!');
 					break;
-				default:	// full_name da/ne
-					if (substr($command, strpos($command, ' ')+1) === 'da') {
-						pg_query("UPDATE user_account SET currently_edited_attribute='address' WHERE id='$senderId';");
-						posaljiZahtjevZaOdabirom('address');
+				case 'change full_name':
+					pg_query("UPDATE user_account SET currently_edited_attribute='first_name' WHERE id='$senderId';");
+					posaljiZahtjevZaOdabirom('first_name');
+					break;
+				case 'preserve full_name':
+					pg_query("UPDATE user_account SET currently_edited_attribute='address' WHERE id='$senderId';");
+					posaljiZahtjevZaOdabirom('address');
+					break;
+				default:	// for handling payload data from selected special quick reply controls that read user's e-mail address or phone number from user's profile
+					if (strpos($command, '@') !== false) {
+						ps_query("UPDATE user_account SET currently_edited_attribute='phone', email='$command' WHERE id='$senderId';");
+						posaljiZahtjevZaOdabirom('email');
 					}
 					else {
-						pg_query("UPDATE user_account SET currently_edited_attribute='first_name' WHERE id='$senderId';");
-						posaljiZahtjevZaOdabirom('first_name');
+						ps_query("UPDATE user_account SET currently_edited_attribute=NULL, phone='$command' WHERE id='$senderId';");
+						replyBackWithSimpleText('Možete dalje nastaviti normalno koristiti pogodnosti chatbota!');
 					}
 			}
 		}
@@ -384,8 +392,8 @@ function posaljiZahtjevZaOdabirom($atribut, $ponavljanje=false, $prefiks='') {
 					$replyContent .= "Da li je '$userInfo[first_name] $userInfo[last_name]' Vaše puno ime?";
 				}
 			}
-			array_push($quickReplies, array('content_type'=>'text', 'title'=>'Da', 'payload' => 'full_name da'));
-			array_push($quickReplies, array('content_type'=>'text', 'title'=>'Ne', 'payload' => 'full_name ne'));
+			array_push($quickReplies, array('content_type'=>'text', 'title'=>'Da', 'payload' => 'preserve full_name'));
+			array_push($quickReplies, array('content_type'=>'text', 'title'=>'Ne', 'payload' => 'change full_name'));
 			break;
 		case 'first_name':
 			if ($ponavljanje) {
@@ -395,7 +403,7 @@ function posaljiZahtjevZaOdabirom($atribut, $ponavljanje=false, $prefiks='') {
 				$replyContent .= 'Navedite Vaše ime:';
 			}
 			if (!empty($userInfo['first_name'])) {
-				array_push($quickReplies, array('content_type'=>'text', 'title'=>"zadrži '$userInfo[first_name]'", 'payload' => "first_name"));
+				array_push($quickReplies, array('content_type'=>'text', 'title'=>"zadrži '$userInfo[first_name]'", 'payload' => 'first_name'));
 			}
 			break;
 		case 'last_name':
@@ -406,56 +414,73 @@ function posaljiZahtjevZaOdabirom($atribut, $ponavljanje=false, $prefiks='') {
 				$replyContent .= 'Navedite Vaše prezime:';
 			}
 			if (!empty($userInfo['last_name'])) {
-				array_push($quickReplies, array('content_type'=>'text', 'title'=>"zadrži '$userInfo[last_name]'", 'payload' => "last_name"));
+				array_push($quickReplies, array('content_type'=>'text', 'title'=>"zadrži '$userInfo[last_name]'", 'payload' => 'last_name'));
 			}
 			break;
 		case 'address':
 			if ($ponavljanje) {
 				if (empty($userInfo['address'])) {
-					$replyContent .= 'Ponavljamo, napišite Vašu adresu stanovanja ili dostavljanja.';
+					$replyContent .= 'Ponavljamo, navedite Vašu adresu stanovanja ili dostavljanja.';
 				}
 				else {
-					$replyContent .= 'Ponavljamo, napišite Vašu adresu stanovanja ili dostavljanja, ili pak odaberite da se zadrži dosadašnja.';
+					$replyContent .= "Ponavljamo, navedite Vašu adresu stanovanja ili dostavljanja, ili pak odaberite da se zadrži dosadašnja ($userInfo[route] $userInfo[street_number], $userInfo[postal_code]).";
 				}
 			}
 			else {
-				$replyContent .= 'Navedite Vašu adresu stanovanja ili adresu na koju želite da Vam se dostavi roba:';
+				if (empty($userInfo['address'])) {
+					$replyContent .= 'Navedite Vašu adresu stanovanja ili adresu na koju želite da Vam se dostavi roba:';
+				}
+				else {
+					$replyContent .= "Navedite Vašu adresu stanovanja ili adresu na koju želite da Vam se dostavi roba, ili pak odaberite da se zadrži dosadašnja ($userInfo[route] $userInfo[street_number], $userInfo[postal_code]).";
+				}
 			}
 			if (!empty($userInfo['address'])) {
-				array_push($quickReplies, array('content_type'=>'text', 'title'=>"zadrži '$userInfo[address]'", 'payload' => "address"));
+				array_push($quickReplies, array('content_type'=>'text', 'title'=>'zadrži dosadašnju', 'payload' => 'address'));
 			}
 			break;
 		case 'email':
 			if ($ponavljanje) {
 				if (empty($userInfo['email'])) {
-					$replyContent .= 'Ponavljamo, napišite Vašu e-mail adresu.';
+					$replyContent .= 'Ponavljamo, navedite Vašu e-mail adresu.';
 				}
 				else {
-					$replyContent .= 'Ponavljamo, napišite Vašu e-mail adresu ili odaberite da se zadrži dosadašnja.';
+					$replyContent .= "Ponavljamo, navedite Vašu e-mail adresu ili odaberite da se zadrži dosadašnja ($userInfo[email]).";
 				}
 			}
 			else {
-				$replyContent .= 'Navedite Vašu e-mail adresu na koju ćete biti u mogućnosti kontaktirani:';
+				if (empty($userInfo['email'])) {
+					$replyContent .= "Navedite Vašu e-mail adresu na koju ćete biti u mogućnosti kontaktirani:";
+				}
+				else {
+					$replyContent .= "Navedite Vašu e-mail adresu na koju ćete biti u mogućnosti kontaktirani ili odaberite dosadašnju ($userInfo[email]).";
+				}
 			}
 			if (!empty($userInfo['email'])) {
-				array_push($quickReplies, array('content_type'=>'text', 'title'=>"zadrži '$userInfo[email]'", 'payload' => "email"));
+				array_push($quickReplies, array('content_type'=>'text', 'title'=>'zadrži dosadašnji', 'payload' => 'email'));
 			}
+			array_push($quickReplies, array('content_type' => 'user_email'));
 			break;
 		case 'phone':
 			if ($ponavljanje) {
 				if (empty($userInfo['phone'])) {
-					$replyContent .= 'Ponavljamo, napišite Vaš telefonski broj.';
+					$replyContent .= 'Ponavljamo, navedite Vaš telefonski broj.';
 				}
 				else {
-					$replyContent .= 'Ponavljamo, napišite Vaš telefonski broj ili odaberite da se zadrži dosadašnji.';
+					$replyContent .= "Ponavljamo, navedite Vaš telefonski broj ili odaberite da se zadrži dosadašnji ($userInfo[phone]).";
 				}
 			}
 			else {
-				$replyContent .= 'Navedite Vaš telefonski broj na koji ćete biti u mogućnosti kontaktirani:';
+				if (empty($userInfo['phone'])) {
+					$replyContent .= 'Navedite Vaš telefonski broj na koji ćete biti u mogućnosti kontaktirani:';
+				}
+				else {
+					$replyContent .= "Navedite Vaš telefonski broj na koji ćete biti u mogućnosti kontaktirani ili odaberite da se zadrži dosadašnji ($userInfo[phone]).";
+				}
 			}
 			if (!empty($userInfo['phone'])) {
-				array_push($quickReplies, array('content_type'=>'text', 'title'=>"zadrži '$userInfo[phone]'", 'payload' => "phone"));
+				array_push($quickReplies, array('content_type'=>'text', 'title'=>'zadrži dosadašnju', 'payload' => 'phone'));
 			}
+			array_push($quickReplies, array('content_type' => 'user_phone_number'));
 			break;
 
 	}
