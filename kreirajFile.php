@@ -8,8 +8,11 @@ $fileContentArray = explode("\n", $fileContent);
 $desiredProducts = array();
 
 foreach($fileContentArray as $link){
-	$l["https://www.links.hr$link"] = 1;
-	array_push($desiredProducts,$l);
+	if(!empty($link)){
+		$l["https://www.links.hr$link"] = 1;
+		array_push($desiredProducts,$l);
+	}
+	
 }
 
 var_dump($desiredProducts);
