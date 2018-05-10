@@ -219,12 +219,12 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 	}
 	// When bot receives button click from user
 	else if (!empty($messageInfo['postback'])) {
-		if (empty($userInfo['phone'])) {	// if this attribute is not defined, then user still hasn't finished registration process
+		if (!empty($userInfo['currently_edited_attribute'])) {
+			posaljiZahtjevZaOdabirom($userInfo['currently_edited_attribute'], true);
+		}
+		else if (empty($userInfo['phone'])) {	// if this attribute is not defined, then user still hasn't finished registration process
 			pg_query("UPDATE user_account SET currently_edited_attribute='full_name' WHERE id='$senderId';");
 			posaljiZahtjevZaOdabirom('full_name');
-		}
-		else if (!empty($userInfo['currently_edited_attribute'])) {
-			posaljiZahtjevZaOdabirom($userInfo['currently_edited_attribute'], true);
 		}
 		else {
 			$command = $messageInfo['postback']['payload'];
