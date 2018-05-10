@@ -5,12 +5,11 @@ fclose($myfile);
 
 $fileContentArray = explode("\n", $fileContent);
 
-$desiredProducts = array();
+$desiredProducts = [];
 
 foreach($fileContentArray as $link){
 	if(!empty($link)){
-		$l["https://www.links.hr$link"] = 1;
-		array_push($desiredProducts,$l);
+		$desiredProducts["https://www.links.hr$link"] = 1;
 	}
 	
 }
