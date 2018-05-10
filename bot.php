@@ -266,15 +266,13 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 					posaljiZahtjevZaOdabirom($userInfo['currently_edited_attribute'], true);
 			}
 		}else if($command === "Završi"){
-			/*$quickReplies = array();
+			$quickReplies = array();
 			array_push($quickReplies, array('content_type'=>'text', 'title'=>'Pokupit ću tamo', 'payload' => "$linkProizovada Rijeka"));
 			array_push($quickReplies, array('content_type'=>'text', 'title'=>'Želim dostavu', 'payload' => "$linkProizovada dostava"));
 			array_push($quickReplies, array('content_type'=>'text', 'title'=>'Odustajem od kupnje', 'payload' => ''));
 			
 			$answer['quick_replies'] = $quickReplies;
-			replyBackSpecificObject($answer);*/
-			
-			replyBackWithSimpleText("Prepoznata naredba zavrsi");
+			replyBackSpecificObject($answer);
 		}
 	}
 	// When bot receives button click from user
