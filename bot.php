@@ -37,7 +37,48 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 	$result = pg_query("SELECT * FROM user_account u LEFT JOIN address a ON u.address=a.id WHERE u.id='$senderId' LIMIT 1;");
 	$userInfo = pg_fetch_array($result, null, PGSQL_ASSOC);
 	pg_free_result($result);
-	if (!empty($messageInfo['message']['quick_reply']['payload'])) {
+	if (!empty($messageInfo['message']['attachments'])) {
+		if ($messageInfo['message']['attachments'][0]['type'] === 'location') {
+			$coordinates = $messageInfo['message']['attachments'][0]['payload']['coordinates'];
+			if (!empty($coordinates)) {
+				$ch = curl_init();
+				curl_setopt_array($ch, array(
+					CURLOPT_URL => "https://maps.googleapis.com/maps/api/geocode/json?latlng=$coordinates[lat],$coordinates[long]&key=" . API_KEY,
+					CURLOPT_RETURNTRANSFER => true,
+					CURLOPT_CUSTOMREQUEST => 'GET',
+					CURLOPT_HTTPHEADER => array(
+						'content-type: application/json'
+					)
+				));
+				$result = json_decode(curl_exec($ch), true);
+				curl_close($ch);
+				if ($result['status'] === 'OK') {
+					if (count($result['results']) !== 0) {
+						foreach ($result['results'][0]['address_components'] as $comp) {
+							if (in_array('street_number', $comp['types'])) {
+								$streetNum = $comp['short_name'];
+							}
+							else if (in_array('route', $comp['types'])) {
+								$route = $comp['long_name'];
+							}
+							else if (in_array('postal_code', $comp['types'])) {
+								$postalCode = $comp['short_name'];
+							}
+						}
+					}
+					else {
+						replyBackWithSimpleText('address', true, 'Za definiranu lokaciju nije moguće odrediti ulicu, kućni i poštanski broj. Pokušajte navesti te geografske podatke ili pak odabrati neku drugu lokaciju');
+					}
+				}
+				pg_query("UPDATE user_account SET address=get_address_id('$streetNum', '$route', '$postalCode'), currently_edited_attribute='email' WHERE id='$senderId';");
+				posaljiZahtjevZaOdabirom('email', false, 'Uspješno ste registrirali adresu uz Vaš korisnički račun!');
+			}
+		}
+		else {
+			replyBackWithSimpleText('Privitke poput slika, video-zapisa i audio-sadržaja nije moguće analizirati! Molimo Vas da se izrazite tekstualno.');
+		}
+	}
+	else if (!empty($messageInfo['message']['quick_reply']['payload'])) {
 		$command = $messageInfo['message']['quick_reply']['payload'];
 		if (empty($userInfo['currently_edited_attribute'])) {
 			$commandParts = explode(' ', $command);
@@ -437,6 +478,7 @@ function posaljiZahtjevZaOdabirom($atribut, $ponavljanje=false, $prefiks='') {
 			if (!empty($userInfo['address'])) {
 				array_push($quickReplies, array('content_type'=>'text', 'title'=>'zadrži dosadašnju', 'payload' => 'address'));
 			}
+			array_push($quickReplies, array('content_type' => 'location'));
 			break;
 		case 'email':
 			if ($ponavljanje) {
