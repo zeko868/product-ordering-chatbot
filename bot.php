@@ -16,7 +16,6 @@ $command = '';
 if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 	$conn = pg_connect('postgres://gsnnkdcbycpcyq:ba69093c4619187587610e80e188d4f812627530798ef14d3133bd3541b00290@ec2-54-228-235-185.eu-west-1.compute.amazonaws.com:5432/dedt0mj008catq');
 	$result = pg_query("INSERT INTO user_account VALUES ('$senderId');");	// this is performed whether the user id is already in database or not - all the other table attributes are nullable, so their values don't need to be explicitly set
-	$introGuidelines = '';
 	if ($result && pg_affected_rows($result) === 1) {
 		$ch = curl_init();
 		curl_setopt_array($ch, array(
@@ -32,22 +31,15 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 		$ime = $result['first_name'];
 		$prezime = $result['last_name'];
 		pg_query("UPDATE user_account SET first_name='$ime', last_name='$prezime' WHERE id='$senderId';");
-		$introGuidelines = "Poštovanje $ime $prezime,\n";
+		replyBackWithSimpleText("Poštovanje $ime $prezime,\nRazgovarate s virtualnim asistentom koji će Vas voditi kroz kupovinu. Dovoljno je navesti u slobodnom formatu (po mogućnosti u službenom hrvatskom jeziku) što tražite, bilo naziv proizvođača, marke, vrste komponente i/ili cjenovni raspon traženog proizvoda. Kao rezultat se vraćaju stavke dostupne iz Linskovog web-shopa koje je onda moguće jednostavno naručiti.", false);
 		$korisnikUpravoDeklariran = true;
 	}
 	$result = pg_query("SELECT * FROM user_account u LEFT JOIN address a ON u.address=a.id WHERE u.id='$senderId' LIMIT 1;");
 	$userInfo = pg_fetch_array($result, null, PGSQL_ASSOC);
 	pg_free_result($result);
 	if (!empty($messageInfo['message']['quick_reply']['payload'])) {
-		if (empty($userInfo['phone'])) {	// if this attribute is not defined, then user still hasn't finished registration process
-			if (!isset($introGuidelines)) {
-				$introGuidelines = '';
-			}
-			$introGuidelines .= 'Za korištenje aplikacije potrebno je proći kroz 3 koraka konfiguracije. Za početak, navedite Vašu adresu na koju će biti dopremljena roba.';
-			replyBackWithSimpleText($introGuidelines);
-		}
-		else {
-			$command = $messageInfo['message']['quick_reply']['payload'];
+		$command = $messageInfo['message']['quick_reply']['payload'];
+		if (empty($userInfo['currently_edited_attribute'])) {
 			$commandParts = explode(' ', $command);
 			$linkProizovada = $commandParts[0];
 			unset($commandParts[0]);
@@ -92,107 +84,134 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 				replyBackWithSimpleText($answer);
 			}
 		}
+		else {
+			switch ($command) {
+				case 'first_name':
+					pg_query("UPDATE user_account SET currently_edited_attribute='last_name' WHERE id='$senderId';");
+					posaljiZahtjevZaOdabirom('last_name');
+					break;
+				case 'last_name':
+					pg_query("UPDATE user_account SET currently_edited_attribute='address' WHERE id='$senderId';");
+					posaljiZahtjevZaOdabirom('address', false, 'Uspješno ste registrirali svoje stvarno ime!');
+					break;
+				case 'address':
+					pg_query("UPDATE user_account SET currently_edited_attribute='email' WHERE id='$senderId';");
+					posaljiZahtjevZaOdabirom('email');
+					break;
+				case 'email':
+					pg_query("UPDATE user_account SET currently_edited_attribute='phone' WHERE id='$senderId';");
+					posaljiZahtjevZaOdabirom('phone');
+					break;
+				case 'phone':
+					pg_query("UPDATE user_account SET currently_edited_attribute=NULL WHERE id='$senderId';");
+					replyBackWithSimpleText('Možete dalje nastaviti normalno koristiti pogodnosti chatbota!');
+					break;
+				default:	// full_name da/ne
+					if (substr($command, strpos($command, ' ')+1) === 'da') {
+						pg_query("UPDATE user_account SET currently_edited_attribute='address' WHERE id='$senderId';");
+						posaljiZahtjevZaOdabirom('address');
+					}
+					else {
+						pg_query("UPDATE user_account SET currently_edited_attribute='first_name' WHERE id='$senderId';");
+						posaljiZahtjevZaOdabirom('first_name');
+					}
+			}
+		}
 	}
 	else if (!empty($messageInfo['message']['text'])) {
 		$command = $messageInfo['message']['text'];
 
-		if (empty($userInfo['address'])) {
-			$command = urlencode($command);
-			$ch = curl_init();
-			curl_setopt_array($ch, array(
-				CURLOPT_URL => "https://maps.googleapis.com/maps/api/geocode/json?address=$command&key=" . API_KEY,
-				CURLOPT_RETURNTRANSFER => true,
-				CURLOPT_CUSTOMREQUEST => 'GET',
-				CURLOPT_HTTPHEADER => array(
-					'content-type: application/json'
-				)
-			));
-			$result = json_decode(curl_exec($ch), true);
-			curl_close($ch);
-			if ($result['status'] == 'OK') {
-				if (count($result['results']) === 1) {
-					foreach ($result['results'][0]['address_components'] as $comp) {
-						if (in_array('street_number', $comp['types'])) {
-							$streetNum = $comp['short_name'];
-						}
-						else if (in_array('route', $comp['types'])) {
-							$route = $comp['long_name'];
-						}
-						else if (in_array('postal_code', $comp['types'])) {
-							$postalCode = $comp['short_name'];
-						}
-					}
-					if (isset($streetNum) && isset($route) && isset($postalCode)) {
-						pg_query("UPDATE user_account SET address=get_address_id('$streetNum', '$route', '$postalCode') WHERE id='$senderId';");
-						$introGuidelines .= "Uspješno ste registrirali adresu uz Vaš korisnički račun!\nNavedite Vašu e-mail adresu na koju ćete biti u mogućnosti kontaktirani";
-					}
-					else {
-						if (isset($korisnikUpravoDeklariran)) {
-							$introGuidelines .= 'Za korištenje aplikacije potrebno je proći kroz 3 koraka konfiguracije. Za početak, navedite Vašu adresu na koju će biti dopremljena roba.';
+		if (!empty($userInfo['currently_edited_attribute'])) {
+			switch ($userInfo['currently_edited_attribute']) {
+				case 'first_name':
+					$firstName = trim($command, ". \t\n\r\0\x0B");
+					pg_query_params("UPDATE user_account SET first_name=$1, currently_edited_attribute='last_name' WHERE id='$senderId';", array($firstName));
+					posaljiZahtjevZaOdabirom('last_name', false);
+					break;
+				case 'last_name':
+					$lastName = trim($command, ". \t\n\r\0\x0B");
+					pg_query_params("UPDATE user_account SET last_name=$1, currently_edited_attribute='address' WHERE id='$senderId';", array($lastName));
+					posaljiZahtjevZaOdabirom('address', false, 'Uspješno ste registrirali svoje stvarno ime!');
+					break;
+				case 'address':
+					$command = urlencode($command);
+					$ch = curl_init();
+					curl_setopt_array($ch, array(
+						CURLOPT_URL => "https://maps.googleapis.com/maps/api/geocode/json?address=$command&key=" . API_KEY,
+						CURLOPT_RETURNTRANSFER => true,
+						CURLOPT_CUSTOMREQUEST => 'GET',
+						CURLOPT_HTTPHEADER => array(
+							'content-type: application/json'
+						)
+					));
+					$result = json_decode(curl_exec($ch), true);
+					curl_close($ch);
+					if ($result['status'] === 'OK') {
+						if (count($result['results']) === 1) {
+							foreach ($result['results'][0]['address_components'] as $comp) {
+								if (in_array('street_number', $comp['types'])) {
+									$streetNum = $comp['short_name'];
+								}
+								else if (in_array('route', $comp['types'])) {
+									$route = $comp['long_name'];
+								}
+								else if (in_array('postal_code', $comp['types'])) {
+									$postalCode = $comp['short_name'];
+								}
+							}
+							if (isset($streetNum) && isset($route) && isset($postalCode)) {
+								pg_query("UPDATE user_account SET address=get_address_id('$streetNum', '$route', '$postalCode'), currently_edited_attribute='email' WHERE id='$senderId';");
+								posaljiZahtjevZaOdabirom('email', false, 'Uspješno ste registrirali adresu uz Vaš korisnički račun!');
+							}
+							else {
+								posaljiZahtjevZaOdabirom('email', true, 'Molimo Vas da navedete sve komponente adrese koje su nam od značaja poput naziva ulice i kućnog broja te naziva poštanskog mjesta ili njegovog pripadajućeg broja.');
+							}
 						}
 						else {
-							$introGuidelines = 'Molimo Vas da navedete sve komponente adrese koje su nam od značaja poput naziva ulice i kućnog broja te naziva poštanskog mjesta ili njegovog pripadajućeg broja';
+							posaljiZahtjevZaOdabirom('email', true, 'Molimo Vas da precizirate adresu! Naime, ne može se pouzdano otkriti o kojem je točno mjestu riječ.');
 						}
 					}
-				}
-				else {
-					if (isset($korisnikUpravoDeklariran)) {
-						$introGuidelines .= 'Za korištenje aplikacije potrebno je proći kroz 3 koraka konfiguracije. Za početak, navedite Vašu adresu na koju će biti dopremljena roba.';
+					else {
+						posaljiZahtjevZaOdabirom('email', true, 'Molimo Vas da precizirate adresu! Naime, nije pronađeno nijedno mjesto koje odgovara na navedeni opis.');
 					}
-				else {
-						$introGuidelines = 'Molimo Vas da precizirate adresu! Naime, ne može se pouzdano otkriti o kojem je točno mjestu riječ';
+					break;
+				case 'email':
+					if (preg_match('/\S*@\S*\.\S*/', $command, $matches)) {
+						$email = trim($matches[0], ':.,-;?!');
+						pg_query_params("UPDATE user_account SET email=$1, currently_edited_attribute='phone' WHERE id='$senderId';", array($email));	// protection against potential attacks like sql-injection
+						posaljiZahtjevZaOdabirom('phone', false, 'Uspješno ste registrirali e-mail adresu uz Vaš korisnički račun!');
 					}
-				}
-			}
-			else {
-				if (isset($korisnikUpravoDeklariran)) {
-					$introGuidelines .= 'Za korištenje aplikacije potrebno je proći kroz 3 koraka konfiguracije. Za početak, navedite Vašu adresu na koju će biti dopremljena roba.';
-				}
-				else {
-					$introGuidelines = 'Molimo Vas da precizirate adresu! Naime, nije pronađeno nijedno mjesto koje odgovara na navedeni opis';
-				}
-			}
-			replyBackWithSimpleText($introGuidelines);
-		}
-		else {
-			if (empty($userInfo['email'])) {
-				if (preg_match('/\S*@\S*\.\S*/', $command, $matches)) {
-					$email = trim($matches[0], ':.,-;?!');
-					pg_query_params("UPDATE user_account SET email=$1 WHERE id='$senderId';", array($email));	// protection against potential attacks like sql-injection
-					$introGuidelines = "Uspješno ste registrirali e-mail adresu uz Vaš korisnički račun!\nNavedite još Vaš kontaktni broj telefona";
-				}
-				else {
-					$introGuidelines = 'Niste naveli e-mail adresu ili ona koju ste naveli nije važećeg formata! Molimo, napišite Vašu ispravnu e-mail adresu';
-				}
-				replyBackWithSimpleText($introGuidelines);
-			}
-			else {
-				if (empty($userInfo['phone'])) {
+					else {
+						posaljiZahtjevZaOdabirom('email', true, 'Niste naveli e-mail adresu ili ona koju ste naveli nije važećeg formata!');
+					}
+					break;
+				case 'phone':
 					if (preg_match_all('/(?:\+\s*)?\d+(?:(?:\s|\/|\-)+\d+)*/', $command, $matches)) {
 						foreach ($matches[0] as $numWithSeparators) {
 							$number = preg_replace('(-|/|\s)', '', $numWithSeparators);
 							if (strlen($number) > 7) {
-								pg_query("UPDATE user_account SET phone='$number' WHERE id='$senderId';");
-								$introGuidelines = "Uspješno ste registrirali telefonski broj uz Vaš korisnički račun!\nSada možete započeti s pretragom i naručivanjem artikala.";
+								pg_query("UPDATE user_account SET phone='$number', currently_edited_attribute=NULL WHERE id='$senderId';");
+								replyBackWithSimpleText("Uspješno ste registrirali telefonski broj uz Vaš korisnički račun!\nSada možete započeti s pretragom i naručivanjem artikala.");
 							}
 						}
 					}
 					else {
-						$introGuidelines = 'Niste naveli važeći telefonski broj! Molimo, napišite Vaš ispravni telefonski broj';
+						posaljiZahtjevZaOdabirom('phone', true, 'Niste naveli važeći telefonski broj!');
 					}
-					replyBackWithSimpleText($introGuidelines);
-				}
+					break;
+				default:
+					posaljiZahtjevZaOdabirom($userInfo['currently_edited_attribute'], true);
 			}
 		}
 	}
 	// When bot receives button click from user
 	else if (!empty($messageInfo['postback'])) {
 		if (empty($userInfo['phone'])) {	// if this attribute is not defined, then user still hasn't finished registration process
-			if (!isset($introGuidelines)) {
-				$introGuidelines = '';
-			}
-			$introGuidelines .= 'Za korištenje aplikacije potrebno je proći kroz 3 koraka konfiguracije. Za početak, navedite Vašu adresu na koju će biti dopremljena roba.';
-			replyBackWithSimpleText($introGuidelines);
+			pg_query("UPDATE user_account SET currently_edited_attribute='full_name' WHERE id='$senderId';");
+			posaljiZahtjevZaOdabirom('full_name');
+		}
+		else if (!empty($userInfo['currently_edited_attribute'])) {
+			posaljiZahtjevZaOdabirom($userInfo['currently_edited_attribute'], true);
 		}
 		else {
 			$command = $messageInfo['postback']['payload'];
@@ -230,7 +249,7 @@ if($translatedInput['status'] === 'OK'){
 
 $translatedOutput = translateInput($nlpText['tekst'], 'en', 'hr');
 
-if($translatedOutput['status'] == 'OK'){
+if($translatedOutput['status'] === 'OK'){
 	$translatedOutputText = $translatedOutput['translate'];
 }else{
 	replyBackWithSimpleText('Došlo je do pogreške!');
@@ -239,7 +258,7 @@ if($translatedOutput['status'] == 'OK'){
 $nlpText['tekst'] = urediIzlaz($translatedOutputText);
 
 $datum = new DateTime();
-$datumString = $datum->format("Y-m-d H:i:s");
+$datumString = $datum->format('Y-m-d H:i:s');
 
 
 require './traziRobu.php';
@@ -281,13 +300,20 @@ if(!empty($obj)){
 
 	replyBackSpecificObject([ 'attachment' => $answer ]);
 }else{
-	replyBackWithSimpleText('Nisu nađeni proizvodi koji odgovaraju zadanim kriterijima');
+	if (!isset($korisnikUpravoDeklariran)) {
+		replyBackWithSimpleText('Nisu nađeni proizvodi koji odgovaraju zadanim kriterijima');
+	}
+	else {
+		pg_close();
+	}
 }
 
 
-function replyBackSpecificObject($answer) {
+function replyBackSpecificObject($answer, $zavrsi=true) {
 	global $senderId;
-	pg_close();
+	if ($zavrsi) {
+		pg_close();
+	}
 	$response = [
 		'messaging_type' => 'RESPONSE',
 		'recipient' => [ 'id' => $senderId ],
@@ -299,11 +325,13 @@ function replyBackSpecificObject($answer) {
 	curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
 	$result = curl_exec($ch);
 	curl_close($ch);
-	exit();
+	if ($zavrsi) {
+		exit();
+	}
 }
 
-function replyBackWithSimpleText($text) {
-	replyBackSpecificObject([ 'text' => $text ]);
+function replyBackWithSimpleText($text, $zavrsi=true) {
+	replyBackSpecificObject([ 'text' => $text ], $zavrsi);
 }
 
 function changeTypingIndicator($turnOn) {
@@ -319,6 +347,85 @@ function changeTypingIndicator($turnOn) {
 	curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
 	$result = curl_exec($ch);
 	curl_close($ch);
+}
+
+function posaljiZahtjevZaOdabirom($atribut, $ponavljanje=false, $prefiks='') {
+	global $userInfo;
+	if (!empty($prefiks)) {
+		$replyContent = $prefiks . "\n";
+	}
+	else {
+		$replyContent = '';
+	}
+	$quickReplies = [];
+	switch ($atribut) {
+		case 'full_name':
+			if ($ponavljanje) {
+				$replyContent .= "Potrebno je odabrati jednu od ponuđenih opcija! Ponavljamo, da li je '$userInfo[first_name] $userInfo[last_name]' Vaše pravo ime?";
+			}
+			else {
+				if (empty($userInfo['phone'])) {
+					$replyContent .= "Za daljnje korištenje aplikacije potrebno se je registrirati. Za početak, odgovorite da li je '$userInfo[first_name] $userInfo[last_name]' Vaše puno ime.";
+				}
+				else {
+					$replyContent .= "Da li je '$userInfo[first_name] $userInfo[last_name]' Vaše puno ime?";
+				}
+			}
+			array_push($quickReplies, array('content_type'=>'text', 'title'=>'Da', 'payload' => 'full_name da'));
+			array_push($quickReplies, array('content_type'=>'text', 'title'=>'Ne', 'payload' => 'full_name ne'));
+			break;
+		case 'first_name':
+			if ($ponavljanje) {
+				$replyContent .= 'Ponavljamo, napišite Vaše ime ili odaberite da se zadrži dosadašnje.';
+			}
+			else {
+				$replyContent .= 'Navedite Vaše ime:';
+			}
+			array_push($quickReplies, array('content_type'=>'text', 'title'=>"zadrži '$userInfo[first_name]'", 'payload' => "first_name"));
+			break;
+		case 'last_name':
+			if ($ponavljanje) {
+				$replyContent .= 'Ponavljamo, napišite Vaše prezime ili odaberite da se zadrži dosadašnje.';
+			}
+			else {
+				$replyContent .= 'Navedite Vaše prezime:';
+			}
+			array_push($quickReplies, array('content_type'=>'text', 'title'=>"zadrži '$userInfo[last_name]'", 'payload' => "last_name"));
+			break;
+		case 'address':
+			if ($ponavljanje) {
+				$replyContent .= 'Ponavljamo, napišite Vašu adresu dostavljanja ili odaberite da se zadrži dosadašnja.';
+			}
+			else {
+				$replyContent .= 'Navedite Vašu adresu stanovanja ili adresu na koju želite da Vam se dostavi roba:';
+			}
+			array_push($quickReplies, array('content_type'=>'text', 'title'=>"zadrži '$userInfo[address]'", 'payload' => "address"));
+			break;
+		case 'email':
+			if ($ponavljanje) {
+				$replyContent .= 'Ponavljamo, napišite Vašu e-mail adresu ili odaberite da se zadrži dosadašnja.';
+			}
+			else {
+				$replyContent .= 'Navedite Vašu e-mail adresu na koju ćete biti u mogućnosti kontaktirani:';
+			}
+			array_push($quickReplies, array('content_type'=>'text', 'title'=>"zadrži '$userInfo[email]'", 'payload' => "email"));
+			break;
+		case 'phone':
+			if ($ponavljanje) {
+				$replyContent .= 'Ponavljamo, napišite Vaš telefonski broj ili odaberite da se zadrži dosadašnji.';
+			}
+			else {
+				$replyContent .= 'Navedite Vaš telefonski broj na koji ćete biti u mogućnosti kontaktirani:';
+			}
+			array_push($quickReplies, array('content_type'=>'text', 'title'=>"zadrži '$userInfo[phone]'", 'payload' => "phone"));
+			break;
+
+	}
+	$answer = [ 'text' => $replyContent ];
+	if (!empty($quickReplies)) {
+		$answer['quick_replies'] = $quickReplies;
+	}
+	replyBackSpecificObject($answer);
 }
 
 function extractTitleAndSubtitle($productName, &$title, &$subtitle, $price=null) {
