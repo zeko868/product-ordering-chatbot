@@ -520,7 +520,7 @@ function posaljiZahtjevZaOdabirom($atribut, $ponavljanje=false, $prefiks='') {
 				}
 			}
 			if (!empty($userInfo['phone'])) {
-				array_push($quickReplies, array('content_type'=>'text', 'title'=>'zadrži dosadašnju', 'payload' => 'phone'));
+				array_push($quickReplies, array('content_type'=>'text', 'title'=>'zadrži dosadašnji', 'payload' => 'phone'));
 			}
 			array_push($quickReplies, array('content_type' => 'user_phone_number'));
 			break;
