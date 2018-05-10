@@ -47,10 +47,10 @@ if (!$nedostupno) {
             break;
         default:
             $replyContent = "$najblizeIshodiste Vam je najbliže mjesto s našom poslovnicom u kojoj je dostupan traženi artikl.";
-            array_push($quickReplies, array('content_type'=>'text', 'title'=>'Pokupit ću tamo', 'payload' => "$linkProizovada $najblizeIshodiste"));
+            //array_push($quickReplies, array('content_type'=>'text', 'title'=>'Pokupit ću tamo', 'payload' => "$linkProizovada $najblizeIshodiste"));
     }
-    array_push($quickReplies, array('content_type'=>'text', 'title'=>'Želim dostavu', 'payload' => "$linkProizovada dostava"));
-    array_push($quickReplies, array('content_type'=>'text', 'title'=>'Odustajem od kupnje', 'payload' => ''));
+    //array_push($quickReplies, array('content_type'=>'text', 'title'=>'Želim dostavu', 'payload' => "$linkProizovada dostava"));
+    //array_push($quickReplies, array('content_type'=>'text', 'title'=>'Odustajem od kupnje', 'payload' => ''));
 }else{
     $replyContent = 'Ispričavamo se, traženi artikl trenutno nije dostupan!';
 }
