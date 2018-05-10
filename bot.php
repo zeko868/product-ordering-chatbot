@@ -267,8 +267,12 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 			}
 		}else if($command === "Završi"){
 			$quickReplies = array();
-			array_push($quickReplies, array('content_type'=>'text', 'title'=>'Pokupit ću tamo', 'payload' => "$linkProizovada Rijeka"));
+			/*array_push($quickReplies, array('content_type'=>'text', 'title'=>'Pokupit ću tamo', 'payload' => "$linkProizovada Rijeka"));
 			array_push($quickReplies, array('content_type'=>'text', 'title'=>'Želim dostavu', 'payload' => "$linkProizovada dostava"));
+			array_push($quickReplies, array('content_type'=>'text', 'title'=>'Odustajem od kupnje', 'payload' => ''));*/
+			
+			array_push($quickReplies, array('content_type'=>'text', 'title'=>'Pokupit ću tamo', 'payload' => "Rijeka"));
+			array_push($quickReplies, array('content_type'=>'text', 'title'=>'Želim dostavu', 'payload' => "dostava"));
 			array_push($quickReplies, array('content_type'=>'text', 'title'=>'Odustajem od kupnje', 'payload' => ''));
 			
 			$answer['quick_replies'] = $quickReplies;
