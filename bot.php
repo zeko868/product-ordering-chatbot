@@ -339,19 +339,34 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 					posaljiZahtjevZaOdabirom($userInfo['currently_edited_attribute'], true);
 			}
 		}else if($command === "Završi"){
-			$quickReplies = [];
-			/*array_push($quickReplies, array('content_type'=>'text', 'title'=>'Pokupit ću tamo', 'payload' => "$linkProizovada Rijeka"));
-			array_push($quickReplies, array('content_type'=>'text', 'title'=>'Želim dostavu', 'payload' => "$linkProizovada dostava"));
-			array_push($quickReplies, array('content_type'=>'text', 'title'=>'Odustajem od kupnje', 'payload' => ''));*/
 			
-			array_push($quickReplies, array('content_type'=>'text', 'title'=>'Pokupit ću tamo', 'payload' => "Rijeka"));
-			array_push($quickReplies, array('content_type'=>'text', 'title'=>'Želim dostavu', 'payload' => "dostava"));
-			array_push($quickReplies, array('content_type'=>'text', 'title'=>'Odustajem od kupnje', 'payload' => 'odustani'));
+			$myfile = fopen("$senderId.txt", "r");
+			$fileContent = fread($myfile,filesize("$senderId.txt"));
+			fclose($myfile);
+
+			$fileContentArray = [];
+			if($fileContent != null){
+				$fileContentArray = explode("\n", $fileContent);
+			}
 			
-			$answer = [ 'text' => "Odaberite način preuzimanja narudžbe" ];
+			if(sizeof($fileContentArray) > 0){
+				$quickReplies = [];
+				/*array_push($quickReplies, array('content_type'=>'text', 'title'=>'Pokupit ću tamo', 'payload' => "$linkProizovada Rijeka"));
+				array_push($quickReplies, array('content_type'=>'text', 'title'=>'Želim dostavu', 'payload' => "$linkProizovada dostava"));
+				array_push($quickReplies, array('content_type'=>'text', 'title'=>'Odustajem od kupnje', 'payload' => ''));*/
+				
+				array_push($quickReplies, array('content_type'=>'text', 'title'=>'Pokupit ću tamo', 'payload' => "Rijeka"));
+				array_push($quickReplies, array('content_type'=>'text', 'title'=>'Želim dostavu', 'payload' => "dostava"));
+				array_push($quickReplies, array('content_type'=>'text', 'title'=>'Odustajem od kupnje', 'payload' => 'odustani'));
+				
+				$answer = [ 'text' => "Odaberite način preuzimanja narudžbe" ];
+				
+				$answer['quick_replies'] = $quickReplies;
+				replyBackSpecificObject($answer);
+			}else{
+				replyBackWithSimpleText("U košarici nemate nikakvih artikala.");
+			}
 			
-			$answer['quick_replies'] = $quickReplies;
-			replyBackSpecificObject($answer);
 		}
 	}
 	// When bot receives button click from user
