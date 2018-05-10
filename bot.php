@@ -275,6 +275,8 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 			array_push($quickReplies, array('content_type'=>'text', 'title'=>'Želim dostavu', 'payload' => "dostava"));
 			array_push($quickReplies, array('content_type'=>'text', 'title'=>'Odustajem od kupnje', 'payload' => ''));
 			
+			$answer = [ 'text' => "Odaberite način preuzimanja narudžbe" ];
+			
 			$answer['quick_replies'] = $quickReplies;
 			replyBackSpecificObject($answer);
 		}
