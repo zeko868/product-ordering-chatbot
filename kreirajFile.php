@@ -1,20 +1,5 @@
 <?php
-
-$newfile = "test.txt";
-
-if (file_exists($newfile)) {
-    $fh = fopen($newfile, 'a');
-    fwrite($fh, 'x');
-} else {
-    echo "y";
-    $fh = fopen($newfile, 'wb');
-    fwrite($fh, 'y');
-}
-
-fclose($fh);
-chmod($newfile, 0777);
-
-// echo (is_writable($filnme_epub.".js")) ? 'writable' : 'not writable';
-echo (is_readable("$newfile")) ? 'readable' : 'not readable';
-
+$myfile = fopen("1155662414560805.txt", "r") or die("Unable to open file!");
+echo fread($myfile,filesize("1155662414560805.txt"));
+fclose($myfile);
 ?>
