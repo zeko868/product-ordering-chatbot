@@ -177,8 +177,20 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 				
 				changeTypingIndicator(false);
 				replyBackSpecificObject([ 'attachment' => $answer ]);
-			}else{
 				
+				//open file to write
+				$fp = fopen("$senderId.txt", "r+");
+				// clear content to 0 bits
+				ftruncate($fp, 0);
+				//close file
+				fclose($fp);
+			}else{
+				//open file to write
+				$fp = fopen("$senderId.txt", "r+");
+				// clear content to 0 bits
+				ftruncate($fp, 0);
+				//close file
+				fclose($fp);
 			}
 			
 			}
