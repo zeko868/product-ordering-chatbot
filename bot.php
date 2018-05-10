@@ -67,7 +67,8 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 				for ($i=2; $i<$numOfOutputRows; $i+=2) {
 					$productName = $ordererOutput[$i-1];
 					$productImageUrl = $ordererOutput[$i];
-					$orderedItems[] = ['title'=>substr($productName, 0, 80), 'subtitle'=>substr($productName, 0, 80),'quantity'=>1,'price'=>$price,'currency'=>'HRK','image_url'=>$productImageUrl];
+					extractTitleAndSubtitle($productName, $title, $subtitle);
+					$orderedItems[] = ['title'=>$title, 'subtitle'=>$subtitle,'quantity'=>1,'price'=>$price,'currency'=>'HRK','image_url'=>$productImageUrl];
 				}
 				$answer = [
 					'type'=>'template',
@@ -244,21 +245,10 @@ $datumString = $datum->format("Y-m-d H:i:s");
 require './traziRobu.php';
 
 if(!empty($obj)){
-	
-	
 	$buttons = array();
 	$itemsNum = min(10, count($obj));
 	for($i=0; $i<$itemsNum; $i++){
-		$title = $obj[$i]->naziv;
-		$title = preg_replace('/,\s*cijena:.+?(,|$)/i', '\1', $title, 1);
-		$subtitle = 'Cijena: ' . $obj[$i]->cijena . " kn\n";
-		$titleLength = strlen($title);
-		if ($titleLength > 80) {
-			if ( ($titleLimit = strrpos($title, ',', 80-$titleLength))!==false || ($titleLimit = strrpos($title, ' ', 80-$titleLength))!==false ) {
-				$subtitle .= substr($title, $titleLimit+1);
-				$title = substr($title, 0, $titleLimit);
-			}
-		}
+		extractTitleAndSubtitle($obj[$i]->naziv, $title, $subtitle, $obj[$i]->cijena);
 		array_push($buttons, array(
 			'title' => htmlspecialchars_decode($title, ENT_QUOTES),
 			'image_url' => $obj[$i]->slika,
@@ -329,4 +319,22 @@ function changeTypingIndicator($turnOn) {
 	curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
 	$result = curl_exec($ch);
 	curl_close($ch);
+}
+
+function extractTitleAndSubtitle($productName, &$title, &$subtitle, $price=null) {
+	if ($price === null) {
+		$title = $productName;
+		$subtitle = '';
+	}
+	else {
+		$title = preg_replace('/,\s*cijena:.+?(,|$)/i', '\1', $productName, 1);
+		$subtitle = 'Cijena: ' . $price . " kn\n";
+	}
+	$titleLength = strlen($title);
+	if ($titleLength > 80) {
+		if ( ($titleLimit = strrpos($title, ',', 80-$titleLength))!==false || ($titleLimit = strrpos($title, ' ', 80-$titleLength))!==false ) {
+			$subtitle .= substr($title, $titleLimit+1);
+			$title = substr($title, 0, $titleLimit);
+		}
+	}
 }
