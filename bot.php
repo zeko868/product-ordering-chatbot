@@ -157,11 +157,11 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 					break;
 				default:	// for handling payload data from selected special quick reply controls that read user's e-mail address or phone number from user's profile
 					if (strpos($command, '@') !== false) {
-						ps_query("UPDATE user_account SET currently_edited_attribute='phone', email='$command' WHERE id='$senderId';");
+						pg_query("UPDATE user_account SET currently_edited_attribute='phone', email='$command' WHERE id='$senderId';");
 						posaljiZahtjevZaOdabirom('email');
 					}
 					else {
-						ps_query("UPDATE user_account SET currently_edited_attribute=NULL, phone='$command' WHERE id='$senderId';");
+						pg_query("UPDATE user_account SET currently_edited_attribute=NULL, phone='$command' WHERE id='$senderId';");
 						replyBackWithSimpleText('Možete dalje nastaviti normalno koristiti pogodnosti chatbota!');
 					}
 			}
