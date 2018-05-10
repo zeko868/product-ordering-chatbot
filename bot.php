@@ -382,11 +382,17 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 			$command = $messageInfo['postback']['payload'];
 			if(strpos($command, '/hr/') === 0){
 				$linkProizovada = $command;
-				addItemInBasket("$senderId.txt","$linkProizovada\n");
+				
 				
 				require './provjeraDostupnosti.php';
-				replyBackWithSimpleText("Artikl je uspješno dodan u košaricu, možete nastaviti s kupnjom ili završiti kupnju slanjem poruke 'Završi'. $replyContent");
-				$answer = [ 'text' => $replyContent ];
+				if($replyContent != 'Ispričavamo se, traženi artikl trenutno nije dostupan!'){
+					addItemInBasket("$senderId.txt","$linkProizovada\n");,
+					
+					replyBackWithSimpleText("Artikl je uspješno dodan u košaricu, možete nastaviti s kupnjom ili završiti kupnju slanjem poruke 'Završi'. $replyContent");
+				}else{
+					replyBackWithSimpleText($replyContent);
+				}
+				
 				/*if (!empty($quickReplies)) {
 					$answer['quick_replies'] = $quickReplies;
 				}*/
