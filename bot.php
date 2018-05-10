@@ -92,7 +92,7 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 					break;
 				case 'last_name':
 					pg_query("UPDATE user_account SET currently_edited_attribute='address' WHERE id='$senderId';");
-					posaljiZahtjevZaOdabirom('address', false, 'Uspješno ste registrirali svoje stvarno ime!');
+					posaljiZahtjevZaOdabirom('address', false, 'Uspješno ste registrirali svoje stvarno puno ime!');
 					break;
 				case 'address':
 					pg_query("UPDATE user_account SET currently_edited_attribute='email' WHERE id='$senderId';");
@@ -137,7 +137,7 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 					$lastName = trim($command, ". \t\n\r\0\x0B");
 					if (!empty($lastName)) {
 						pg_query_params("UPDATE user_account SET last_name=$1, currently_edited_attribute='address' WHERE id='$senderId';", array($lastName));
-						posaljiZahtjevZaOdabirom('address', false, 'Uspješno ste registrirali svoje stvarno ime!');
+						posaljiZahtjevZaOdabirom('address', false, 'Uspješno ste registrirali svoje stvarno puno ime!');
 					}
 					else {
 						posaljiZahtjevZaOdabirom('last_name', true, 'Prezime ne može biti neprazno jer je očito nestvarno!');
@@ -174,15 +174,15 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 								posaljiZahtjevZaOdabirom('email', false, 'Uspješno ste registrirali adresu uz Vaš korisnički račun!');
 							}
 							else {
-								posaljiZahtjevZaOdabirom('email', true, 'Molimo Vas da navedete sve komponente adrese koje su nam od značaja poput naziva ulice i kućnog broja te naziva poštanskog mjesta ili njegovog pripadajućeg broja.');
+								posaljiZahtjevZaOdabirom('address', true, 'Molimo Vas da navedete sve komponente adrese koje su nam od značaja poput naziva ulice i kućnog broja te naziva poštanskog mjesta ili njegovog pripadajućeg broja.');
 							}
 						}
 						else {
-							posaljiZahtjevZaOdabirom('email', true, 'Molimo Vas da precizirate adresu! Naime, ne može se pouzdano otkriti o kojem je točno mjestu riječ.');
+							posaljiZahtjevZaOdabirom('address', true, 'Molimo Vas da precizirate adresu! Naime, ne može se pouzdano otkriti o kojem je točno mjestu riječ.');
 						}
 					}
 					else {
-						posaljiZahtjevZaOdabirom('email', true, 'Molimo Vas da precizirate adresu! Naime, nije pronađeno nijedno mjesto koje odgovara na navedeni opis.');
+						posaljiZahtjevZaOdabirom('address', true, 'Molimo Vas da precizirate adresu! Naime, nije pronađeno nijedno mjesto koje odgovara na navedeni opis.');
 					}
 					break;
 				case 'email':
@@ -202,6 +202,9 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 							if (strlen($number) > 7) {
 								pg_query("UPDATE user_account SET phone='$number', currently_edited_attribute=NULL WHERE id='$senderId';");
 								replyBackWithSimpleText("Uspješno ste registrirali telefonski broj uz Vaš korisnički račun!\nSada možete započeti s pretragom i naručivanjem artikala.");
+							}
+							else {
+								posaljiZahtjevZaOdabirom('phone', true, 'Niste naveli važeći telefonski broj!');
 							}
 						}
 					}
@@ -408,7 +411,12 @@ function posaljiZahtjevZaOdabirom($atribut, $ponavljanje=false, $prefiks='') {
 			break;
 		case 'address':
 			if ($ponavljanje) {
-				$replyContent .= 'Ponavljamo, napišite Vašu adresu dostavljanja ili odaberite da se zadrži dosadašnja.';
+				if (empty($userInfo['address'])) {
+					$replyContent .= 'Ponavljamo, napišite Vašu adresu stanovanja ili dostavljanja.';
+				}
+				else {
+					$replyContent .= 'Ponavljamo, napišite Vašu adresu stanovanja ili dostavljanja, ili pak odaberite da se zadrži dosadašnja.';
+				}
 			}
 			else {
 				$replyContent .= 'Navedite Vašu adresu stanovanja ili adresu na koju želite da Vam se dostavi roba:';
@@ -419,7 +427,12 @@ function posaljiZahtjevZaOdabirom($atribut, $ponavljanje=false, $prefiks='') {
 			break;
 		case 'email':
 			if ($ponavljanje) {
-				$replyContent .= 'Ponavljamo, napišite Vašu e-mail adresu ili odaberite da se zadrži dosadašnja.';
+				if (empty($userInfo['email'])) {
+					$replyContent .= 'Ponavljamo, napišite Vašu e-mail adresu.';
+				}
+				else {
+					$replyContent .= 'Ponavljamo, napišite Vašu e-mail adresu ili odaberite da se zadrži dosadašnja.';
+				}
 			}
 			else {
 				$replyContent .= 'Navedite Vašu e-mail adresu na koju ćete biti u mogućnosti kontaktirani:';
@@ -430,7 +443,12 @@ function posaljiZahtjevZaOdabirom($atribut, $ponavljanje=false, $prefiks='') {
 			break;
 		case 'phone':
 			if ($ponavljanje) {
-				$replyContent .= 'Ponavljamo, napišite Vaš telefonski broj ili odaberite da se zadrži dosadašnji.';
+				if (empty($userInfo['phone'])) {
+					$replyContent .= 'Ponavljamo, napišite Vaš telefonski broj.';
+				}
+				else {
+					$replyContent .= 'Ponavljamo, napišite Vaš telefonski broj ili odaberite da se zadrži dosadašnji.';
+				}
 			}
 			else {
 				$replyContent .= 'Navedite Vaš telefonski broj na koji ćete biti u mogućnosti kontaktirani:';
