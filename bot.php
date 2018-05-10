@@ -177,9 +177,9 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 				
 				changeTypingIndicator(false);
 				replyBackSpecificObject([ 'attachment' => $answer ]);
-				unlink("$senderId.txt");
+				delete("$senderId.txt");
 			}else{
-				unlink("$senderId.txt");
+				delete("$senderId.txt");
 			}
 			
 			}
