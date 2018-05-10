@@ -557,10 +557,10 @@ function extractTitleAndSubtitle($productName, &$title, &$subtitle, $price=null)
 function addItemInBasket($file,$link){
 	if (file_exists($file)) {
 		$fh = fopen($file, 'a');
-		fwrite($fh, $link);
+		fwrite($fh, $link."\n");
 	} else {
 		$fh = fopen($file, 'wb');
-		fwrite($fh, $link);
+		fwrite($fh, $link."\n");
 	}
 
 	fclose($fh);
