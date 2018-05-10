@@ -176,27 +176,28 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 				];
 				
 				changeTypingIndicator(false);
+				//open file to write
+				$fp = fopen("$senderId.txt", "r+");
+				// clear content to 0 bits
+				ftruncate($fp, 0);
+				//close file
+				fclose($fp);
 				replyBackSpecificObject([ 'attachment' => $answer ]);
 				
-				//open file to write
-				$fp = fopen("$senderId.txt", "r+");
-				// clear content to 0 bits
-				ftruncate($fp, 0);
-				//close file
-				fclose($fp);
-			}else{
-				//open file to write
-				$fp = fopen("$senderId.txt", "r+");
-				// clear content to 0 bits
-				ftruncate($fp, 0);
-				//close file
-				fclose($fp);
+				
 			}
 			
 			}
 			else {
+				//open file to write
+				$fp = fopen("$senderId.txt", "r+");
+				// clear content to 0 bits
+				ftruncate($fp, 0);
+				//close file
+				fclose($fp);
+				
 				changeTypingIndicator(false);
-				replyBackWithSimpleText($answer);
+				replyBackWithSimpleText("Uspješno je obrisana košarica!");
 			}
 		}
 		else {
