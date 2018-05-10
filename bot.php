@@ -92,7 +92,8 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 			require 'naruciRobu.php';
 
 			if (!empty($ordererOutput)) {
-				$ordererOutput = explode("\n", $ordererOutput);
+				addItemInBasket("$senderId.txt","links.hr\n");
+				/*$ordererOutput = explode("\n", $ordererOutput);
 				$price = floatval(str_replace(array('.', ','), array('', '.'), explode(' ', $ordererOutput[0])[0]));
 				$placeName = mb_convert_case($city, MB_CASE_TITLE);
 				$numOfOutputRows = count($ordererOutput);
@@ -118,7 +119,7 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 				];
 				
 				changeTypingIndicator(false);
-				replyBackSpecificObject([ 'attachment' => $answer ]);
+				replyBackSpecificObject([ 'attachment' => $answer ]);*/
 			}
 			else {
 				changeTypingIndicator(false);
@@ -279,12 +280,14 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 			$command = $messageInfo['postback']['payload'];
 			if(strpos($command, '/hr/') === 0){
 				$linkProizovada = $command;
-				require './provjeraDostupnosti.php';
+				addItemInBasket("$senderId.txt","$linkProizovada\n");
+				replyBackWithSimpleText("Artikl je uspješno dodan u košaricu, možete nastaviti s kupnjom ili završiti kupnju slanjem poruke 'Završi'.");
+				/*require './provjeraDostupnosti.php';
 				$answer = [ 'text' => $replyContent ];
 				if (!empty($quickReplies)) {
 					$answer['quick_replies'] = $quickReplies;
 				}
-				replyBackSpecificObject($answer);
+				replyBackSpecificObject($answer);*/
 			}
 		}
 	}
@@ -345,7 +348,7 @@ if(!empty($obj)){
 				array(
 					'type' => 'postback',
 					'payload' => $obj[$i]->link,
-					'title' => 'Naruči proizvod'
+					'title' => 'Dodaj u košaricu'
 					)
 				)
 			)
@@ -549,4 +552,17 @@ function extractTitleAndSubtitle($productName, &$title, &$subtitle, $price=null)
 			$title = substr($title, 0, $titleLimit);
 		}
 	}
+}
+
+function addItemInBasket($file,$link){
+	if (file_exists($file)) {
+		$fh = fopen($file, 'a');
+		fwrite($fh, $link);
+	} else {
+		$fh = fopen($file, 'wb');
+		fwrite($fh, $link);
+	}
+
+	fclose($fh);
+	chmod($file, 0777);
 }
