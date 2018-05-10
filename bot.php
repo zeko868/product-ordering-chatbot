@@ -125,13 +125,23 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 			switch ($userInfo['currently_edited_attribute']) {
 				case 'first_name':
 					$firstName = trim($command, ". \t\n\r\0\x0B");
-					pg_query_params("UPDATE user_account SET first_name=$1, currently_edited_attribute='last_name' WHERE id='$senderId';", array($firstName));
-					posaljiZahtjevZaOdabirom('last_name', false);
+					if (!empty($firstName)) {
+						pg_query_params("UPDATE user_account SET first_name=$1, currently_edited_attribute='last_name' WHERE id='$senderId';", array($firstName));
+						posaljiZahtjevZaOdabirom('last_name');
+					}
+					else {
+						posaljiZahtjevZaOdabirom('first_name', true, 'Ime ne može biti neprazno jer je očito nestvarno!');
+					}
 					break;
 				case 'last_name':
 					$lastName = trim($command, ". \t\n\r\0\x0B");
-					pg_query_params("UPDATE user_account SET last_name=$1, currently_edited_attribute='address' WHERE id='$senderId';", array($lastName));
-					posaljiZahtjevZaOdabirom('address', false, 'Uspješno ste registrirali svoje stvarno ime!');
+					if (!empty($lastName)) {
+						pg_query_params("UPDATE user_account SET last_name=$1, currently_edited_attribute='address' WHERE id='$senderId';", array($lastName));
+						posaljiZahtjevZaOdabirom('address', false, 'Uspješno ste registrirali svoje stvarno ime!');
+					}
+					else {
+						posaljiZahtjevZaOdabirom('last_name', true, 'Prezime ne može biti neprazno jer je očito nestvarno!');
+					}
 					break;
 				case 'address':
 					$command = urlencode($command);
@@ -381,7 +391,9 @@ function posaljiZahtjevZaOdabirom($atribut, $ponavljanje=false, $prefiks='') {
 			else {
 				$replyContent .= 'Navedite Vaše ime:';
 			}
-			array_push($quickReplies, array('content_type'=>'text', 'title'=>"zadrži '$userInfo[first_name]'", 'payload' => "first_name"));
+			if (!empty($userInfo['first_name'])) {
+				array_push($quickReplies, array('content_type'=>'text', 'title'=>"zadrži '$userInfo[first_name]'", 'payload' => "first_name"));
+			}
 			break;
 		case 'last_name':
 			if ($ponavljanje) {
@@ -390,7 +402,9 @@ function posaljiZahtjevZaOdabirom($atribut, $ponavljanje=false, $prefiks='') {
 			else {
 				$replyContent .= 'Navedite Vaše prezime:';
 			}
-			array_push($quickReplies, array('content_type'=>'text', 'title'=>"zadrži '$userInfo[last_name]'", 'payload' => "last_name"));
+			if (!empty($userInfo['last_name'])) {
+				array_push($quickReplies, array('content_type'=>'text', 'title'=>"zadrži '$userInfo[last_name]'", 'payload' => "last_name"));
+			}
 			break;
 		case 'address':
 			if ($ponavljanje) {
@@ -399,7 +413,9 @@ function posaljiZahtjevZaOdabirom($atribut, $ponavljanje=false, $prefiks='') {
 			else {
 				$replyContent .= 'Navedite Vašu adresu stanovanja ili adresu na koju želite da Vam se dostavi roba:';
 			}
-			array_push($quickReplies, array('content_type'=>'text', 'title'=>"zadrži '$userInfo[address]'", 'payload' => "address"));
+			if (!empty($userInfo['address'])) {
+				array_push($quickReplies, array('content_type'=>'text', 'title'=>"zadrži '$userInfo[address]'", 'payload' => "address"));
+			}
 			break;
 		case 'email':
 			if ($ponavljanje) {
@@ -408,7 +424,9 @@ function posaljiZahtjevZaOdabirom($atribut, $ponavljanje=false, $prefiks='') {
 			else {
 				$replyContent .= 'Navedite Vašu e-mail adresu na koju ćete biti u mogućnosti kontaktirani:';
 			}
-			array_push($quickReplies, array('content_type'=>'text', 'title'=>"zadrži '$userInfo[email]'", 'payload' => "email"));
+			if (!empty($userInfo['email'])) {
+				array_push($quickReplies, array('content_type'=>'text', 'title'=>"zadrži '$userInfo[email]'", 'payload' => "email"));
+			}
 			break;
 		case 'phone':
 			if ($ponavljanje) {
@@ -417,7 +435,9 @@ function posaljiZahtjevZaOdabirom($atribut, $ponavljanje=false, $prefiks='') {
 			else {
 				$replyContent .= 'Navedite Vaš telefonski broj na koji ćete biti u mogućnosti kontaktirani:';
 			}
-			array_push($quickReplies, array('content_type'=>'text', 'title'=>"zadrži '$userInfo[phone]'", 'payload' => "phone"));
+			if (!empty($userInfo['phone'])) {
+				array_push($quickReplies, array('content_type'=>'text', 'title'=>"zadrži '$userInfo[phone]'", 'payload' => "phone"));
+			}
 			break;
 
 	}
