@@ -158,7 +158,7 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 				default:	// for handling payload data from selected special quick reply controls that read user's e-mail address or phone number from user's profile
 					if (strpos($command, '@') !== false) {
 						pg_query("UPDATE user_account SET currently_edited_attribute='phone', email='$command' WHERE id='$senderId';");
-						posaljiZahtjevZaOdabirom('email');
+						posaljiZahtjevZaOdabirom('phone');
 					}
 					else {
 						pg_query("UPDATE user_account SET currently_edited_attribute=NULL, phone='$command' WHERE id='$senderId';");
@@ -498,7 +498,7 @@ function posaljiZahtjevZaOdabirom($atribut, $ponavljanje=false, $prefiks='') {
 				}
 			}
 			if (!empty($userInfo['email'])) {
-				array_push($quickReplies, array('content_type'=>'text', 'title'=>'zadrži dosadašnji', 'payload' => 'email'));
+				array_push($quickReplies, array('content_type'=>'text', 'title'=>'zadrži dosadašnju', 'payload' => 'email'));
 			}
 			array_push($quickReplies, array('content_type' => 'user_email'));
 			break;
