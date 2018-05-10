@@ -281,13 +281,13 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 			if(strpos($command, '/hr/') === 0){
 				$linkProizovada = $command;
 				addItemInBasket("$senderId.txt","$linkProizovada\n");
-				replyBackWithSimpleText("Artikl je uspješno dodan u košaricu, možete nastaviti s kupnjom ili završiti kupnju slanjem poruke 'Završi'.");
+				replyBackWithSimpleText("Artikl je uspješno dodan u košaricu, možete nastaviti s kupnjom ili završiti kupnju slanjem poruke 'Završi'. $answer");
 				require './provjeraDostupnosti.php';
 				$answer = [ 'text' => $replyContent ];
 				if (!empty($quickReplies)) {
 					$answer['quick_replies'] = $quickReplies;
 				}
-				replyBackSpecificObject($answer);
+				//replyBackSpecificObject($answer);
 			}
 		}
 	}
