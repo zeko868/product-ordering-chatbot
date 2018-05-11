@@ -62,8 +62,10 @@ public class Orderer {
                 WebElement imageBox = driver.findElement(By.cssSelector("img[id^=main-product-img-]"));
                 String productName = imageBox.getAttribute("title");
                 String productImageUrl = imageBox.getAttribute("src");
+                String price = driver.findElement(By.cssSelector("meta[itemprop=price]")).getAttribute("content");
                 productsInfo.add(productName);
                 productsInfo.add(productImageUrl);
+                productsInfo.add(price);
             }
 
             try {
