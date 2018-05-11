@@ -125,78 +125,64 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 				replyBackWithSimpleText($answer);
 			}*/
 			
-			if($command !== "odustani"){
-				$myfile = fopen("$senderId.txt", "r") or die("Unable to open file!");
-				$fileContent = fread($myfile,filesize("$senderId.txt"));
-				fclose($myfile);
+			$myfile = fopen("$senderId.txt", "r") or die("Unable to open file!");
+			$fileContent = fread($myfile,filesize("$senderId.txt"));
+			fclose($myfile);
 
-				$fileContentArray = explode("\n", $fileContent);
+			$fileContentArray = explode("\n", $fileContent);
 
-				$desiredProducts = [];
+			$desiredProducts = [];
 
-				foreach($fileContentArray as $link){
-					if(!empty($link)){
-						$desiredProducts["https://www.links.hr$link"] = 1;
-					}
-					
+			foreach($fileContentArray as $link){
+				if(!empty($link)){
+					$desiredProducts["https://www.links.hr$link"] = 1;
 				}
-				
-				$action = $command;	// lokacije Zagreb Trešnjevka, Zagreb Dubrava i Slavonski Brod se sastoje od više riječi
-				$delivery = ($action === 'dostava');
-				$closestStore = $action;
-				changeTypingIndicator(true);
-				require 'naruciRobu.php';
-
-				if (!empty($ordererOutput)) {
-					addItemInBasket("$senderId.txt","links.hr\n");
-					$ordererOutput = explode("\n", $ordererOutput);
-					$price = floatval(str_replace(array('.', ','), array('', '.'), explode(' ', $ordererOutput[0])[0]));
-					$placeName = mb_convert_case($city, MB_CASE_TITLE);
-					$numOfOutputRows = count($ordererOutput);
-					$orderedItems = [];
-					for ($i=2; $i<$numOfOutputRows; $i+=2) {
-						$productName = $ordererOutput[$i-1];
-						$productImageUrl = $ordererOutput[$i];
-						extractTitleAndSubtitle($productName, $title, $subtitle);
-						$orderedItems[] = ['title'=>$title, 'subtitle'=>$subtitle,'quantity'=>1,'price'=>$price,'currency'=>'HRK','image_url'=>$productImageUrl];
-				}
-				$answer = [
-					'type'=>'template',
-					'payload'=>[
-						'template_type'=>'receipt',
-						'recipient_name'=>"$firstName $lastName",
-						'order_number'=>'123456',
-						'currency'=>'HRK',
-						'payment_method'=>'Plaćanje pouzećem',
-						'address'=>['street_1'=>$address,'city'=>$placeName,'postal_code'=>$postCode,'state'=>'Hrvatska','country'=>'CRO'],
-						'summary'=>['subtotal'=>0,'shipping_cost'=>0,'total_tax'=>0,'total_cost'=>$price],
-						'elements'=> $orderedItems
-					]
-				];
-				
-				changeTypingIndicator(false);
-				//open file to write
-				$fp = fopen("$senderId.txt", "r+");
-				// clear content to 0 bits
-				ftruncate($fp, 0);
-				//close file
-				fclose($fp);
-				replyBackSpecificObject([ 'attachment' => $answer ]);
-				
 				
 			}
 			
+			$action = $command;	// lokacije Zagreb Trešnjevka, Zagreb Dubrava i Slavonski Brod se sastoje od više riječi
+			$delivery = ($action === 'dostava');
+			$closestStore = $action;
+			changeTypingIndicator(true);
+			require 'naruciRobu.php';
+
+			if (!empty($ordererOutput)) {
+				addItemInBasket("$senderId.txt","links.hr\n");
+				$ordererOutput = explode("\n", $ordererOutput);
+				$price = floatval(str_replace(array('.', ','), array('', '.'), explode(' ', $ordererOutput[0])[0]));
+				$placeName = mb_convert_case($city, MB_CASE_TITLE);
+				$numOfOutputRows = count($ordererOutput);
+				$orderedItems = [];
+				for ($i=3; $i<$numOfOutputRows; $i+=3) {
+					$productName = $ordererOutput[$i-2];
+					$productImageUrl = $ordererOutput[$i-1];
+					extractTitleAndSubtitle($productName, $title, $subtitle);
+					$orderedItems[] = ['title'=>$title, 'subtitle'=>$subtitle,'quantity'=>1,'price'=>$price,'currency'=>'HRK','image_url'=>$productImageUrl];
 			}
-			else {
-				//open file to write
-				$fp = fopen("$senderId.txt", "r+");
-				// clear content to 0 bits
-				ftruncate($fp, 0);
-				//close file
-				fclose($fp);
+			$answer = [
+				'type'=>'template',
+				'payload'=>[
+					'template_type'=>'receipt',
+					'recipient_name'=>"$firstName $lastName",
+					'order_number'=>'123456',
+					'currency'=>'HRK',
+					'payment_method'=>'Plaćanje pouzećem',
+					'address'=>['street_1'=>$address,'city'=>$placeName,'postal_code'=>$postCode,'state'=>'Hrvatska','country'=>'CRO'],
+					'summary'=>['subtotal'=>0,'shipping_cost'=>0,'total_tax'=>0,'total_cost'=>$price],
+					'elements'=> $orderedItems
+				]
+			];
+			
+			changeTypingIndicator(false);
+			//open file to write
+			$fp = fopen("$senderId.txt", "r+");
+			// clear content to 0 bits
+			ftruncate($fp, 0);
+			//close file
+			fclose($fp);
+			replyBackSpecificObject([ 'attachment' => $answer ]);
 				
-				changeTypingIndicator(false);
-				replyBackWithSimpleText("Uspješno je obrisana košarica!");
+				
 			}
 		}
 		else {
@@ -337,35 +323,6 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 				default:
 					posaljiZahtjevZaOdabirom($userInfo['currently_edited_attribute'], true);
 			}
-		}else if($command === "Završi"){
-			
-			$myfile = fopen("$senderId.txt", "r");
-			$fileContent = fread($myfile,filesize("$senderId.txt"));
-			fclose($myfile);
-
-			$fileContentArray = [];
-			if($fileContent != null){
-				$fileContentArray = explode("\n", $fileContent);
-			}
-			
-			if(sizeof($fileContentArray) > 0){
-				$quickReplies = [];
-				/*array_push($quickReplies, array('content_type'=>'text', 'title'=>'Pokupit ću tamo', 'payload' => "$linkProizovada Rijeka"));
-				array_push($quickReplies, array('content_type'=>'text', 'title'=>'Želim dostavu', 'payload' => "$linkProizovada dostava"));
-				array_push($quickReplies, array('content_type'=>'text', 'title'=>'Odustajem od kupnje', 'payload' => ''));*/
-				
-				array_push($quickReplies, array('content_type'=>'text', 'title'=>'Pokupit ću tamo', 'payload' => "Rijeka"));
-				array_push($quickReplies, array('content_type'=>'text', 'title'=>'Želim dostavu', 'payload' => "dostava"));
-				array_push($quickReplies, array('content_type'=>'text', 'title'=>'Odustajem od kupnje', 'payload' => 'odustani'));
-				
-				$answer = [ 'text' => "Odaberite način preuzimanja narudžbe" ];
-				
-				$answer['quick_replies'] = $quickReplies;
-				replyBackSpecificObject($answer);
-			}else{
-				replyBackWithSimpleText("U košarici nemate nikakvih artikala.");
-			}
-			
 		}
 	}
 	// When bot receives button click from user
@@ -387,7 +344,7 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 				if($replyContent != 'Ispričavamo se, traženi artikl trenutno nije dostupan!'){
 					addItemInBasket("$senderId.txt","$linkProizovada\n");
 					
-					replyBackWithSimpleText("Artikl je uspješno dodan u košaricu, možete nastaviti s kupnjom ili završiti kupnju slanjem poruke 'Završi'. $replyContent");
+					replyBackWithSimpleText("Artikl je uspješno dodan u košaricu, možete nastaviti s kupnjom ili odabrati jednu od akcija vezanih za košaricu koje se nalaze u izborniku.");
 				}else{
 					replyBackWithSimpleText($replyContent);
 				}
@@ -396,6 +353,19 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 					$answer['quick_replies'] = $quickReplies;
 				}*/
 				//replyBackSpecificObject($answer);
+			}else if(strpos($command, 'obrisi') === 0){
+				
+				
+				$x = explode(" ", $command);
+				
+				$fname = "$senderId.txt"; 
+				$lines = file($fname); 
+				foreach($lines as $line) if(!strstr($line, $x[1]."\n")) $out .= $line;  
+				$f = fopen($fname, "w");  
+				fwrite($f, $out);  
+				fclose($f); 
+				
+				replyBackWithSimpleText("Obrisi: " . $x[1]);
 			}
 		}
 	}
@@ -403,10 +373,129 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 		$command = $messageInfo['main_menu']['payload'];
 		switch ($command) {
 			case 'zavrsi_kupovinu':
+			
+				$myfile = fopen("$senderId.txt", "r");
+				$fileContent = fread($myfile,filesize("$senderId.txt"));
+				fclose($myfile);
+
+				$fileContentArray = [];
+				if($fileContent != null){
+					$fileContentArray = explode("\n", $fileContent);
+				}
+				
+				if(sizeof($fileContentArray) > 0){
+					$quickReplies = [];
+					/*array_push($quickReplies, array('content_type'=>'text', 'title'=>'Pokupit ću tamo', 'payload' => "$linkProizovada Rijeka"));
+					array_push($quickReplies, array('content_type'=>'text', 'title'=>'Želim dostavu', 'payload' => "$linkProizovada dostava"));
+					array_push($quickReplies, array('content_type'=>'text', 'title'=>'Odustajem od kupnje', 'payload' => ''));*/
+					
+					array_push($quickReplies, array('content_type'=>'text', 'title'=>'Pokupit ću tamo', 'payload' => "Rijeka"));
+					array_push($quickReplies, array('content_type'=>'text', 'title'=>'Želim dostavu', 'payload' => "dostava"));
+					
+					$answer = [ 'text' => "Odaberite način preuzimanja narudžbe" ];
+					
+					$answer['quick_replies'] = $quickReplies;
+					replyBackSpecificObject($answer);
+				}else{
+					replyBackWithSimpleText("U košarici nemate nikakvih artikala.");
+				}
+				
 				break;
 			case 'isprazni_kosaricu':
+				
+				//open file to write
+				$fp = fopen("$senderId.txt", "r+");
+				// clear content to 0 bits
+				ftruncate($fp, 0);
+				//close file
+				fclose($fp);
+				
+				replyBackWithSimpleText("Uspješno je obrisana košarica!");
+				
 				break;
 			case 'prikazi_sadrzaj_kosarice':
+			
+				$myfile = fopen("$senderId.txt", "r");
+				$fileContent = fread($myfile,filesize("$senderId.txt"));
+				fclose($myfile);
+
+				$fileContentArray = explode("\n", $fileContent);
+			
+				if(sizeof($fileContentArray) > 0){
+					
+
+					$desiredProducts = [];
+
+					foreach($fileContentArray as $link){
+						if(!empty($link)){
+							$desiredProducts["https://www.links.hr$link"] = 1;
+						}
+						
+					}
+					
+					$action = "dostava";	// lokacije Zagreb Trešnjevka, Zagreb Dubrava i Slavonski Brod se sastoje od više riječi
+					$delivery = ($action === 'dostava');
+					$closestStore = $action;
+					changeTypingIndicator(true);
+					require 'naruciRobu.php';
+
+					$buttons = array();
+					$item = 0;
+					if (!empty($ordererOutput)) {
+						$ordererOutput = explode("\n", $ordererOutput);
+						$price = floatval(str_replace(array('.', ','), array('', '.'), explode(' ', $ordererOutput[0])[0]));
+						$placeName = mb_convert_case($city, MB_CASE_TITLE);
+						$numOfOutputRows = count($ordererOutput);
+						$orderedItems = [];
+						for ($i=3; $i<$numOfOutputRows; $i+=3) {
+							$productName = $ordererOutput[$i-2];
+							$productImageUrl = $ordererOutput[$i-1];
+							$itemPrice = $ordererOutput[$i];
+							extractTitleAndSubtitle($productName, $title, $subtitle);
+							
+							array_push($buttons, array(
+								'title' => $title,
+								'image_url' => $productImageUrl,
+								'subtitle' => 
+									$itemPrice,
+								'default_action' => [
+									'type' => 'web_url',
+									'url' => 'https://www.links.hr' . $fileContentArray[$item] . '#quickTabs',
+									'messenger_extensions' => true,
+									'webview_height_ratio'=> 'TALL'
+								],
+								'buttons' => array(
+									array(
+										'type' => 'postback',
+										'payload' => "obrisi https://www.links.hr" . $fileContentArray[$item++],
+										'title' => 'Obriši iz košarice'
+										)
+									)
+								)
+							);
+							
+							//$orderedItems[] = ['title'=>$title, 'subtitle'=>$subtitle,'quantity'=>1,'price'=>$price,'currency'=>'HRK','image_url'=>$productImageUrl];
+					}
+					
+					$answer = [
+						'type'=>'template',
+						'payload'=>[
+							'template_type'=>'generic',
+							'elements'=> $buttons
+						]
+					];
+					
+					changeTypingIndicator(false);
+					replyBackSpecificObject([ 'attachment' => $answer ], false);
+					
+					replyBackWithSimpleText("Za kupovinu košarice Košarica -> Završi kupovinu");
+					}
+				}else{
+					replyBackWithSimpleText("U košarici nemate nikakvih artikala.");
+				}
+			
+				
+			
 				break;
 			case 'full_name':
 				break;
