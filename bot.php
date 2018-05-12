@@ -250,24 +250,24 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 					$params = [null, $command, $senderId];
 					if (strpos($command, '@') !== false) {
 						$q = 'UPDATE user_account SET currently_edited_attribute=$1, email=$2 WHERE id=$3;';
-						$params[0] = 'email';
 						if ($userAlreadyRegistered) {
 							pg_query_params($q, $params);
 							replyBackWithSimpleText('Uspješno ste ažurirali svoju e-mail adresu!');
 						}
 						else {
+							$params[0] = 'email';
 							pg_query_params($q, $params);
 							posaljiZahtjevZaOdabirom('phone');
 						}
 					}
 					else {
 						$q = 'UPDATE user_account SET currently_edited_attribute=$1, phone=$2 WHERE id=$3;';
-						$params[0] = 'phone';
 						if ($userAlreadyRegistered) {
 							pg_query_params($q, $params);
 							replyBackWithSimpleText('Uspješno ste ažurirali svoj telefonski broj!');
 						}
 						else {
+							$params[0] = 'phone';
 							pg_query_params($q, $params);
 							replyBackWithSimpleText('Možete dalje nastaviti normalno koristiti pogodnosti chatbota!');
 						}
