@@ -29,7 +29,7 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 		curl_close($ch);
 		$ime = $result['first_name'];
 		$prezime = $result['last_name'];
-		pg_query("UPDATE user_account SET first_name='$ime', last_name='$prezime' WHERE id='$senderId';");
+		pg_query_params("UPDATE user_account SET first_name=$1, last_name=$2 WHERE id=$3;", array($ime, $prezime, $senderId));
 		replyBackWithSimpleText("Poštovanje $ime $prezime,\nRazgovarate s virtualnim asistentom koji će Vas voditi kroz kupovinu. Dovoljno je navesti u slobodnom formatu (po mogućnosti u službenom hrvatskom jeziku) što tražite, bilo naziv proizvođača, marke, vrste komponente i/ili cjenovni raspon traženog proizvoda. Kao rezultat se vraćaju stavke dostupne iz Linskovog web-shopa koje je onda moguće jednostavno naručiti.", false);
 		$korisnikUpravoDeklariran = true;
 	}
