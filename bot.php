@@ -80,7 +80,7 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 				}
 				else {
 					pg_query_params($q, $params);
-					posaljiZahtjevZaOdabirom($params[3], false, 'Uspješno ste registrirali adresu uz Vaš korisnički račun!');
+					posaljiZahtjevZaOdabirom($params[3], false, "Uspješno ste uz Vaš korisnički račun registrirali adresu '$route $streetNum' s poštanskim brojem $postalCode.");
 				}
 			}
 		}
@@ -235,7 +235,7 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 						replyBackWithSimpleText('Uspješno ste ažurirali svoj telefonski broj!');
 					}
 					else {
-						replyBackWithSimpleText('Možete dalje nastaviti normalno koristiti pogodnosti chatbota!');
+						replyBackWithSimpleText('Uspješno ste registraciju priveli kraju. Možete dalje nastaviti normalno koristiti pogodnosti chatbota!');
 					}
 					break;
 				case 'change full_name':
@@ -268,7 +268,7 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 						}
 						else {
 							pg_query_params($q, $params);
-							replyBackWithSimpleText('Možete dalje nastaviti normalno koristiti pogodnosti chatbota!');
+							replyBackWithSimpleText('Uspješno ste registraciju priveli kraju. Možete dalje nastaviti normalno koristiti pogodnosti chatbota!');
 						}
 					}
 			}
@@ -344,7 +344,7 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 								}
 								else {
 									pg_query_params($q, $params);
-									posaljiZahtjevZaOdabirom($params[3], false, 'Uspješno ste registrirali adresu uz Vaš korisnički račun!');
+									posaljiZahtjevZaOdabirom($params[3], false, "Uspješno ste uz Vaš korisnički račun registrirali adresu '$route $streetNum' s poštanskim brojem $postalCode.");
 								}
 							}
 							else {
