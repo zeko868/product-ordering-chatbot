@@ -602,7 +602,6 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 				break;
 			case 'radna_vremena':
 			
-				if ($k === 'radno vrijeme') {
 				require 'radnoVrijeme.php';
 				if ($exactOpeningHours) {
 					$v = $exactOpeningHours;
