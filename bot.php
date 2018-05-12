@@ -613,6 +613,25 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 				pg_query_params('UPDATE user_account SET currently_edited_attribute=$1 WHERE id=$2', array($command, $senderId));
 				posaljiZahtjevZaOdabirom($command);
 				break;
+			case 'pregled_osobnih_podataka':
+				if (!empty($userInfo['address'])) {
+					$userInfo['address'] = "$userInfo[route] $userInfo[street_number], $userInfo[postal_code]";
+				}
+				foreach ($userInfo as $key => $val) {
+					if (empty($val)) {
+						$userInfo[$key] = "_nedefinirano_";
+					}
+				}
+				replyBackWithSimpleText(<<<EOS
+Vaši trenutni osobni podaci su sljedeći:
+*Ime:* $userInfo[first_name]
+*Prezime:* $userInfo[last_name]
+*Adresa:* $userInfo[address]
+*E-mail:* $userInfo[email]
+*Telefon:* $userInfo[phone]
+EOS
+				);
+				break;
 			case 'radna_vremena':
 			
 				require 'radnoVrijeme.php';
