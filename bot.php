@@ -36,6 +36,7 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 	$result = pg_query("SELECT * FROM user_account u LEFT JOIN address a ON u.address=a.id WHERE u.id='$senderId' LIMIT 1;");
 	$userInfo = pg_fetch_array($result, null, PGSQL_ASSOC);
 	pg_free_result($result);
+	$userAlreadyRegistered = !empty($userInfo['phone']);
 	if (!empty($messageInfo['message']['attachments'])) {
 		if ($messageInfo['message']['attachments'][0]['type'] === 'location') {
 			$coordinates = $messageInfo['message']['attachments'][0]['payload']['coordinates'];
@@ -327,7 +328,7 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 		if (!empty($userInfo['currently_edited_attribute'])) {
 			posaljiZahtjevZaOdabirom($userInfo['currently_edited_attribute'], true);
 		}
-		else if (empty($userInfo['phone'])) {	// if this attribute is not defined, then user still hasn't finished registration process
+		else if (!$userAlreadyRegistered) {
 			pg_query("UPDATE user_account SET currently_edited_attribute='full_name' WHERE id='$senderId';");
 			posaljiZahtjevZaOdabirom('full_name');
 		}
@@ -644,6 +645,7 @@ function changeTypingIndicator($turnOn) {
 
 function posaljiZahtjevZaOdabirom($atribut, $ponavljanje=false, $prefiks='') {
 	global $userInfo;
+	global $userAlreadyRegistered;
 	if (!empty($prefiks)) {
 		$replyContent = $prefiks . "\n";
 	}
@@ -657,7 +659,7 @@ function posaljiZahtjevZaOdabirom($atribut, $ponavljanje=false, $prefiks='') {
 				$replyContent .= "Potrebno je odabrati jednu od ponuđenih opcija! Ponavljamo, da li je '$userInfo[first_name] $userInfo[last_name]' Vaše pravo ime?";
 			}
 			else {
-				if (empty($userInfo['phone'])) {
+				if (!$userAlreadyRegistered) {
 					$replyContent .= "Za daljnje korištenje aplikacije potrebno se je registrirati. Za početak, odgovorite da li je '$userInfo[first_name] $userInfo[last_name]' Vaše puno ime.";
 				}
 				else {
