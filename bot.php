@@ -503,14 +503,14 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 						for ($i=3; $i<$numOfOutputRows; $i+=3) {
 							$productName = $ordererOutput[$i-2];
 							$productImageUrl = $ordererOutput[$i-1];
-							$itemPrice = $ordererOutput[$i];
+							//$itemPrice = $ordererOutput[$i];
 							extractTitleAndSubtitle($productName, $title, $subtitle);
 							
 							array_push($buttons, array(
 								'title' => $title,
 								'image_url' => $productImageUrl,
 								'subtitle' => 
-									$itemPrice,
+									"pojedinacna cijena",
 								'default_action' => [
 									'type' => 'web_url',
 									'url' => 'https://www.links.hr' . $fileContentArray[$item] . '#quickTabs',
