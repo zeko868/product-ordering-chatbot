@@ -605,6 +605,45 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 			case 'lokacije':
 				break;
 			case 'gaming':
+				$prijedlog = "https://www.links.hr/hr/laptopi-za-igranje-0150";
+				
+				$buttons = array();
+				$itemsNum = min(10, count($obj));
+				for($i=0; $i<$itemsNum; $i++){
+					extractTitleAndSubtitle($obj[$i]->naziv, $title, $subtitle, $obj[$i]->cijena);
+					array_push($buttons, array(
+						'title' => htmlspecialchars_decode($title, ENT_QUOTES),
+						'image_url' => $obj[$i]->slika,
+						'subtitle' => 
+							htmlspecialchars_decode($subtitle, ENT_QUOTES),
+						'default_action' => [
+							'type' => 'web_url',
+							'url' => 'https://www.links.hr' . $obj[$i]->link . '#quickTabs',
+							'messenger_extensions' => true,
+							'webview_height_ratio'=> 'TALL'
+						],
+						'buttons' => array(
+							array(
+								'type' => 'postback',
+								'payload' => $obj[$i]->link,
+								'title' => 'Dodaj u košaricu'
+								)
+							)
+						)
+					);
+				}
+
+				$answer = [
+					'type'=>'template',
+					'payload'=>[
+						'template_type'=>'generic',
+						'elements'=> $buttons
+					]
+				];
+
+				replyBackSpecificObject([ 'attachment' => $answer ]);
+				
+				require './traziRobu.php';
 				break;
 			case 'business':
 				break;

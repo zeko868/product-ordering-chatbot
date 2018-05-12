@@ -1,67 +1,72 @@
 <?php
 
-ini_set('allow_url_fopen', 1);
+if(empty($prijedlog)){
+	ini_set('allow_url_fopen', 1);
 
-$stranica = 'https://www.links.hr';
-$trazilica = '/hr/search?q=';
+	$stranica = 'https://www.links.hr';
+	$trazilica = '/hr/search?q=';
 
-//popunjavanje podacima koirsnika
-$dodatak = '&adv=true&adv=false'; //??? vjerojatno treba za search
-$pojamZaPretragu = $nlpText['tekst'];
+	//popunjavanje podacima koirsnika
+	$dodatak = '&adv=true&adv=false'; //??? vjerojatno treba za search
+	$pojamZaPretragu = $nlpText['tekst'];
 
-$conn = pg_connect('postgres://gsnnkdcbycpcyq:ba69093c4619187587610e80e188d4f812627530798ef14d3133bd3541b00290@ec2-54-228-235-185.eu-west-1.compute.amazonaws.com:5432/dedt0mj008catq');
-$result = pg_query("INSERT INTO pregledavanja(id_facebook,string_pretrage,datum_pretrage) VALUES ('$senderId','" . $pojamZaPretragu . "','$datumString');");
+	$conn = pg_connect('postgres://gsnnkdcbycpcyq:ba69093c4619187587610e80e188d4f812627530798ef14d3133bd3541b00290@ec2-54-228-235-185.eu-west-1.compute.amazonaws.com:5432/dedt0mj008catq');
+	$result = pg_query("INSERT INTO pregledavanja(id_facebook,string_pretrage,datum_pretrage) VALUES ('$senderId','" . $pojamZaPretragu . "','$datumString');");
 
-//$pojamZaPretragu = "grafička";
-if (isset($nlpText['ostalo']['cijenaOd'])) {
-    $cMin = $nlpText['ostalo']['cijenaOd'];
-} else {
-    $cMin = '';
+	//$pojamZaPretragu = "grafička";
+	if (isset($nlpText['ostalo']['cijenaOd'])) {
+		$cMin = $nlpText['ostalo']['cijenaOd'];
+	} else {
+		$cMin = '';
+	}
+	if (isset($nlpText['ostalo']['cijenaDo'])) {
+		$cMax = $nlpText['ostalo']['cijenaDo'];
+	} else {
+		$cMax = '';
+	}
+
+	//$cMin = "";
+	//$cMax = "";
+
+
+	$asc = '&orderby=10';
+	$desc = '&orderby=11';
+
+	$proizvodi = '&mid=';
+	$cijenaOd = '&pf=';
+	$cijenaDo = '&pt=';
+
+	$url = $stranica . $trazilica;
+	$lines = file($url);
+
+	$nadjeno = FALSE;
+
+	for ($i = 0; $i < count($lines); $i++) {
+		if (strpos($lines[$i], '<label for="mid">Proizvođač:</label>')) {
+			$i = $i + 2;
+			while (strpos($lines[$i], '</select>') === FALSE) {
+				$pro[] = parsirajProizvodace($lines[$i]);
+				$i++;
+			}
+			break;
+		}
+	}
+
+	//filteri -- proizvođač
+	//$proizvodac = 0;
+	$proizvodac = nadjiProizvodaca($nlpText['ostalo']['ostaliFilteri'], $pro); // 0 ako nije naveden
+
+	//url za pretragu
+
+	$url1 = $stranica . $trazilica . urlencode($pojamZaPretragu)
+			. $dodatak
+			. $proizvodi . $proizvodac        
+			. $cijenaOd . $cMin
+			. $cijenaDo . $cMax;
+}else{
+	$url1 = $prijedlog;
 }
-if (isset($nlpText['ostalo']['cijenaDo'])) {
-    $cMax = $nlpText['ostalo']['cijenaDo'];
-} else {
-    $cMax = '';
-}
 
-//$cMin = "";
-//$cMax = "";
-
-
-$asc = '&orderby=10';
-$desc = '&orderby=11';
-
-$proizvodi = '&mid=';
-$cijenaOd = '&pf=';
-$cijenaDo = '&pt=';
-
-$url = $stranica . $trazilica;
-$lines = file($url);
-
-$nadjeno = FALSE;
-
-for ($i = 0; $i < count($lines); $i++) {
-    if (strpos($lines[$i], '<label for="mid">Proizvođač:</label>')) {
-        $i = $i + 2;
-        while (strpos($lines[$i], '</select>') === FALSE) {
-            $pro[] = parsirajProizvodace($lines[$i]);
-            $i++;
-        }
-        break;
-    }
-}
-
-//filteri -- proizvođač
-//$proizvodac = 0;
-$proizvodac = nadjiProizvodaca($nlpText['ostalo']['ostaliFilteri'], $pro); // 0 ako nije naveden
-
-//url za pretragu
-
-$url1 = $stranica . $trazilica . urlencode($pojamZaPretragu)
-        . $dodatak
-        . $proizvodi . $proizvodac        
-        . $cijenaOd . $cMin
-        . $cijenaDo . $cMax;
 
 $lines1 = file($url1);
 
