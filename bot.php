@@ -447,8 +447,7 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 				
 
 				foreach($data as $k) {
-					replyBackWithSimpleText($k,false);
-					if(trim($k) !== trim($DELETE)) {
+					if(trim("https://www.links.hr".$k) !== trim($DELETE)) {
 						$out[] = $k;
 					}
 				}
