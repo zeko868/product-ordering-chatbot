@@ -255,7 +255,7 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 							replyBackWithSimpleText('Uspješno ste ažurirali svoju e-mail adresu!');
 						}
 						else {
-							$params[0] = 'email';
+							$params[0] = 'phone';
 							pg_query_params($q, $params);
 							posaljiZahtjevZaOdabirom('phone');
 						}
@@ -267,7 +267,6 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 							replyBackWithSimpleText('Uspješno ste ažurirali svoj telefonski broj!');
 						}
 						else {
-							$params[0] = 'phone';
 							pg_query_params($q, $params);
 							replyBackWithSimpleText('Možete dalje nastaviti normalno koristiti pogodnosti chatbota!');
 						}
