@@ -607,7 +607,9 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 			case 'gaming':
 				$prijedlog = "https://www.links.hr/hr/laptopi-za-igranje-0150";
 				
-				$buttons = array();
+				$buttons = array();				
+				require './traziRobu.php';
+				
 				$itemsNum = min(10, count($obj));
 				for($i=0; $i<$itemsNum; $i++){
 					extractTitleAndSubtitle($obj[$i]->naziv, $title, $subtitle, $obj[$i]->cijena);
@@ -642,8 +644,7 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 				];
 
 				replyBackSpecificObject([ 'attachment' => $answer ]);
-				
-				require './traziRobu.php';
+
 				break;
 			case 'business':
 				break;
