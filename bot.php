@@ -195,25 +195,48 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 		}
 		else {
 			switch ($command) {
-				case 'first_name':
+				case 'preserve first_name':
 					pg_query("UPDATE user_account SET currently_edited_attribute='last_name' WHERE id='$senderId';");
 					posaljiZahtjevZaOdabirom('last_name');
 					break;
-				case 'last_name':
-					pg_query("UPDATE user_account SET currently_edited_attribute='address' WHERE id='$senderId';");
-					posaljiZahtjevZaOdabirom('address', false, 'Uspješno ste registrirali svoje stvarno puno ime!');
+				case 'preserve last_name':
+					if ($userAlreadyRegistered) {
+						pg_query("UPDATE user_account SET currently_edited_attribute=NULL WHERE id='$senderId';");
+						replyBackWithSimpleText('Uspješno ste ažurirali svoje stvarno puno ime!');
+					}
+					else {
+						pg_query("UPDATE user_account SET currently_edited_attribute='address' WHERE id='$senderId';");
+						posaljiZahtjevZaOdabirom('address', false, 'Uspješno ste registrirali svoje puno ime!');
+					}
 					break;
-				case 'address':
-					pg_query("UPDATE user_account SET currently_edited_attribute='email' WHERE id='$senderId';");
-					posaljiZahtjevZaOdabirom('email');
+				case 'preserve address':
+					if ($userAlreadyRegistered) {
+						pg_query("UPDATE user_account SET currently_edited_attribute=NULL WHERE id='$senderId';");
+						replyBackWithSimpleText('Uspješno ste ažurirali svoju geografsku adresu!');
+					}
+					else {
+						pg_query("UPDATE user_account SET currently_edited_attribute='email' WHERE id='$senderId';");
+						posaljiZahtjevZaOdabirom('email');
+					}
 					break;
-				case 'email':
-					pg_query("UPDATE user_account SET currently_edited_attribute='phone' WHERE id='$senderId';");
-					posaljiZahtjevZaOdabirom('phone');
+				case 'preserve email':
+					if ($userAlreadyRegistered) {
+						pg_query("UPDATE user_account SET currently_edited_attribute=NULL WHERE id='$senderId';");
+						replyBackWithSimpleText('Uspješno ste ažurirali svoju e-mail adresu!');
+					}
+					else {
+						pg_query("UPDATE user_account SET currently_edited_attribute='phone' WHERE id='$senderId';");
+						posaljiZahtjevZaOdabirom('phone');
+					}
 					break;
-				case 'phone':
+				case 'preserve phone':
 					pg_query("UPDATE user_account SET currently_edited_attribute=NULL WHERE id='$senderId';");
-					replyBackWithSimpleText('Možete dalje nastaviti normalno koristiti pogodnosti chatbota!');
+					if ($userAlreadyRegistered) {
+						replyBackWithSimpleText('Uspješno ste ažurirali svoj telefonski broj!');
+					}
+					else {
+						replyBackWithSimpleText('Možete dalje nastaviti normalno koristiti pogodnosti chatbota!');
+					}
 					break;
 				case 'change full_name':
 					pg_query("UPDATE user_account SET currently_edited_attribute='first_name' WHERE id='$senderId';");
@@ -224,13 +247,30 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 					posaljiZahtjevZaOdabirom('address');
 					break;
 				default:	// for handling payload data from selected special quick reply controls that read user's e-mail address or phone number from user's profile
+					$params = [null, $command, $senderId];
 					if (strpos($command, '@') !== false) {
-						pg_query("UPDATE user_account SET currently_edited_attribute='phone', email='$command' WHERE id='$senderId';");
-						posaljiZahtjevZaOdabirom('phone');
+						$q = 'UPDATE user_account SET currently_edited_attribute=$1, email=$2 WHERE id=$3;';
+						$params[0] = 'email';
+						if ($userAlreadyRegistered) {
+							pg_query_params($q, $params);
+							replyBackWithSimpleText('Uspješno ste ažurirali svoju e-mail adresu!');
+						}
+						else {
+							pg_query_params($q, $params);
+							posaljiZahtjevZaOdabirom('phone');
+						}
 					}
 					else {
-						pg_query("UPDATE user_account SET currently_edited_attribute=NULL, phone='$command' WHERE id='$senderId';");
-						replyBackWithSimpleText('Možete dalje nastaviti normalno koristiti pogodnosti chatbota!');
+						$q = 'UPDATE user_account SET currently_edited_attribute=$1, phone=$2 WHERE id=$3;';
+						$params[0] = 'phone';
+						if ($userAlreadyRegistered) {
+							pg_query_params($q, $params);
+							replyBackWithSimpleText('Uspješno ste ažurirali svoj telefonski broj!');
+						}
+						else {
+							pg_query_params($q, $params);
+							replyBackWithSimpleText('Možete dalje nastaviti normalno koristiti pogodnosti chatbota!');
+						}
 					}
 			}
 		}
@@ -539,6 +579,7 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 			
 				break;
 			case 'full_name':
+				$command = 'first_name';	// to avoid asking user if their current name is valid if they chose to change it
 			case 'address':
 			case 'phone':
 			case 'email':
@@ -719,7 +760,7 @@ function posaljiZahtjevZaOdabirom($atribut, $ponavljanje=false, $prefiks='') {
 				$replyContent .= 'Navedite Vaše ime:';
 			}
 			if (!empty($userInfo['first_name'])) {
-				array_push($quickReplies, array('content_type'=>'text', 'title'=>"zadrži '$userInfo[first_name]'", 'payload' => 'first_name'));
+				array_push($quickReplies, array('content_type'=>'text', 'title'=>"zadrži '$userInfo[first_name]'", 'payload' => 'preserve first_name'));
 			}
 			break;
 		case 'last_name':
@@ -730,7 +771,7 @@ function posaljiZahtjevZaOdabirom($atribut, $ponavljanje=false, $prefiks='') {
 				$replyContent .= 'Navedite Vaše prezime:';
 			}
 			if (!empty($userInfo['last_name'])) {
-				array_push($quickReplies, array('content_type'=>'text', 'title'=>"zadrži '$userInfo[last_name]'", 'payload' => 'last_name'));
+				array_push($quickReplies, array('content_type'=>'text', 'title'=>"zadrži '$userInfo[last_name]'", 'payload' => 'preserve last_name'));
 			}
 			break;
 		case 'address':
@@ -751,7 +792,7 @@ function posaljiZahtjevZaOdabirom($atribut, $ponavljanje=false, $prefiks='') {
 				}
 			}
 			if (!empty($userInfo['address'])) {
-				array_push($quickReplies, array('content_type'=>'text', 'title'=>'zadrži dosadašnju', 'payload' => 'address'));
+				array_push($quickReplies, array('content_type'=>'text', 'title'=>'zadrži dosadašnju', 'payload' => 'preserve address'));
 			}
 			array_push($quickReplies, array('content_type' => 'location'));
 			break;
@@ -773,7 +814,7 @@ function posaljiZahtjevZaOdabirom($atribut, $ponavljanje=false, $prefiks='') {
 				}
 			}
 			if (!empty($userInfo['email'])) {
-				array_push($quickReplies, array('content_type'=>'text', 'title'=>'zadrži dosadašnju', 'payload' => 'email'));
+				array_push($quickReplies, array('content_type'=>'text', 'title'=>'zadrži dosadašnju', 'payload' => 'preserve email'));
 			}
 			array_push($quickReplies, array('content_type' => 'user_email'));
 			break;
@@ -795,7 +836,7 @@ function posaljiZahtjevZaOdabirom($atribut, $ponavljanje=false, $prefiks='') {
 				}
 			}
 			if (!empty($userInfo['phone'])) {
-				array_push($quickReplies, array('content_type'=>'text', 'title'=>'zadrži dosadašnji', 'payload' => 'phone'));
+				array_push($quickReplies, array('content_type'=>'text', 'title'=>'zadrži dosadašnji', 'payload' => 'preserve phone'));
 			}
 			array_push($quickReplies, array('content_type' => 'user_phone_number'));
 			break;
