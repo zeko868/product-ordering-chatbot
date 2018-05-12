@@ -137,7 +137,6 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 				if(!empty($link)){
 					$desiredProducts["https://www.links.hr$link"] = 1;
 				}
-				
 			}
 			
 			$action = $command;	// lokacije Zagreb Trešnjevka, Zagreb Dubrava i Slavonski Brod se sastoje od više riječi
@@ -158,31 +157,29 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 					$productImageUrl = $ordererOutput[$i-1];
 					extractTitleAndSubtitle($productName, $title, $subtitle);
 					$orderedItems[] = ['title'=>$title, 'subtitle'=>$subtitle,'quantity'=>1,'price'=>$price,'currency'=>'HRK','image_url'=>$productImageUrl];
-			}
-			$answer = [
-				'type'=>'template',
-				'payload'=>[
-					'template_type'=>'receipt',
-					'recipient_name'=>"$firstName $lastName",
-					'order_number'=>'123456',
-					'currency'=>'HRK',
-					'payment_method'=>'Plaćanje pouzećem',
-					'address'=>['street_1'=>$address,'city'=>$placeName,'postal_code'=>$postCode,'state'=>'Hrvatska','country'=>'CRO'],
-					'summary'=>['subtotal'=>0,'shipping_cost'=>0,'total_tax'=>0,'total_cost'=>$price],
-					'elements'=> $orderedItems
-				]
-			];
-			
-			changeTypingIndicator(false);
-			//open file to write
-			$fp = fopen("$senderId.txt", "r+");
-			// clear content to 0 bits
-			ftruncate($fp, 0);
-			//close file
-			fclose($fp);
-			replyBackSpecificObject([ 'attachment' => $answer ]);
+				}
+				$answer = [
+					'type'=>'template',
+					'payload'=>[
+						'template_type'=>'receipt',
+						'recipient_name'=>"$firstName $lastName",
+						'order_number'=>'123456',
+						'currency'=>'HRK',
+						'payment_method'=>'Plaćanje pouzećem',
+						'address'=>['street_1'=>$address,'city'=>$placeName,'postal_code'=>$postCode,'state'=>'Hrvatska','country'=>'CRO'],
+						'summary'=>['subtotal'=>0,'shipping_cost'=>0,'total_tax'=>0,'total_cost'=>$price],
+						'elements'=> $orderedItems
+					]
+				];
 				
-				
+				changeTypingIndicator(false);
+				//open file to write
+				$fp = fopen("$senderId.txt", "r+");
+				// clear content to 0 bits
+				ftruncate($fp, 0);
+				//close file
+				fclose($fp);
+				replyBackSpecificObject([ 'attachment' => $answer ]);
 			}
 		}
 		else {
