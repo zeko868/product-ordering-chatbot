@@ -68,7 +68,7 @@ public class Orderer {
                 productsInfo.add(price);
             }
 
-            if (!pickupStore.isEmpty()) {
+            if (!pickupStore.equals("pregled")) {
                 try {
                     Thread.sleep(500);  // delay required before performing check-out
                 } catch (InterruptedException ex) {
