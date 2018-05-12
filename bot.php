@@ -195,11 +195,11 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 		}
 		else {
 			switch ($command) {
-				case 'preserve first_name':
-					pg_query("UPDATE user_account SET currently_edited_attribute='last_name' WHERE id='$senderId';");
-					posaljiZahtjevZaOdabirom('last_name');
-					break;
 				case 'preserve last_name':
+					pg_query("UPDATE user_account SET currently_edited_attribute='first_name' WHERE id='$senderId';");
+					posaljiZahtjevZaOdabirom('first_name');
+					break;
+				case 'preserve first_name':
 					if ($userAlreadyRegistered) {
 						pg_query("UPDATE user_account SET currently_edited_attribute=NULL WHERE id='$senderId';");
 						replyBackWithSimpleText('Uspješno ste ažurirali svoje stvarno puno ime!');
@@ -239,8 +239,8 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 					}
 					break;
 				case 'change full_name':
-					pg_query("UPDATE user_account SET currently_edited_attribute='first_name' WHERE id='$senderId';");
-					posaljiZahtjevZaOdabirom('first_name');
+					pg_query("UPDATE user_account SET currently_edited_attribute='last_name' WHERE id='$senderId';");
+					posaljiZahtjevZaOdabirom('last_name');
 					break;
 				case 'preserve full_name':
 					pg_query("UPDATE user_account SET currently_edited_attribute='address' WHERE id='$senderId';");
@@ -278,22 +278,22 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 
 		if (!empty($expectedValueType)) {
 			switch ($expectedValueType) {
-				case 'first_name':
-					$firstName = trim($command, ". \t\n\r\0\x0B");
-					if (!empty($firstName)) {
-						$params = [$firstName, 'last_name', $senderId];
-						pg_query_params('UPDATE user_account SET first_name=$1, currently_edited_attribute=$2 WHERE id=$3;', $params);
-						posaljiZahtjevZaOdabirom($params[1]);
-					}
-					else {
-						posaljiZahtjevZaOdabirom($expectedValueType, true, 'Ime ne može biti neprazno jer je očito nestvarno!');
-					}
-					break;
 				case 'last_name':
 					$lastName = trim($command, ". \t\n\r\0\x0B");
 					if (!empty($lastName)) {
-						$q = 'UPDATE user_account SET last_name=$1, currently_edited_attribute=$2 WHERE id=$3;';
-						$params = [$lastName, 'address', $senderId];
+						$params = [$lastName, 'first_name', $senderId];
+						pg_query_params('UPDATE user_account SET last_name=$1, currently_edited_attribute=$2 WHERE id=$3;', $params);
+						posaljiZahtjevZaOdabirom($params[1]);
+					}
+					else {
+						posaljiZahtjevZaOdabirom($expectedValueType, true, 'Prezime ne može biti neprazno jer je očito nestvarno!');
+					}
+					break;
+				case 'first_name':
+					$firstName = trim($command, ". \t\n\r\0\x0B");
+					if (!empty($firstName)) {
+						$q = 'UPDATE user_account SET first_name=$1, currently_edited_attribute=$2 WHERE id=$3;';
+						$params = [$firstName, 'address', $senderId];
 						if ($userAlreadyRegistered) {
 							$params[1] = null;
 							pg_query_params($q, $params);
@@ -305,7 +305,7 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 						}
 					}
 					else {
-						posaljiZahtjevZaOdabirom($expectedValueType, true, 'Prezime ne može biti neprazno jer je očito nestvarno!');
+						posaljiZahtjevZaOdabirom($expectedValueType, true, 'Ime ne može biti neprazno jer je očito nestvarno!');
 					}
 					break;
 				case 'address':
@@ -605,7 +605,7 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 			
 				break;
 			case 'full_name':
-				$command = 'first_name';	// to avoid asking user if their current name is valid if they chose to change it
+				$command = 'last_name';	// to avoid asking user if their current name is valid if they chose to change it
 			case 'address':
 			case 'phone':
 			case 'email':
@@ -623,8 +623,8 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 				}
 				replyBackWithSimpleText(<<<EOS
 Vaši trenutni osobni podaci su sljedeći:
-*Ime:* $userInfo[first_name]
 *Prezime:* $userInfo[last_name]
+*Ime:* $userInfo[first_name]
 *Adresa:* $userInfo[address]
 *E-mail:* $userInfo[email]
 *Telefon:* $userInfo[phone]
