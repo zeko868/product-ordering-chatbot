@@ -37,6 +37,7 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 	$userInfo = pg_fetch_array($result, null, PGSQL_ASSOC);
 	pg_free_result($result);
 	$userAlreadyRegistered = !empty($userInfo['phone']);
+	$expectedValueType = $userInfo['currently_edited_attribute'];
 	if (!empty($messageInfo['message']['attachments'])) {
 		if ($messageInfo['message']['attachments'][0]['type'] === 'location') {
 			$coordinates = $messageInfo['message']['attachments'][0]['payload']['coordinates'];
@@ -70,8 +71,17 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 						replyBackWithSimpleText('address', true, 'Za definiranu lokaciju nije moguće odrediti ulicu, kućni i poštanski broj. Pokušajte navesti te geografske podatke ili pak odabrati neku drugu lokaciju');
 					}
 				}
-				pg_query("UPDATE user_account SET address=get_address_id('$streetNum', '$route', '$postalCode'), currently_edited_attribute='email' WHERE id='$senderId';");
-				posaljiZahtjevZaOdabirom('email', false, 'Uspješno ste registrirali adresu uz Vaš korisnički račun!');
+				$q = 'UPDATE user_account SET address=get_address_id($1, $2, $3), currently_edited_attribute=$4 WHERE id=$5;';
+				$params = [$streetNum, $route, $postalCode, 'email', $senderId];
+				if ($userAlreadyRegistered) {
+					$params[3] = null;
+					pg_query_params($q, $params);
+					replyBackWithSimpleText('Uspješno ste ažurirali Vašu adresu');
+				}
+				else {
+					pg_query_params($q, $params);
+					posaljiZahtjevZaOdabirom($params[3], false, 'Uspješno ste registrirali adresu uz Vaš korisnički račun!');
+				}
 			}
 		}
 		else {
@@ -80,7 +90,7 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 	}
 	else if (!empty($messageInfo['message']['quick_reply']['payload'])) {
 		$command = $messageInfo['message']['quick_reply']['payload'];
-		if (empty($userInfo['currently_edited_attribute'])) {
+		if (empty($expectedValueType)) {
 			/*$commandParts = explode(' ', $command);
 			$linkProizovada = $commandParts[0];
 			unset($commandParts[0]);
@@ -227,26 +237,36 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 	}else if (!empty($messageInfo['message']['text'])) {
 		$command = $messageInfo['message']['text'];
 
-		if (!empty($userInfo['currently_edited_attribute'])) {
-			switch ($userInfo['currently_edited_attribute']) {
+		if (!empty($expectedValueType)) {
+			switch ($expectedValueType) {
 				case 'first_name':
 					$firstName = trim($command, ". \t\n\r\0\x0B");
 					if (!empty($firstName)) {
-						pg_query_params("UPDATE user_account SET first_name=$1, currently_edited_attribute='last_name' WHERE id='$senderId';", array($firstName));
-						posaljiZahtjevZaOdabirom('last_name');
+						$params = [$firstName, 'last_name', $senderId];
+						pg_query_params('UPDATE user_account SET first_name=$1, currently_edited_attribute=$2 WHERE id=$3;', $params);
+						posaljiZahtjevZaOdabirom($params[1]);
 					}
 					else {
-						posaljiZahtjevZaOdabirom('first_name', true, 'Ime ne može biti neprazno jer je očito nestvarno!');
+						posaljiZahtjevZaOdabirom($expectedValueType, true, 'Ime ne može biti neprazno jer je očito nestvarno!');
 					}
 					break;
 				case 'last_name':
 					$lastName = trim($command, ". \t\n\r\0\x0B");
 					if (!empty($lastName)) {
-						pg_query_params("UPDATE user_account SET last_name=$1, currently_edited_attribute='address' WHERE id='$senderId';", array($lastName));
-						posaljiZahtjevZaOdabirom('address', false, 'Uspješno ste registrirali svoje stvarno puno ime!');
+						$q = 'UPDATE user_account SET last_name=$1, currently_edited_attribute=$2 WHERE id=$3;';
+						$params = [$lastName, 'address', $senderId];
+						if ($userAlreadyRegistered) {
+							$params[1] = null;
+							pg_query_params($q, $params);
+							replyBackWithSimpleText('Uspješno ste ažurirali svoje stvarno puno ime!');
+						}
+						else {
+							pg_query_params($q, $params);
+							posaljiZahtjevZaOdabirom($params[1], false, 'Uspješno ste registrirali svoje stvarno puno ime!');
+						}
 					}
 					else {
-						posaljiZahtjevZaOdabirom('last_name', true, 'Prezime ne može biti neprazno jer je očito nestvarno!');
+						posaljiZahtjevZaOdabirom($expectedValueType, true, 'Prezime ne može biti neprazno jer je očito nestvarno!');
 					}
 					break;
 				case 'address':
@@ -276,29 +296,47 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 								}
 							}
 							if (isset($streetNum) && isset($route) && isset($postalCode)) {
-								pg_query("UPDATE user_account SET address=get_address_id('$streetNum', '$route', '$postalCode'), currently_edited_attribute='email' WHERE id='$senderId';");
-								posaljiZahtjevZaOdabirom('email', false, 'Uspješno ste registrirali adresu uz Vaš korisnički račun!');
+								$q = 'UPDATE user_account SET address=get_address_id($1, $2, $3), currently_edited_attribute=$4 WHERE id=$5;';
+								$params = [$streetNum, $route, $postalCode, 'email', $senderId];
+								if ($userAlreadyRegistered) {
+									$params[3] = null;
+									pg_query_params($q, $params);
+									replyBackWithSimpleText('Uspješno ste ažurirali Vašu adresu');
+								}
+								else {
+									pg_query_params($q, $params);
+									posaljiZahtjevZaOdabirom($params[3], false, 'Uspješno ste registrirali adresu uz Vaš korisnički račun!');
+								}
 							}
 							else {
-								posaljiZahtjevZaOdabirom('address', true, 'Molimo Vas da navedete sve komponente adrese koje su nam od značaja poput naziva ulice i kućnog broja te naziva poštanskog mjesta ili njegovog pripadajućeg broja.');
+								posaljiZahtjevZaOdabirom($expectedValueType, true, 'Molimo Vas da navedete sve komponente adrese koje su nam od značaja poput naziva ulice i kućnog broja te naziva poštanskog mjesta ili njegovog pripadajućeg broja.');
 							}
 						}
 						else {
-							posaljiZahtjevZaOdabirom('address', true, 'Molimo Vas da precizirate adresu! Naime, ne može se pouzdano otkriti o kojem je točno mjestu riječ.');
+							posaljiZahtjevZaOdabirom($expectedValueType, true, 'Molimo Vas da precizirate adresu! Naime, ne može se pouzdano otkriti o kojem je točno mjestu riječ.');
 						}
 					}
 					else {
-						posaljiZahtjevZaOdabirom('address', true, 'Molimo Vas da precizirate adresu! Naime, nije pronađeno nijedno mjesto koje odgovara na navedeni opis.');
+						posaljiZahtjevZaOdabirom($expectedValueType, true, 'Molimo Vas da precizirate adresu! Naime, nije pronađeno nijedno mjesto koje odgovara na navedeni opis.');
 					}
 					break;
 				case 'email':
 					if (preg_match('/\S*@\S*\.\S*/', $command, $matches)) {
 						$email = trim($matches[0], ':.,-;?!');
-						pg_query_params("UPDATE user_account SET email=$1, currently_edited_attribute='phone' WHERE id='$senderId';", array($email));	// protection against potential attacks like sql-injection
-						posaljiZahtjevZaOdabirom('phone', false, 'Uspješno ste registrirali e-mail adresu uz Vaš korisnički račun!');
+						$q = 'UPDATE user_account SET email=$1, currently_edited_attribute=$2 WHERE id=$3;';
+						$params = [$email, 'phone', $senderId];
+						if ($userAlreadyRegistered) {
+							$params[1] = null;
+							pg_query_params($q, $params);	// protection against potential attacks like sql-injection
+							replyBackWithSimpleText('Uspješno ste ažurirali e-mail adresu Vašeg korisničkog računa');
+						}
+						else {
+							pg_query_params($q, $params);	// protection against potential attacks like sql-injection
+							posaljiZahtjevZaOdabirom($params[1], false, 'Uspješno ste registrirali e-mail adresu uz Vaš korisnički račun!');
+						}
 					}
 					else {
-						posaljiZahtjevZaOdabirom('email', true, 'Niste naveli e-mail adresu ili ona koju ste naveli nije važećeg formata!');
+						posaljiZahtjevZaOdabirom($expectedValueType, true, 'Niste naveli e-mail adresu ili ona koju ste naveli nije važećeg formata!');
 					}
 					break;
 				case 'phone':
@@ -306,27 +344,32 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 						foreach ($matches[0] as $numWithSeparators) {
 							$number = preg_replace('(-|/|\s)', '', $numWithSeparators);
 							if (strlen($number) > 7) {
-								pg_query("UPDATE user_account SET phone='$number', currently_edited_attribute=NULL WHERE id='$senderId';");
-								replyBackWithSimpleText("Uspješno ste registrirali telefonski broj uz Vaš korisnički račun!\nSada možete započeti s pretragom i naručivanjem artikala.");
+								pg_query_params('UPDATE user_account SET phone=$1, currently_edited_attribute=$2 WHERE id=$3;', array($number, null, $senderId));
+								if ($userAlreadyRegistered) {
+									replyBackWithSimpleText('Uspješno ste ažurirali telefonski broj Vašeg korisničkog računa!');
+								}
+								else {
+									replyBackWithSimpleText("Uspješno ste registrirali telefonski broj uz Vaš korisnički račun!\nSada možete započeti s pretragom i naručivanjem artikala.");
+								}
 							}
 							else {
-								posaljiZahtjevZaOdabirom('phone', true, 'Niste naveli važeći telefonski broj!');
+								posaljiZahtjevZaOdabirom($expectedValueType, true, 'Niste naveli važeći telefonski broj!');
 							}
 						}
 					}
 					else {
-						posaljiZahtjevZaOdabirom('phone', true, 'Niste naveli važeći telefonski broj!');
+						posaljiZahtjevZaOdabirom($expectedValueType, true, 'Niste naveli važeći telefonski broj!');
 					}
 					break;
 				default:
-					posaljiZahtjevZaOdabirom($userInfo['currently_edited_attribute'], true);
+					posaljiZahtjevZaOdabirom($expectedValueType, true);
 			}
 		}
 	}
 	// When bot receives button click from user
 	else if (!empty($messageInfo['postback'])) {
-		if (!empty($userInfo['currently_edited_attribute'])) {
-			posaljiZahtjevZaOdabirom($userInfo['currently_edited_attribute'], true);
+		if (!empty($expectedValueType)) {
+			posaljiZahtjevZaOdabirom($expectedValueType, true);
 		}
 		else if (!$userAlreadyRegistered) {
 			pg_query("UPDATE user_account SET currently_edited_attribute='full_name' WHERE id='$senderId';");
