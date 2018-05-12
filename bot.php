@@ -444,13 +444,14 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 				$data = file("$senderId.txt");
 
 				$out = array();
+				
 
 				foreach($data as $k) {
+					replyBackWithSimpleText($k,false);
 					if(trim($k) !== trim($DELETE)) {
 						$out[] = $k;
 					}
 				}
-				var_dump($out);
 
 				$fp = fopen("$senderId.txt", "w+");
 				flock($fp, LOCK_EX);
