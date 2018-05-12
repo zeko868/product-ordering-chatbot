@@ -1,18 +1,23 @@
 <?php
-$myfile = fopen("1155662414560805.txt", "r") or die("Unable to open file!");
-$fileContent = fread($myfile,filesize("1155662414560805.txt"));
-fclose($myfile);
 
-$fileContentArray = explode("\n", $fileContent);
+$DELETE = "https://www.links.hrhttps://www.links.hr/hr/procesor-intel-core-i3-8100-s-1151-3-6ghz-6mb-cache-gpu-quad-core-050600063";
 
-$desiredProducts = [];
+$data = file("1155662414560805.txt");
 
-foreach($fileContentArray as $link){
-	if(!empty($link)){
-		$desiredProducts["https://www.links.hr$link"] = 1;
+$out = array();
+
+foreach($data as $k) {
+	if(trim($k) !== trim($DELETE)) {
+		$out[] = $k;
 	}
-	
 }
+var_dump($out);
 
-var_dump($desiredProducts);
+$fp = fopen("./1155662414560805.txt", "w+");
+flock($fp, LOCK_EX);
+foreach($out as $line) {
+ fwrite($fp, $line);
+}
+flock($fp, LOCK_UN);
+fclose($fp);  
 ?>
