@@ -478,7 +478,12 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 					$fileContentArray = explode("\n", $fileContent);
 				}
 				
-				if(sizeof($fileContentArray) > 0){
+				$postojiItem = false;
+				foreach($fileContentArray as $line){
+					if(!empty($line)) $postojiItem = true;
+				}
+				
+				if(sizeof($fileContentArray) > 0 && $postojiItem){
 					$quickReplies = [];
 					/*array_push($quickReplies, array('content_type'=>'text', 'title'=>'Pokupit ću tamo', 'payload' => "$linkProizovada Rijeka"));
 					array_push($quickReplies, array('content_type'=>'text', 'title'=>'Želim dostavu', 'payload' => "$linkProizovada dostava"));
@@ -514,9 +519,17 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 				$fileContent = fread($myfile,filesize("$senderId.txt"));
 				fclose($myfile);
 
-				$fileContentArray = explode("\n", $fileContent);
-			
-				if(sizeof($fileContentArray) > 0){
+				$fileContentArray = [];
+				if($fileContent != null){
+					$fileContentArray = explode("\n", $fileContent);
+				}
+				
+				$postojiItem = false;
+				foreach($fileContentArray as $line){
+					if(!empty($line)) $postojiItem = true;
+				}
+				
+				if(sizeof($fileContentArray) > 0 && $postojiItem){
 					
 
 					$desiredProducts = [];
