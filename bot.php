@@ -964,7 +964,7 @@ function posaljiZahtjevZaOdabirom($atribut, $ponavljanje=false, $prefiks='') {
 					$replyContent .= "Navedite Vašu adresu stanovanja ili adresu na koju želite da Vam se dostavi roba, ili pak odaberite da se zadrži dosadašnja ($userInfo[route] $userInfo[street_number], $userInfo[postal_code]).";
 				}
 			}
-			if (!empty($userInfo['address']) || $userAlreadyRegistered) {
+			if (!(empty($userInfo['address']) || $userAlreadyRegistered)) {
 				array_push($quickReplies, array('content_type'=>'text', 'title'=>'zadrži dosadašnju', 'payload' => 'preserve address'));
 			}
 			array_push($quickReplies, array('content_type' => 'location'));
@@ -986,7 +986,7 @@ function posaljiZahtjevZaOdabirom($atribut, $ponavljanje=false, $prefiks='') {
 					$replyContent .= "Navedite Vašu e-mail adresu na koju ćete biti u mogućnosti kontaktirani ili odaberite dosadašnju ($userInfo[email]).";
 				}
 			}
-			if (!empty($userInfo['email']) || $userAlreadyRegistered) {
+			if (!(empty($userInfo['email']) || $userAlreadyRegistered)) {
 				array_push($quickReplies, array('content_type'=>'text', 'title'=>'zadrži dosadašnju', 'payload' => 'preserve email'));
 			}
 			array_push($quickReplies, array('content_type' => 'user_email'));
@@ -1008,7 +1008,7 @@ function posaljiZahtjevZaOdabirom($atribut, $ponavljanje=false, $prefiks='') {
 					$replyContent .= "Navedite Vaš telefonski broj na koji ćete biti u mogućnosti kontaktirani ili odaberite da se zadrži dosadašnji ($userInfo[phone]).";
 				}
 			}
-			if (!empty($userInfo['phone']) || $userAlreadyRegistered) {
+			if (!(empty($userInfo['phone']) || $userAlreadyRegistered)) {
 				array_push($quickReplies, array('content_type'=>'text', 'title'=>'zadrži dosadašnji', 'payload' => 'preserve phone'));
 			}
 			array_push($quickReplies, array('content_type' => 'user_phone_number'));
