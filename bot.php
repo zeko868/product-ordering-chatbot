@@ -399,14 +399,26 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 				
 				$x = explode(" ", $command);
 				
-				$fname = "$senderId.txt"; 
-				$lines = file($fname); 
-				foreach($lines as $line) if(!strstr($line, $x[1]."\n")) $out .= $line;  
-				$f = fopen($fname, "w");  
-				fwrite($f, $out);  
-				fclose($f); 
-				
-				replyBackWithSimpleText("Obrisi: " . $x[1]);
+				$DELETE = $x[1];
+
+				$data = file("$senderId.txt");
+
+				$out = array();
+
+				foreach($data as $k) {
+					if(trim($k) !== trim($DELETE)) {
+						$out[] = $k;
+					}
+				}
+				var_dump($out);
+
+				$fp = fopen("$senderId.txt", "w+");
+				flock($fp, LOCK_EX);
+				foreach($out as $line) {
+				 fwrite($fp, $line);
+				}
+				flock($fp, LOCK_UN);
+				fclose($fp);  
 			}
 		}
 	}
@@ -474,7 +486,7 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 						
 					}
 					
-					$action = "dostava";	// lokacije Zagreb Trešnjevka, Zagreb Dubrava i Slavonski Brod se sastoje od više riječi
+					$action = "";	// lokacije Zagreb Trešnjevka, Zagreb Dubrava i Slavonski Brod se sastoje od više riječi
 					$delivery = ($action === 'dostava');
 					$closestStore = $action;
 					changeTypingIndicator(true);
