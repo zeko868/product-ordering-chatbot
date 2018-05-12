@@ -496,12 +496,11 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 			
 				break;
 			case 'full_name':
-				break;
 			case 'address':
-				break;
 			case 'phone':
-				break;
 			case 'email':
+				pg_query_params('UPDATE user_account SET currently_edited_attribute=$1 WHERE id=$2', array($command, $senderId));
+				posaljiZahtjevZaOdabirom($command);
 				break;
 			case 'radna_vremena':
 				break;
