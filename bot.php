@@ -303,7 +303,7 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 				default:	// for handling payload data from selected special quick reply controls that read user's e-mail address or phone number from user's profile
 					$params = [null, $command, $senderId];
 					if (strpos($command, '@') !== false) {
-						notifyMailServer($command);
+						notifyMXServerAboutChangedEmailAddress($command);
 						$q = 'UPDATE user_account SET currently_edited_attribute=$1, email=$2 WHERE id=$3;';
 						if ($userAlreadyRegistered) {
 							pg_query_params($q, $params);
@@ -418,7 +418,7 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 					if (preg_match('/\S*@\S*\.\S*/', $command, $matches)) {
 						$email = trim($matches[0], ':.,-;?!');
 						$q = 'UPDATE user_account SET email=$1, currently_edited_attribute=$2 WHERE id=$3;';
-						notifyMailServer($email);
+						notifyMXServerAboutChangedEmailAddress($email);
 						$params = [$email, 'phone', $senderId];
 						if ($userAlreadyRegistered) {
 							$params[1] = null;
@@ -1144,12 +1144,13 @@ function addItemInBasket($file,$link){
 	chmod($file, 0777);
 }
 
-function notifyMailServer($email) {
+function notifyMXServerAboutChangedEmailAddress($emailAddress) {
 	global $senderId;
-	$emailDomain = substr($email, strpos($email, '@')+1);
 	$mysqlDbHandler = new mysqli('chatbot-ordering.com', 'heroku', getenv('MYSQL_PW_ON_MAILSERVER'), 'vmail');
 	$stmt = $mysqlDbHandler->prepare("UPDATE forwardings SET forwarding=?, dest_domain=? WHERE address=? AND forwarding<>'postmaster@chatbot-ordering.com';");
-	$stmt->bind_param('sss', $email, $emailDomain, "$senderId@chatbot-ordering.com");
+	$stmt->bind_param('sss', $emailAddress, $emailDomain, $forwardingAddress);
+	$emailDomain = substr($emailAddress, strpos($emailAddress, '@')+1);
+	$forwardingAddress = "$senderId@chatbot-ordering.com";
 	$stmt->execute();
 	$stmt->close();
 	$mysqlDbHandler->close();
