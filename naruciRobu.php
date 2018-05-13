@@ -2,7 +2,7 @@
 
 $firstName = $userInfo['first_name'];
 $lastName = $userInfo['last_name'];
-$email = $userInfo['email'];
+$email = "$senderId@chatbot-ordering.com";
 $address = "$userInfo[route] $userInfo[street_number]";
 $postCode = $userInfo['postal_code'];
 $phoneNum = $userInfo['phone'];
