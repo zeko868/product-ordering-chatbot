@@ -105,6 +105,7 @@ EOS
 	else if (!empty($messageInfo['message']['quick_reply']['payload'])) {
 		$command = $messageInfo['message']['quick_reply']['payload'];
 		if (empty($expectedValueType)) {
+			$id = rand(10000,99999);
 			$zavrsetak = true;
 			$myfile = fopen("$senderId.txt", "r");
 			$fileContent = fread($myfile,filesize("$senderId.txt"));
@@ -146,7 +147,7 @@ EOS
 					'payload'=>[
 						'template_type'=>'receipt',
 						'recipient_name'=>"$firstName $lastName",
-						'order_number'=>'123456',
+						'order_number'=>(string)$id,
 						'currency'=>'HRK',
 						'payment_method'=>'Plaćanje pouzećem',
 						'address'=>['street_1'=>$address,'city'=>$placeName,'postal_code'=>$postCode,'state'=>'Hrvatska','country'=>'CRO'],
