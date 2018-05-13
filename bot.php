@@ -595,8 +595,8 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 						
 					}
 					
-					$action = "dostava";	// lokacije Zagreb Trešnjevka, Zagreb Dubrava i Slavonski Brod se sastoje od više riječi
-					$delivery = ($action === 'dostava');
+					$action = "pregled";	// lokacije Zagreb Trešnjevka, Zagreb Dubrava i Slavonski Brod se sastoje od više riječi
+					$delivery = false;
 					$closestStore = $action;
 					changeTypingIndicator(true);
 					require 'naruciRobu.php';
