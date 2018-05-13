@@ -82,9 +82,11 @@ function NLPtext($translatedText){
 
     $response = curl_exec($curl);
     curl_close($curl);
-    
+    //var_dump($response);
     $json = json_decode($response, true);
     $data = $json['entities'];
+	
+	$nlp['proizvod'] = '';
 
     foreach($data as $value){
         switch($value['type']){
@@ -92,11 +94,16 @@ function NLPtext($translatedText){
                 $nlp['proizvodac'] = $value['name'];
                 break;
             case 'CONSUMER_GOOD':
-                $nlp['proizvod'] = $value['name'];
+                $nlp['proizvod'] .= $value['name'] . " ";
                 break;
+			case 'OTHER':
+				if(strtolower($value['name']) === 'graphics cards')
+					$nlp['proizvod'] .= $value['name'];
+				if(strtolower($value['name']) === 'graphics')
+					$nlp['proizvod'] .= 'graphics cards';
+				break;
         }
     }
-	
 	$json = json_decode( file_get_contents('./producers.json') , true);
 
 
