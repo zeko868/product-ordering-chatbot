@@ -645,12 +645,25 @@ EOS
 						$userInfo[$key] = "_nedefinirano_";
 					}
 				}
+				switch ($userInfo['subscribe']) {
+					case 'both':
+						$nacinObavjestavanja = "*Način obavještavanja:* messenger i e-mail\nE-mail: $userInfo[email]";
+						break;
+					case 'messenger':
+						$nacinObavjestavanja = '*Način obavještavanja:* messenger';
+						break;
+					case 'email':
+						$nacinObavjestavanja = "*Način obavještavanja:* e-mail\nE-mail: $userInfo[email]";
+						break;
+					default:
+						$nacinObavjestavanja = '*Način obavještavanja:* _nedefinirano_';
+				}
 				replyBackWithSimpleText(<<<EOS
 Vaši trenutni osobni podaci su sljedeći:
 *Prezime:* $userInfo[last_name]
 *Ime:* $userInfo[first_name]
 *Adresa:* $userInfo[address]
-*E-mail:* $userInfo[email]
+$nacinObavjestavanja
 *Telefon:* $userInfo[phone]
 EOS
 				);
