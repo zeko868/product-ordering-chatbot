@@ -171,7 +171,7 @@ EOS
 			require 'naruciRobu.php';
 
 			if (!empty($ordererOutput)) {
-				$id = rand (10000, 99999);
+				//$id = rand (10000, 99999);
 				addItemInBasket("$senderId.txt","links.hr\n");
 				$ordererOutput = explode("\n", $ordererOutput);
 				$price = floatval(str_replace(array('.', ','), array('', '.'), explode(' ', $ordererOutput[0])[0]));
@@ -189,7 +189,7 @@ EOS
 					'payload'=>[
 						'template_type'=>'receipt',
 						'recipient_name'=>"$firstName $lastName",
-						'order_number'=>(string)$id,
+						'order_number'=>"1234",
 						'currency'=>'HRK',
 						'payment_method'=>'Plaćanje pouzećem',
 						'address'=>['street_1'=>$address,'city'=>$placeName,'postal_code'=>$postCode,'state'=>'Hrvatska','country'=>'CRO'],
