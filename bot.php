@@ -104,52 +104,8 @@ EOS
 	else if (!empty($messageInfo['message']['quick_reply']['payload'])) {
 		$command = $messageInfo['message']['quick_reply']['payload'];
 		if (empty($expectedValueType)) {
-			/*$commandParts = explode(' ', $command);
-			$linkProizovada = $commandParts[0];
-			unset($commandParts[0]);
-			$action = implode(' ', $commandParts);	// lokacije Zagreb Trešnjevka, Zagreb Dubrava i Slavonski Brod se sastoje od više riječi
-			$delivery = ($action === 'dostava');
-			$closestStore = $action;
-			$desiredProducts = [ 'https://www.links.hr' . $linkProizovada => 1 ];
-			changeTypingIndicator(true);
-			require 'naruciRobu.php';
-
-			if (!empty($ordererOutput)) {
-				addItemInBasket("$senderId.txt","links.hr\n");
-				$ordererOutput = explode("\n", $ordererOutput);
-				$price = floatval(str_replace(array('.', ','), array('', '.'), explode(' ', $ordererOutput[0])[0]));
-				$placeName = mb_convert_case($city, MB_CASE_TITLE);
-				$numOfOutputRows = count($ordererOutput);
-				$orderedItems = [];
-				for ($i=2; $i<$numOfOutputRows; $i+=2) {
-					$productName = $ordererOutput[$i-1];
-					$productImageUrl = $ordererOutput[$i];
-					extractTitleAndSubtitle($productName, $title, $subtitle);
-					$orderedItems[] = ['title'=>$title, 'subtitle'=>$subtitle,'quantity'=>1,'price'=>$price,'currency'=>'HRK','image_url'=>$productImageUrl];
-				}
-				$answer = [
-					'type'=>'template',
-					'payload'=>[
-						'template_type'=>'receipt',
-						'recipient_name'=>"$firstName $lastName",
-						'order_number'=>'123456',
-						'currency'=>'HRK',
-						'payment_method'=>'Plaćanje pouzećem',
-						'address'=>['street_1'=>$address,'city'=>$placeName,'postal_code'=>$postCode,'state'=>'Hrvatska','country'=>'CRO'],
-						'summary'=>['subtotal'=>0,'shipping_cost'=>0,'total_tax'=>0,'total_cost'=>$price],
-						'elements'=> $orderedItems
-					]
-				];
-				
-				changeTypingIndicator(false);
-				replyBackSpecificObject([ 'attachment' => $answer ]);
-			}
-			else {
-				changeTypingIndicator(false);
-				replyBackWithSimpleText($answer);
-			}*/
 			
-			$myfile = fopen("$senderId.txt", "r") or die("Unable to open file!");
+			$myfile = fopen("$senderId.txt", "r");
 			$fileContent = fread($myfile,filesize("$senderId.txt"));
 			fclose($myfile);
 
