@@ -561,7 +561,8 @@ EOS
 					$answer = [ 'text' => "Odaberite način preuzimanja narudžbe" ];
 					
 					$answer['quick_replies'] = $quickReplies;
-					replyBackSpecificObject($answer,true);
+					replyBackSpecificObject($answer);
+					exit();
 				}else{
 					replyBackWithSimpleText("U košarici nemate nikakvih artikala.");
 				}
