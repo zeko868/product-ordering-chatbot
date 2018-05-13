@@ -12,7 +12,6 @@ $input = json_decode(file_get_contents('php://input'), true, 512, JSON_BIGINT_AS
 $senderId = $input['entry'][0]['messaging'][0]['sender']['id'];
 $response = null;
 $command = '';
-
 if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 	$conn = pg_connect('postgres://gsnnkdcbycpcyq:ba69093c4619187587610e80e188d4f812627530798ef14d3133bd3541b00290@ec2-54-228-235-185.eu-west-1.compute.amazonaws.com:5432/dedt0mj008catq');
 	$result = pg_query("INSERT INTO user_account VALUES ('$senderId');");	// this is performed whether the user id is already in database or not - all the other table attributes are nullable, so their values don't need to be explicitly set
@@ -171,7 +170,6 @@ EOS
 			require 'naruciRobu.php';
 
 			if (!empty($ordererOutput)) {
-				//$id = rand (10000, 99999);
 				addItemInBasket("$senderId.txt","links.hr\n");
 				$ordererOutput = explode("\n", $ordererOutput);
 				$price = floatval(str_replace(array('.', ','), array('', '.'), explode(' ', $ordererOutput[0])[0]));
@@ -189,7 +187,7 @@ EOS
 					'payload'=>[
 						'template_type'=>'receipt',
 						'recipient_name'=>"$firstName $lastName",
-						'order_number'=>"1234",
+						'order_number'=>'123456',
 						'currency'=>'HRK',
 						'payment_method'=>'Plaćanje pouzećem',
 						'address'=>['street_1'=>$address,'city'=>$placeName,'postal_code'=>$postCode,'state'=>'Hrvatska','country'=>'CRO'],
@@ -206,7 +204,6 @@ EOS
 				//close file
 				fclose($fp);
 				replyBackSpecificObject([ 'attachment' => $answer ]);
-				exit();
 			}
 		}
 		else {
@@ -950,9 +947,6 @@ function replyBackSpecificObject($answer, $zavrsi=true) {
 
 function replyBackWithSimpleText($text, $zavrsi=true) {
 	replyBackSpecificObject([ 'text' => $text ], $zavrsi);
-	if ($zavrsi) {
-		exit();
-	}
 }
 
 function changeTypingIndicator($turnOn) {
