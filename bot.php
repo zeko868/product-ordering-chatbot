@@ -32,6 +32,9 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 		pg_query_params("UPDATE user_account SET first_name=$1, last_name=$2 WHERE id=$3;", array($ime, $prezime, $senderId));
 		replyBackWithSimpleText("Poštovanje $ime $prezime,\nRazgovarate s virtualnim asistentom koji će Vas voditi kroz kupovinu. Dovoljno je navesti u slobodnom formatu (po mogućnosti u službenom hrvatskom jeziku) što tražite, bilo naziv proizvođača, marke, vrste komponente i/ili cjenovni raspon traženog proizvoda. Kao rezultat se vraćaju stavke dostupne iz Linskovog web-shopa koje je onda moguće jednostavno naručiti.", false);
 		$korisnikUpravoDeklariran = true;
+		$mysqlDbHandler = new mysqli('chatbot-ordering.com', 'heroku', getenv('MYSQL_PW_ON_MAILSERVER'), 'vmail');
+		$mysqlDbHandler->multi_query("INSERT INTO alias (address, domain, active) VALUES ('$senderId@chatbot-ordering.com', 'chatbot-ordering.com', 1);INSERT INTO forwardings (address, forwarding, domain, dest_domain, is_list, active) VALUES ('$senderId@chatbot-ordering.com', 'postmaster@chatbot-ordering.com', 'chatbot-ordering.com', 'chatbot-ordering.com', 1, 0), ('$senderId@chatbot-ordering.com', '', 'chatbot-ordering.com', '', 1, 0);");
+		$mysqlDbHandler->close();
 	}
 	$result = pg_query("SELECT * FROM user_account u LEFT JOIN address a ON u.address=a.id WHERE u.id='$senderId' LIMIT 1;");
 	$userInfo = pg_fetch_array($result, null, PGSQL_ASSOC);
@@ -72,7 +75,7 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 					}
 				}
 				$q = 'UPDATE user_account SET address=get_address_id($1, $2, $3), currently_edited_attribute=$4 WHERE id=$5;';
-				$params = [$streetNum, $route, $postalCode, 'email', $senderId];
+				$params = [$streetNum, $route, $postalCode, 'subscribe', $senderId];
 				if ($userAlreadyRegistered) {
 					$params[3] = null;
 					pg_query_params($q, $params);
@@ -215,9 +218,55 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 						replyBackWithSimpleText('Uspješno ste ažurirali svoju geografsku adresu!');
 					}
 					else {
-						pg_query("UPDATE user_account SET currently_edited_attribute='email' WHERE id='$senderId';");
+						pg_query("UPDATE user_account SET currently_edited_attribute='subscribe' WHERE id='$senderId';");
+						posaljiZahtjevZaOdabirom('subscribe');
+					}
+					break;
+				case 'preserve subscription':
+					switch ($userInfo['subscribe']) {
+						case 'email':
+						case 'both':
+							$nextStep = 'email';
+							break;
+						default:
+							if ($userAlreadyRegistered) {
+								$nextStep = null;
+							}
+							else {
+								$nextStep = 'phone';
+							}
+					}
+					pg_query_params('UPDATE user_account SET currently_edited_attribute=$1 WHERE id=$2;', array($nextStep, $senderId));
+					if ($nextStep !== 'email') {
+						replyBackWithSimpleText('Uspješno je pohranjen odabir vezan uz način primanja obavijesti o narudžbama!');
+					}
+					else {
 						posaljiZahtjevZaOdabirom('email');
 					}
+					break;
+				case 'subscribe email':
+					$params = [$userAlreadyRegistered ? null : 'email', $senderId];
+					pg_query_params('UPDATE user_account SET currently_edited_attribute=$1 WHERE id=$2;', $params);
+					$mysqlDbHandler = new mysqli('chatbot-ordering.com', 'heroku', getenv('MYSQL_PW_ON_MAILSERVER'), 'vmail');
+					$mysqlDbHandler->multi_query("UPDATE forwardings SET active=1 WHERE address='$senderId@chatbot-ordering.com' AND forwarding='postmaster@chatbot-ordering.com';UPDATE forwardings SET active=0 WHERE address='$senderId@chatbot-ordering.com' AND forwarding<>'postmaster@chatbot-ordering.com';");
+					$mysqlDbHandler->close();
+					posaljiZahtjevZaOdabirom('email');
+					break;
+				case 'subscribe messenger':
+					$params = [$userAlreadyRegistered ? null : 'phone', $senderId];
+					pg_query_params('UPDATE user_account SET currently_edited_attribute=$1 WHERE id=$2;', $params);
+					$mysqlDbHandler = new mysqli('chatbot-ordering.com', 'heroku', getenv('MYSQL_PW_ON_MAILSERVER'), 'vmail');
+					$mysqlDbHandler->query("UPDATE forwardings SET active=0 WHERE address='$senderId@chatbot-ordering.com';");
+					$mysqlDbHandler->close();
+					replyBackWithSimpleText('Uspješno je pohranjen odabir vezan uz način primanja obavijesti o narudžbama!');
+					break;
+				case 'subscribe both':
+					$params = [$userAlreadyRegistered ? null : 'email', $senderId];
+					pg_query_params('UPDATE user_account SET currently_edited_attribute=$1 WHERE id=$2;', $params);
+					$mysqlDbHandler = new mysqli('chatbot-ordering.com', 'heroku', getenv('MYSQL_PW_ON_MAILSERVER'), 'vmail');
+					$mysqlDbHandler->query("UPDATE forwardings SET active=1 WHERE address='$senderId@chatbot-ordering.com';");
+					$mysqlDbHandler->close();
+					posaljiZahtjevZaOdabirom('email');
 					break;
 				case 'preserve email':
 					if ($userAlreadyRegistered) {
@@ -249,6 +298,7 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 				default:	// for handling payload data from selected special quick reply controls that read user's e-mail address or phone number from user's profile
 					$params = [null, $command, $senderId];
 					if (strpos($command, '@') !== false) {
+						notifyMailServer($command);
 						$q = 'UPDATE user_account SET currently_edited_attribute=$1, email=$2 WHERE id=$3;';
 						if ($userAlreadyRegistered) {
 							pg_query_params($q, $params);
@@ -336,7 +386,7 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 							}
 							if (isset($streetNum) && isset($route) && isset($postalCode)) {
 								$q = 'UPDATE user_account SET address=get_address_id($1, $2, $3), currently_edited_attribute=$4 WHERE id=$5;';
-								$params = [$streetNum, $route, $postalCode, 'email', $senderId];
+								$params = [$streetNum, $route, $postalCode, 'subscribe', $senderId];
 								if ($userAlreadyRegistered) {
 									$params[3] = null;
 									pg_query_params($q, $params);
@@ -363,6 +413,7 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 					if (preg_match('/\S*@\S*\.\S*/', $command, $matches)) {
 						$email = trim($matches[0], ':.,-;?!');
 						$q = 'UPDATE user_account SET email=$1, currently_edited_attribute=$2 WHERE id=$3;';
+						notifyMailServer($email);
 						$params = [$email, 'phone', $senderId];
 						if ($userAlreadyRegistered) {
 							$params[1] = null;
@@ -969,6 +1020,41 @@ function posaljiZahtjevZaOdabirom($atribut, $ponavljanje=false, $prefiks='') {
 			}
 			array_push($quickReplies, array('content_type' => 'location'));
 			break;
+		case 'subscribe':
+			switch ($userInfo['subscribe']) {
+				case 'email':
+					$subscribeName = 'e-mail';
+					break;
+				case 'messenger':
+					$subscribeName = 'messenger';
+					break;
+				case 'both':
+					$subscribeName = 'oboje';
+					break;
+			}
+			if ($ponavljanje) {
+				if (empty($userInfo['subscribe']) || $userAlreadyRegistered) {
+					$replyContent .= 'Ponavljamo, odaberite način na koji ćete biti informirani o statusu narudžbe.';
+				}
+				else {
+					$replyContent .= "Ponavljamo, navedite način na koji ćete biti informirani o statusu narudžbe ili pak odaberite da se zadrži dosadašnji ($subscribeName).";
+				}
+			}
+			else {
+				if (empty($userInfo['subscribe']) || $userAlreadyRegistered) {
+					$replyContent .= 'Odaberite način na koji ćete biti informirani o statusu narudžbe.';
+				}
+				else {
+					$replyContent .= "Odaberite način na koji ćete biti informirani o statusu narudžbe ili pak odaberite da se zadrži dosadašnji ($subscribeName).";
+				}
+			}
+			array_push($quickReplies, array('content_type'=>'text', 'title'=>'e-mail', 'payload' => 'subscribe email'));
+			array_push($quickReplies, array('content_type'=>'text', 'title'=>'messenger', 'payload' => 'subscribe messenger'));
+			array_push($quickReplies, array('content_type'=>'text', 'title'=>'oboje', 'payload' => 'subscribe both'));
+			if (!(empty($userInfo['subscribe']) || $userAlreadyRegistered)) {
+				array_push($quickReplies, array('content_type'=>'text', 'title'=>'zadrži dosadašnji', 'payload' => 'preserve subscription'));
+			}
+			break;
 		case 'email':
 			if ($ponavljanje) {
 				if (empty($userInfo['email']) || $userAlreadyRegistered) {
@@ -1051,4 +1137,15 @@ function addItemInBasket($file,$link){
 
 	fclose($fh);
 	chmod($file, 0777);
+}
+
+function notifyMailServer($email) {
+	global $senderId;
+	$emailDomain = substr($email, strpos($email, '@')+1);
+	$mysqlDbHandler = new mysqli('chatbot-ordering.com', 'heroku', getenv('MYSQL_PW_ON_MAILSERVER'), 'vmail');
+	$stmt = $mysqlDbHandler->prepare("UPDATE forwardings SET forwarding=?, dest_domain=? WHERE address=? AND forwarding<>'postmaster@chatbot-ordering.com';");
+	$stmt->bind_param('sss', $email, $emailDomain, "$senderId@chatbot-ordering.com");
+	$stmt->execute();
+	$stmt->close();
+	$mysqlDbHandler->close();
 }
