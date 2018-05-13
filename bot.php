@@ -855,7 +855,7 @@ foreach( json_decode(file_get_contents('./intents.json'),true) as $k => $v){
 		replyBackWithSimpleText($v);
 	}
 }
-replyBackWithSimpleText($command);
+//replyBackWithSimpleText($command);
 $translatedInput = translateInput(prilagodiZahtjev(mb_strtoupper($command)), 'hr', 'en');	// when translating from bosnian language to english (instead from croatian), currency names/symbols are preserved (i have no idea why)
 if($translatedInput['status'] === 'OK'){
 	$nlpText = NLPtext($translatedInput['translate']);
