@@ -561,7 +561,7 @@ EOS
 					$answer = [ 'text' => "Odaberite način preuzimanja narudžbe" ];
 					
 					$answer['quick_replies'] = $quickReplies;
-					replyBackSpecificObject($answer);
+					replyBackSpecificObject($answer,true);
 				}else{
 					replyBackWithSimpleText("U košarici nemate nikakvih artikala.");
 				}
@@ -949,6 +949,9 @@ function replyBackSpecificObject($answer, $zavrsi=true) {
 
 function replyBackWithSimpleText($text, $zavrsi=true) {
 	replyBackSpecificObject([ 'text' => $text ], $zavrsi);
+	if ($zavrsi) {
+		exit();
+	}
 }
 
 function changeTypingIndicator($turnOn) {
