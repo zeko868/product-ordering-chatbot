@@ -73,7 +73,6 @@ if(empty($prijedlog)){
 	*/
 	
 			
-	echo $url1;
 }else{
 	$url1 = $prijedlog;
 }
