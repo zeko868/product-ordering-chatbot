@@ -248,7 +248,7 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 					$params = ['email', 'email', $senderId];
 					pg_query_params('UPDATE user_account SET currently_edited_attribute=$1, subscribe=$2 WHERE id=$3;', $params);
 					$mysqlDbHandler = new mysqli('chatbot-ordering.com', 'heroku', getenv('MYSQL_PW_ON_MAILSERVER'), 'vmail');
-					$mysqlDbHandler->multi_query("UPDATE forwardings SET active=1 WHERE address='$senderId@chatbot-ordering.com' AND forwarding='postmaster@chatbot-ordering.com';UPDATE forwardings SET active=0 WHERE address='$senderId@chatbot-ordering.com' AND forwarding<>'postmaster@chatbot-ordering.com';");
+					$mysqlDbHandler->multi_query("UPDATE forwardings SET active=0 WHERE address='$senderId@chatbot-ordering.com' AND forwarding='postmaster@chatbot-ordering.com';UPDATE forwardings SET active=1 WHERE address='$senderId@chatbot-ordering.com' AND forwarding<>'postmaster@chatbot-ordering.com';");
 					$mysqlDbHandler->close();
 					posaljiZahtjevZaOdabirom($params[0]);
 					break;
@@ -256,8 +256,7 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 					$params = [$userAlreadyRegistered ? null : 'phone', 'messenger', $senderId];
 					pg_query_params('UPDATE user_account SET currently_edited_attribute=$1, subscribe=$2 WHERE id=$3;', $params);
 					$mysqlDbHandler = new mysqli('chatbot-ordering.com', 'heroku', getenv('MYSQL_PW_ON_MAILSERVER'), 'vmail');
-					$mysqlDbHandler->query("UPDATE forwardings SET active=0 WHERE address='$senderId@chatbot-ordering.com';");
-					$mysqlDbHandler->close();
+					$mysqlDbHandler->multi_query("UPDATE forwardings SET active=1 WHERE address='$senderId@chatbot-ordering.com' AND forwarding='postmaster@chatbot-ordering.com';UPDATE forwardings SET active=0 WHERE address='$senderId@chatbot-ordering.com' AND forwarding<>'postmaster@chatbot-ordering.com';");					$mysqlDbHandler->close();
 					if ($userAlreadyRegistered) {
 						replyBackWithSimpleText('Uspješno je pohranjen odabir vezan uz način primanja obavijesti o narudžbama!');
 					}
