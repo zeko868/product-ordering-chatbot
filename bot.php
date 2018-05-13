@@ -79,7 +79,7 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 				if ($userAlreadyRegistered) {
 					$params[3] = null;
 					pg_query_params($q, $params);
-					replyBackWithSimpleText('Uspješno ste ažurirali Vašu adresu');
+					replyBackWithSimpleText("Uspješno ste uz Vaš korisnički račun povezali adresu '$route $streetNum' s poštanskim brojem $postalCode.");
 				}
 				else {
 					pg_query_params($q, $params);
@@ -245,12 +245,12 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 					}
 					break;
 				case 'subscribe email':
-					$params = [$userAlreadyRegistered ? null : 'email', 'email', $senderId];
+					$params = ['email', 'email', $senderId];
 					pg_query_params('UPDATE user_account SET currently_edited_attribute=$1, subscribe=$2 WHERE id=$3;', $params);
 					$mysqlDbHandler = new mysqli('chatbot-ordering.com', 'heroku', getenv('MYSQL_PW_ON_MAILSERVER'), 'vmail');
 					$mysqlDbHandler->multi_query("UPDATE forwardings SET active=1 WHERE address='$senderId@chatbot-ordering.com' AND forwarding='postmaster@chatbot-ordering.com';UPDATE forwardings SET active=0 WHERE address='$senderId@chatbot-ordering.com' AND forwarding<>'postmaster@chatbot-ordering.com';");
 					$mysqlDbHandler->close();
-					posaljiZahtjevZaOdabirom('email');
+					posaljiZahtjevZaOdabirom($params[0]);
 					break;
 				case 'subscribe messenger':
 					$params = [$userAlreadyRegistered ? null : 'phone', 'messenger', $senderId];
@@ -266,12 +266,12 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 					}
 					break;
 				case 'subscribe both':
-					$params = [$userAlreadyRegistered ? null : 'email', 'both', $senderId];
+					$params = ['email', 'both', $senderId];
 					pg_query_params('UPDATE user_account SET currently_edited_attribute=$1, subscribe=$2 WHERE id=$3;', $params);
 					$mysqlDbHandler = new mysqli('chatbot-ordering.com', 'heroku', getenv('MYSQL_PW_ON_MAILSERVER'), 'vmail');
 					$mysqlDbHandler->query("UPDATE forwardings SET active=1 WHERE address='$senderId@chatbot-ordering.com';");
 					$mysqlDbHandler->close();
-					posaljiZahtjevZaOdabirom('email');
+					posaljiZahtjevZaOdabirom($params[0]);
 					break;
 				case 'preserve email':
 					if ($userAlreadyRegistered) {
@@ -664,7 +664,7 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 				$command = 'last_name';	// to avoid asking user if their current name is valid if they chose to change it
 			case 'address':
 			case 'phone':
-			case 'email':
+			case 'subscribe':
 				pg_query_params('UPDATE user_account SET currently_edited_attribute=$1 WHERE id=$2', array($command, $senderId));
 				posaljiZahtjevZaOdabirom($command);
 				break;
