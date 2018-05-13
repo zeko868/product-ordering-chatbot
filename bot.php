@@ -258,7 +258,12 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 					$mysqlDbHandler = new mysqli('chatbot-ordering.com', 'heroku', getenv('MYSQL_PW_ON_MAILSERVER'), 'vmail');
 					$mysqlDbHandler->query("UPDATE forwardings SET active=0 WHERE address='$senderId@chatbot-ordering.com';");
 					$mysqlDbHandler->close();
-					replyBackWithSimpleText('Uspješno je pohranjen odabir vezan uz način primanja obavijesti o narudžbama!');
+					if ($userAlreadyRegistered) {
+						replyBackWithSimpleText('Uspješno je pohranjen odabir vezan uz način primanja obavijesti o narudžbama!');
+					}
+					else {
+						posaljiZahtjevZaOdabirom($params[0]);
+					}
 					break;
 				case 'subscribe both':
 					$params = [$userAlreadyRegistered ? null : 'email', 'both', $senderId];
