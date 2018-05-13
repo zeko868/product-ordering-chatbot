@@ -426,9 +426,13 @@ function prilagodiZahtjev($inputText){
 function urediIzlaz($inputText){
     $inputText = mb_strtolower($inputText);
     if(($pozicijaRacunalnog = strpos($inputText, 'računalni')) !== false){
-        $input = substr($inputText, 0, $pozicijaRacunalnog) . substr($inputText, $pozicijaRacunalnog + 11, strlen($inputText));
-        return $input;
+        $inputText = substr($inputText, 0, $pozicijaRacunalnog) . substr($inputText, $pozicijaRacunalnog + 11, strlen($inputText));
     }
+	
+	$inputText = str_replace('grafičke','grafička',$inputText);
+	$inputText = str_replace('kartice','kartica',$inputText);
+	$inputText = str_replace('matične','matična',$inputText);
+	
     return $inputText;
 }
 

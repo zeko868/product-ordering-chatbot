@@ -1,6 +1,7 @@
 <?php
 
 if(empty($prijedlog)){
+	
 	ini_set('allow_url_fopen', 1);
 
 	$stranica = 'https://www.links.hr';
@@ -57,12 +58,22 @@ if(empty($prijedlog)){
 	$proizvodac = nadjiProizvodaca($nlpText['ostalo']['ostaliFilteri'], $pro); // 0 ako nije naveden
 
 	//url za pretragu
+	$url1 = $stranica . $trazilica . urlencode($pojamZaPretragu)
+			. $dodatak
+			. $proizvodi        
+			. $cijenaOd . $cMin
+			. $cijenaDo . $cMax;
 
+	/*
 	$url1 = $stranica . $trazilica . urlencode($pojamZaPretragu)
 			. $dodatak
 			. $proizvodi . $proizvodac        
 			. $cijenaOd . $cMin
 			. $cijenaDo . $cMax;
+	*/
+	
+			
+	echo $url1;
 }else{
 	$url1 = $prijedlog;
 }
