@@ -91,6 +91,16 @@ if ($messageInfo = $input['entry'][0]['messaging'][0]) {
 			replyBackWithSimpleText('Privitke poput slika, video-zapisa i audio-sadržaja nije moguće analizirati! Molimo Vas da se izrazite tekstualno.');
 		}
 	}
+	else if (!empty($messageInfo['notification'])) {	// vendor's notification related to completed orders
+		$notification = $messageInfo['notification'];
+		replyBackWithSimpleText(<<<EOS
+*Naslov:* $notification[subject]
+*Pošiljatelj:* $notification[mail]
+*Sadržaj:*
+$notification[content]
+EOS
+		);
+	}
 	else if (!empty($messageInfo['message']['quick_reply']['payload'])) {
 		$command = $messageInfo['message']['quick_reply']['payload'];
 		if (empty($expectedValueType)) {
