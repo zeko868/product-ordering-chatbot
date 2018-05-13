@@ -661,7 +661,7 @@ EOS
 					];
 					
 					changeTypingIndicator(false);
-					replyBackSpecificObject([ 'attachment' => $answer ]);
+					replyBackSpecificObject([ 'attachment' => $answer ], false);
 					
 					replyBackWithSimpleText("Za kupovinu košarice Košarica -> Završi kupovinu");
 					}
