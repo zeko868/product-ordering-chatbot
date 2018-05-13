@@ -206,6 +206,7 @@ EOS
 				//close file
 				fclose($fp);
 				replyBackSpecificObject([ 'attachment' => $answer ]);
+				exit();
 			}
 		}
 		else {
@@ -562,7 +563,6 @@ EOS
 					
 					$answer['quick_replies'] = $quickReplies;
 					replyBackSpecificObject($answer);
-					exit();
 				}else{
 					replyBackWithSimpleText("U košarici nemate nikakvih artikala.");
 				}
@@ -661,7 +661,7 @@ EOS
 					];
 					
 					changeTypingIndicator(false);
-					replyBackSpecificObject([ 'attachment' => $answer ], false);
+					replyBackSpecificObject([ 'attachment' => $answer ]);
 					
 					replyBackWithSimpleText("Za kupovinu košarice Košarica -> Završi kupovinu");
 					}
